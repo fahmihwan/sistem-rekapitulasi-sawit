@@ -27,12 +27,12 @@
                     <div class="panel-heading ">
                         <div style=" display: flex; justify-content: space-between; align-items: center">
                             <div>
-                                Master Data Karyawan
+                                Master Pabrik
                             </div>
 
                             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
                                 data-target="#modalCreate">
-                                <i class="fa fa-user-plus"></i> Tambah Data
+                                <i class="fa fa-plus"></i> Tambah Data
                             </button>
                         </div>
                     </div>
@@ -43,8 +43,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Nama</th>
-                                        <th>Kategori</th>
+                                        <th>Nama Pabrik</th>
                                         <th>Created at</th>
                                         <th>#</th>
                                     </tr>
@@ -53,15 +52,14 @@
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->nama }}</td>
-                                            <td>{{ $item->type_karyawan }}</td>
+                                            <td>{{ $item->nama_pabrik }}</td>
                                             <td class="center">{{ $item->formatted_created_at }}</td>
 
                                             {{-- <button type="submit"
                                                 class="font-medium text-red-600  hover:underline ml-3">Hapus</button> --}}
 
                                             <td class="center" style="display: flex">
-                                                <form method="POST" action="/master/karyawan/{{ $item->id }}">
+                                                <form method="POST" action="/master/pabrik/{{ $item->id }}">
                                                     @method('delete')
                                                     @csrf
                                                     <button type="submit" class="btn btn-danger btn-circle"
@@ -72,9 +70,8 @@
 
                                                 <button type="button" class="btn btn-warning btn-circle btn-edit"
                                                     data-toggle="modal" data-target="#modalEdit"
-                                                    data-id="{{ $item->id }}" data-nama="{{ $item->nama }}"
-                                                    data-typekaryawan="{{ $item->type_karyawan }}" {{-- data-bs-toggle="modal" --}}
-                                                    {{-- data-bs-target="#editModal" --}}>
+                                                    data-id="{{ $item->id }}"
+                                                    data-namapabrik="{{ $item->nama_pabrik }}">
                                                     <i class="fa fa-edit"></i>
                                                 </button>
                                             </td>
@@ -101,10 +98,10 @@
             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <form role="form" method="POST" action="/master/karyawan">
+                    <form role="form" method="POST" action="/master/pabrik">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalCreate">Tambah Karyawan</h4>
+                            <h4 class="modal-title" id="myModalCreate">Tambah Pabrik</h4>
                         </div>
                         <div class="modal-body">
 
@@ -112,33 +109,10 @@
                             @method('POST')
                             @csrf
                             <div class="form-group "> {{-- has-success, has-warning, has-error --}}
-                                <label>Nama</label>
-                                <input class="form-control" name="nama" value="{{ old('nama') }}">
-                                {{-- <p class="help-block">Example block-level help text here.</p> --}}
+                                <label>Nama Pabrik</label>
+                                <input class="form-control" name="nama_pabrik" value="{{ old('nama_pabrik') }}">
                             </div>
 
-                            <div class="form-group">
-                                <label>Kategori</label>
-                                {{-- <div class="radio">
-                                <label>
-                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>Radio 1
-                                </label>
-                            </div> --}}
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="type_karyawan" id="optionsRadios2" value="TKBM">TKBM
-                                    </label>
-                                </div>
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="type_karyawan" id="optionsRadios3" value="SOPIR">Sopir
-                                    </label>
-                                </div>
-                                {{-- <select id="status" name="status" required>
-                                <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                                <option value="nonaktif" {{ old('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
-                            </select><br><br> --}}
-                            </div>
 
 
                         </div>
@@ -163,7 +137,7 @@
                     <form role="form" method="POST" id="form-edit">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalEdit">Ubah Karyawan</h4>
+                            <h4 class="modal-title" id="myModalEdit">Ubah Pabrik</h4>
                         </div>
                         <div class="modal-body">
 
@@ -172,33 +146,8 @@
                             @csrf
                             <div class="form-group "> {{-- has-success, has-warning, has-error --}}
                                 <label>Nama</label>
-                                <input class="form-control" name="nama" id="modal-nama">
-                                {{-- <p class="help-block">Example block-level help text here.</p> --}}
+                                <input class="form-control" name="nama_pabrik" id="modal-namapabrik">
                             </div>
-
-                            <div class="form-group">
-                                <label>Kategori</label>
-                                {{-- <div class="radio">
-                                <label>
-                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>Radio 1
-                                </label>
-                            </div> --}}
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="type_karyawan" id="modal-type1" value="TKBM">TKBM
-                                    </label>
-                                </div>
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="type_karyawan" id="modal-type2" value="SOPIR">Sopir
-                                    </label>
-                                </div>
-                                {{-- <select id="status" name="status" required>
-                                <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                                <option value="nonaktif" {{ old('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
-                            </select><br><br> --}}
-                            </div>
-
 
                         </div>
                         <div class="modal-footer">
@@ -220,18 +169,22 @@
 @endsection
 
 @section('script')
+    {{-- <script src="{{ asset('/js/jquery.min.js') }}"></script> --}}
     <script>
         $(document).ready(function() {
 
+
             $('.btn-edit').on('click', function() {
                 var userId = $(this).data('id');
-                var nama = $(this).data('nama');
-                var type = $(this).data('typekaryawan');
+                var nama = $(this).data('namapabrik');
 
-                $('#form-edit').attr('action', '/master/karyawan/' + userId);
+                console.log(nama);
+
+
+                $('#form-edit').attr('action', '/master/pabrik/' + userId);
                 // Isi field
-                $('#modal-nama').val(nama);
-                $("input[name='type_karyawan'][value='" + type + "']").prop('checked', true);
+                $('#modal-namapabrik').val(nama);
+
             });
         });
     </script>

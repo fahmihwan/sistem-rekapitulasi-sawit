@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\M_pabrik>
  */
-class MPabrikFactory extends Factory
+class M_pabrikFactory extends Factory
 {
+
+
     /**
      * Define the model's default state.
      *
@@ -17,7 +19,7 @@ class MPabrikFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nama_pabrik' => $this->faker->name(),
         ];
     }
 }

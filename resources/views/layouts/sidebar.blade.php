@@ -39,14 +39,15 @@
                 <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Pembelian TBS<span
                         class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
+                    {{-- /pembelian/tbs/{menu}/view --}}
                     <li>
-                        <a href="flot.html">TBS LAHAN</a>
+                        <a href="/pembelian/tbs/LAHAN/view">TBS LAHAN</a>
                     </li>
                     <li>
-                        <a href="flot.html">TBS RUMAH</a>
+                        <a href="/pembelian/tbs/RUMAH/view">TBS RUMAH</a>
                     </li>
                     <li>
-                        <a href="flot.html">TBS RAM</a>
+                        <a href="/pembelian/tbs/RAM/view">TBS RAM</a>
                     </li>
                 </ul>
                 <!-- /.nav-second-level -->

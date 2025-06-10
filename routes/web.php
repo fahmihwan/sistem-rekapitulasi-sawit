@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PabrikController;
+use App\Http\Controllers\TbsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', function () {
@@ -18,3 +19,6 @@ Route::get('/master/pabrik', [PabrikController::class, 'index']);
 Route::post('/master/pabrik', [PabrikController::class, 'store']);
 Route::put('/master/pabrik/{id}', [PabrikController::class, 'update']);
 Route::delete('/master/pabrik/{id}', [PabrikController::class, 'destroy']);
+
+
+Route::get('/pembelian/tbs/{menu}/view', [TbsController::class, 'index']);

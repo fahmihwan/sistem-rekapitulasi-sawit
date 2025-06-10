@@ -11,7 +11,16 @@
     <title>Sistem Rekapitulasi Sawit</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('/css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <link href="{{ asset('/css/metisMenu.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/css/dataTables/dataTables.bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ asset('/css/dataTables/dataTables.responsive.css') }}" rel="stylesheet">
+    <link href="{{ asset('/css/startmin.css') }}" rel="stylesheet">
+    <link href="{{ asset('/css/font-awesome.min.css') }}" rel="stylesheet">
+
+
+    {{-- <link href="../css/bootstrap.min.css" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
     <link href="../css/metisMenu.min.css" rel="stylesheet">
@@ -23,7 +32,7 @@
     <link href="../css/dataTables/dataTables.responsive.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="../css/startmin.css" rel="stylesheet">
+    <link href="../css/startmin.css" rel="stylesheet"> --}}
 
     <!-- Custom Fonts -->
     <link href="../css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -63,17 +72,19 @@
     <!-- /#wrapper -->
 
     <!-- jQuery -->
-    <script src="../js/jquery.min.js"></script>
+    {{-- <script src="../js/jquery.min.js"></script> --}}
+    <script src="{{ asset('/js/jquery.min.js') }}"></script>
 
+    @yield('script')
     <!-- Bootstrap Core JavaScript -->
-    <script src="../js/bootstrap.min.js"></script>
+    <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
-    <script src="../js/metisMenu.min.js"></script>
+    <script src="{{ asset('/js/metisMenu.min.js') }}"></script>
 
     <!-- DataTables JavaScript -->
-    <script src="../js/dataTables/jquery.dataTables.min.js"></script>
-    <script src="../js/dataTables/dataTables.bootstrap.min.js"></script>
+    <script src="{{ asset('/js/dataTables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('/js/dataTables/dataTables.bootstrap.min.js') }}"></script>
 
     <!-- Custom Theme JavaScript -->
     <script src="../js/startmin.js"></script>
@@ -87,7 +98,7 @@
             });
         });
     </script>
-    @yield('script')
+
 </body>
 
 </html>

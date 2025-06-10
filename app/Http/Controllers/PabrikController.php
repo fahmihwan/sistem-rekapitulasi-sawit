@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\M_pabrik;
 use Illuminate\Http\Request;
 
 class PabrikController extends Controller
@@ -9,8 +10,8 @@ class PabrikController extends Controller
 
     public function index()
     {
-        return view('pages.master_karyawan.index', [
-            'items' =>  M_karyawan::latest()->get()
+        return view('pages.master_pabrik.index', [
+            'items' =>  M_pabrik::latest()->get()
         ]);
     }
 
@@ -23,12 +24,11 @@ class PabrikController extends Controller
     {
 
         $validated = $request->validate([
-            'nama' => 'required|max:50',
-            'type_karyawan' => 'required'
+            'nama_pabrik' => 'required|max:50',
         ]);
 
-        M_karyawan::create($validated);
-        return redirect('/master/karyawan');
+        M_pabrik::create($validated);
+        return redirect('/master/pabrik');
     }
 
 
@@ -38,22 +38,21 @@ class PabrikController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            'nama' => 'required|max:50',
-            'type_karyawan' => 'required'
+            'nama_pabrik' => 'required|max:50',
         ]);
 
-        $karyawan =  M_karyawan::findOrFail($id);
+        $karyawan =  M_pabrik::findOrFail($id);
         $karyawan->update($validated);
-        return redirect('/master/karyawan');
+        return redirect('/master/pabrik');
     }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        $karyawan = M_karyawan::findOrFail($id);
+        $karyawan = M_pabrik::findOrFail($id);
 
         $karyawan->delete();
-        return redirect('/master/karyawan')->with('success', 'Karyawan berhasil dihapus!');
+        return redirect('/master/pabrik')->with('success', 'Karyawan berhasil dihapus!');
     }
 }
