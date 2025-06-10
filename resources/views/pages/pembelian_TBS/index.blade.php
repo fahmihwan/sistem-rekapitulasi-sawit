@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">Pembelian {{ $menu }}</h1>
+                <h1 class="page-header">Pembelian {{ $title }}</h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -23,6 +23,7 @@
         </div>
         <div class="row">
             <div class="col-lg-12">
+
                 <div class="panel panel-default">
                     <div class="panel-heading ">
                         <div style=" display: flex; justify-content: space-between; align-items: center">
@@ -36,24 +37,57 @@
                             </button>
                         </div>
                     </div>
-                    <div class="row ">
-                        <div class="md:col-md-6" style="margin-right: 30px; margin-top: 10px">
-                            <div style="display: flex; justify-content: end; ">
-                                <div style="display: flex; align-items: center; ">
-                                    <p style="display: block; width: 140px">Filter Tanggal</p>
-                                    <input type="date" class="form-control" name="nama_customer"
-                                        value="{{ old('nama_customer') }}">
+
+                    <div>
+                        <form method="GET" id="perPageForm" class="container-filter-datatables">
+                            <div class="container-left-datatables">
+                                <span style="margin-left: 5px; margin-right: 5px">Show</span>
+                                <select class="form-control" name="per_page" style="width: 100px"
+                                    onchange="document.getElementById('perPageForm').submit()">
+                                    @foreach ([10, 25, 50, 100] as $size)
+                                        <option value="{{ $size }}"
+                                            {{ request('per_page') == $size ? 'selected' : '' }}>
+                                            {{ $size }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span style="margin-left: 5px; margin-right: 5px">entries</span>
+                            </div>
+
+
+
+
+                            <div class="container-right-datatables">
+                                <div class="form-filter-datatables">
+                                    <span style="display: block; margin-right: 5px; width: 140px">Filter Tanggal</span>
+                                    <input type="date" name="tanggal" value="{{ request('tanggal') }}"
+                                        class="form-control" style="width: 100%">
+                                </div>
+
+                                <div class="form-filter-datatables">
+                                    <span style="display: block; margin-right: 5px ">Search </span>
+                                    <input class="form-control" name="search" value="{{ request('search') }}">
+                                </div>
+
+                                <div class="form-filter-datatables">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="fa fa-search"></i> Search
+                                    </button>
+                                </div>
+
+                                <div class="form-filter-datatables">
+                                    <a href="{{ '/pembelian/tbs/' . $menu . '/view' }}" class="btn btn-info btn-sm">
+                                        <i class="fa fa-refresh"></i> clear
+                                    </a>
                                 </div>
                             </div>
-                        </div>
+
+                        </form>
                     </div>
                     <!-- /.panel-heading -->
                     <div class="panel-body">
-
-
                         <div class="table-responsive">
-
-                            <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                            <table class="table table-striped table-bordered table-hover">
                                 <thead>
                                     <tr>
                                         <th>No</th>
@@ -75,8 +109,6 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $item->nama_customer }}</td>
                                             <td>{{ $item->netto_formatted }}</td>
-                                            {{-- <td>{{ \App\Helpers\Utils::formatRupiah($item->harga) }}</td> --}}
-                                            {{-- <td>{{ \App\Helpers\Utils::formatRupiah($item->uang) }}</td> --}}
                                             <td>{{ $item->harga_formatted }}</td>
                                             <td>{{ $item->uang_formatted }}</td>
                                             <td>{{ $item->timbangan_first_formatted }}</td>
@@ -84,9 +116,6 @@
                                             <td>{{ $item->bruto_formatted }}</td>
                                             <td>{{ $item->sortasi_formatted }}</td>
                                             <td class="center">{{ $item->formatted_created_at }}</td>
-
-                                            {{-- <button type="submit"
-                                                class="font-medium text-red-600  hover:underline ml-3">Hapus</button> --}}
 
                                             <td class="center" style="display: flex">
                                                 <form method="POST" action="/master/pabrik/{{ $item->id }}">
@@ -109,13 +138,28 @@
 
                                 </tbody>
                             </table>
-                        </div>
-                        <!-- /.table-responsive -->
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                {{-- <p>Showing 1 to 10 of 34 entries</p> --}}
+                                <p> Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of
+                                    {{ $items->total() }} entries</p>
 
+                                {{ $items->links() }}
+
+                                {{-- <ul class="pagination" style="padding: 0; margin: 0">
+                                        <li class="disabled"><a href="#" aria-label="Previous"><span
+                                                    aria-hidden="true">&laquo;</span></a></li>
+                                        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a>
+                                        </li>
+                                    </ul> --}}
+
+                            </div>
+
+                        </div>
+
+                        <!-- /.table-responsive -->
                     </div>
                     <!-- /.panel-body -->
                 </div>
-                <!-- /.panel -->
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -161,7 +205,8 @@
                             </div>
                             <div class="form-group ">
                                 <label>Timbangan 2</label>
-                                <input class="form-control" name="timbangan_second" value="{{ old('timbangan_second') }}">
+                                <input class="form-control" name="timbangan_second"
+                                    value="{{ old('timbangan_second') }}">
                             </div>
                             <div class="form-group ">
                                 <label>Bruto</label>
