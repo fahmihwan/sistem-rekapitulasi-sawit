@@ -2,39 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Utils;
+use App\Models\M_type_tbs;
 use App\Models\Pembelian_tbs;
 use Illuminate\Http\Request;
+use PhpParser\Node\Expr\FuncCall;
 
 class TbsController extends Controller
 {
     public function index(Request $request, string $menu)
     {
 
+
         $tanggal = $request->input('tanggal');
         $perPage = $request->input('per_page', 10);
         $search = $request->input('search');
 
-        $_MAPPING_ID = NULL;
-        $_MAPPING_TEXT = NULL;
-        if ($menu == 'LAHAN') {
-            $_MAPPING_TEXT = "TBS LAHAN";
-            $_MAPPING_ID = 1;
-        } else if ($menu == 'RUMAH') {
-            $_MAPPING_TEXT = "TBS RUMAH";
-            $_MAPPING_ID = 2;
-        } else if ($menu == 'RAM') {
-            $_MAPPING_TEXT = "TBS RAM";
-            $_MAPPING_ID = 3;
-        } else {
+        $TBS_TYPE =  Utils::mappingTBS_type($menu);
+        if ($TBS_TYPE == null) {
             return "NOT FOUND";
         }
 
-        // $data = Pembelian_tbs::where('tbs_type_id', $_MAPPING_ID)->paginate($perPage);
-        // ->appends(['per_page' => $perPage]);;
 
-
-
-        $query = Pembelian_tbs::where('tbs_type_id', $_MAPPING_ID);
+        $query = Pembelian_tbs::where('tbs_type_id', $TBS_TYPE['id']);
 
         // Filter tanggal (jika diisi)
         if ($request->filled('tanggal')) {
@@ -53,15 +43,95 @@ class TbsController extends Controller
                     ->orWhere('sortasi', 'ILIKE', "%$search%");
             });
         }
+        $query->orderBy('created_at', 'desc');
 
         $data = $query->paginate($perPage)->appends($request->query());
 
         // dd($data);
         return view('pages.pembelian_TBS.index', [
             'items' =>  $data,
-            'title' => $_MAPPING_TEXT,
+            'title' => $TBS_TYPE['text'],
             'menu' => $menu
 
         ]);
+    }
+
+    public function store(Request $request, $menu)
+    {
+        $request->merge([
+            'uang' => str_replace('.', '', $request->input('uang'))
+        ]);
+
+        $rules = [
+            'nama_customer' => 'required|max:50',
+            'netto' => 'required|numeric',
+            'harga' => 'required|numeric',
+            'uang' => 'required|numeric'
+        ];
+
+        $TBS_TYPE =  Utils::mappingTBS_type($menu);
+        $validated = null;
+        if ($TBS_TYPE == null) {
+            return "NOT FOUND";
+        }
+
+        if ($menu == 'RUMAH') {
+            $validated = $request->validate($rules);
+            $validated['tbs_type_id'] = $TBS_TYPE['id'];
+        } else if ($menu == 'LAHAN') {
+            $validated = $request->validate($rules);
+            $validated['tbs_type_id'] = $TBS_TYPE['id'];
+        } else if ($menu == 'RAM') {
+            $rules['timbangan_first'] = 'required|numeric';
+            $rules['timbangan_second'] = 'required|numeric';
+            $rules['sortasi'] = 'required|numeric';
+            $rules['bruto'] = 'required|numeric';
+            $validated = $request->validate($rules);
+            $validated['tbs_type_id'] = $TBS_TYPE['id'];
+        } else {
+            return "NOT FOUND";
+        }
+
+        Pembelian_tbs::create($validated);
+        return redirect('pembelian/tbs/' . $menu . '/view');
+    }
+
+    public function update(Request $request, $menu, $id)
+    {
+        $request->merge([
+            'uang' => str_replace('.', '', $request->input('uang'))
+        ]);
+
+        // return $request->all();
+        $rules = [
+            'nama_customer' => 'required|max:50',
+            'netto' => 'required|numeric',
+            'harga' => 'required|numeric',
+            'uang' => 'required|numeric'
+        ];
+
+        $TBS_TYPE =  Utils::mappingTBS_type($menu);
+        $validated = null;
+        if ($TBS_TYPE == null) {
+            return "NOT FOUND";
+        }
+
+        if ($menu == 'RUMAH') {
+            $validated = $request->validate($rules);
+        } else if ($menu == 'LAHAN') {
+            $validated = $request->validate($rules);
+        } else if ($menu == 'RAM') {
+            $rules['timbangan_first'] = 'required|numeric';
+            $rules['timbangan_second'] = 'required|numeric';
+            $rules['sortasi'] = 'required|numeric';
+            $rules['bruto'] = 'required|numeric';
+            $validated = $request->validate($rules);
+        } else {
+            return "NOT FOUND";
+        }
+        $pembelianTBs =  Pembelian_tbs::findOrFail($id);
+
+        $pembelianTBs->update($validated);
+        return redirect('pembelian/tbs/' . $menu . '/view');
     }
 }

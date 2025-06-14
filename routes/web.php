@@ -22,3 +22,5 @@ Route::delete('/master/pabrik/{id}', [PabrikController::class, 'destroy']);
 
 
 Route::get('/pembelian/tbs/{menu}/view', [TbsController::class, 'index']);
+Route::post('/pembelian/tbs/{menu}/view', [TbsController::class, 'store']);
+Route::put('/pembelian/tbs/{menu}/view/{id}', [TbsController::class, 'update']);

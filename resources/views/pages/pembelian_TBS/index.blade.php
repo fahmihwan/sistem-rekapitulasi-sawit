@@ -31,8 +31,8 @@
                                 Master TBS
                             </div>
 
-                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
-                                data-target="#modalCreate">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" id="btn-create"
+                                data-target="#modalCreateEdit">
                                 <i class="fa fa-plus"></i> Tambah Data
                             </button>
                         </div>
@@ -92,13 +92,16 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Nama</th>
+                                        @if ($menu == 'RAM')
+                                            <th>Timbagan 1</th>
+                                            <th>Timbagan 2</th>
+                                            <th>Bruto</th>
+                                            <th>Sortasi</th>
+                                        @endif
+
                                         <th>Netto</th>
                                         <th>Harga</th>
                                         <th>Uang</th>
-                                        <th>Timbagan 1</th>
-                                        <th>Timbagan 2</th>
-                                        <th>Bruto</th>
-                                        <th>Sortasi</th>
                                         <th>Created at</th>
                                         <th>#</th>
                                     </tr>
@@ -108,13 +111,16 @@
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $item->nama_customer }}</td>
+                                            @if ($menu == 'RAM')
+                                                <td>{{ $item->timbangan_first_formatted }}</td>
+                                                <td>{{ $item->timbangan_second_formatted }}</td>
+                                                <td>{{ $item->bruto_formatted }}</td>
+                                                <td>{{ $item->sortasi_formatted }}</td>
+                                            @endif
                                             <td>{{ $item->netto_formatted }}</td>
                                             <td>{{ $item->harga_formatted }}</td>
                                             <td>{{ $item->uang_formatted }}</td>
-                                            <td>{{ $item->timbangan_first_formatted }}</td>
-                                            <td>{{ $item->timbangan_second_formatted }}</td>
-                                            <td>{{ $item->bruto_formatted }}</td>
-                                            <td>{{ $item->sortasi_formatted }}</td>
+
                                             <td class="center">{{ $item->formatted_created_at }}</td>
 
                                             <td class="center" style="display: flex">
@@ -126,10 +132,16 @@
                                                         <i class="fa fa-trash"></i></button>
                                                 </form>
 
-
-                                                <button type="button" class="btn btn-warning btn-circle btn-edit"
-                                                    data-toggle="modal" data-target="#modalEdit"
-                                                    data-id="{{ $item->id }}"> {{-- data-namapabrik="{{ $item->nama_pabrik }}"> --}} <i
+                                                <button data-id="{{ $item->id }}"
+                                                    data-nama="{{ $item->nama_customer }}"
+                                                    @if ($menu == 'RAM') data-timbangan1="{{ $item->timbangan_first }}"
+                                                        data-timbangan2="{{ $item->timbangan_second }}"
+                                                        data-bruto="{{ $item->bruto }}"
+                                                        data-sortasi="{{ $item->sortasi }}" @endif
+                                                    data-netto="{{ $item->netto }}" data-harga="{{ $item->harga }}"
+                                                    data-uang="{{ $item->uang }}" data-bs-toggle="modal" type="button"
+                                                    class="btn btn-warning btn-circle btn-edit" data-toggle="modal"
+                                                    data-target="#modalCreateEdit" data-id="{{ $item->id }}"><i
                                                         class="fa fa-edit"></i>
                                                 </button>
                                             </td>
@@ -139,19 +151,10 @@
                                 </tbody>
                             </table>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
-                                {{-- <p>Showing 1 to 10 of 34 entries</p> --}}
                                 <p> Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of
                                     {{ $items->total() }} entries</p>
 
                                 {{ $items->links() }}
-
-                                {{-- <ul class="pagination" style="padding: 0; margin: 0">
-                                        <li class="disabled"><a href="#" aria-label="Previous"><span
-                                                    aria-hidden="true">&laquo;</span></a></li>
-                                        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a>
-                                        </li>
-                                    </ul> --}}
-
                             </div>
 
                         </div>
@@ -165,92 +168,116 @@
         </div>
 
 
+        <input type="hidden" value="{{ $menu }}" id="menu">
+
 
         <!-- Modal CREATE-->
-        <div class="modal fade" id="modalCreate" tabindex="-1" role="dialog" aria-labelledby="myModalCreate"
+        <div class="modal fade" id="modalCreateEdit" tabindex="-1" role="dialog" aria-labelledby="mymodalCreateEdit"
             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <form role="form" method="POST" action="/master/pabrik">
+                    <form id='mainForm' role="form" method=POST action={{ '/pembelian/tbs/' . $menu . '/view' }}>
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalCreate">Tambah Pabrik</h4>
+                            <h4 class="modal-title" id="mymodalCreateEdit">Pembelian {{ $title }}</h4>
                         </div>
                         <div class="modal-body">
+                            <input type="hidden" id="formMethod" name="_method" value="POST">
 
 
-                            @method('POST')
                             @csrf
                             <div class="form-group "> {{-- has-success, has-warning, has-error --}}
                                 <label>Nama Customer</label>
-                                <input class="form-control" name="nama_customer" value="{{ old('nama_customer') }}">
+                                <input class="form-control" name="nama_customer" value="{{ old('nama_customer') }}"
+                                    id="nama_customer">
                             </div>
 
-                            <div class="form-group ">
-                                <label>Netto</label>
-                                <input class="form-control" name="netto" value="{{ old('netto') }}">
-                            </div>
+
+                            @if ($menu == 'RAM')
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group ">
+                                            <label>Timbangan 1</label>
+                                            <div class="form-group input-group">
+                                                <input type="number" class="form-control" name="timbangan_first"
+                                                    value="{{ old('timbangan_first') }}" id="timbangan_first">
+                                                <span class="input-group-addon">Kg</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group ">
+                                            <label>Timbangan 2</label>
+                                            <div class="form-group input-group">
+                                                <input type="number" class="form-control" name="timbangan_second"
+                                                    value="{{ old('timbangan_second') }}" id="timbangan_second">
+                                                <span class="input-group-addon">Kg</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group ">
+                                            <label>Bruto</label>
+                                            <div class="form-group input-group">
+                                                <input class="form-control" name="bruto" value="{{ old('bruto') }}"
+                                                    readonly id="bruto">
+                                                <span class="input-group-addon">Kg</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group ">
+                                            <label>Sortasi</label>
+                                            <div class="form-group input-group">
+                                                <input class="form-control" name="sortasi" value="{{ old('sortasi') }}"
+                                                    id="sortasi">
+                                                <span class="input-group-addon">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if ($menu == 'RAM')
+                                <div class="form-group ">
+                                    <label>Netto</label>
+                                    <div class="form-group input-group">
+                                        <input class="form-control" name="netto" readonly value="{{ old('netto') }}"
+                                            id="netto">
+                                        <span class="input-group-addon">Kg</span>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="form-group ">
+                                    <label>Netto</label>
+                                    <div class="form-group input-group">
+                                        <input class="form-control" type="number" name="netto"
+                                            value="{{ old('netto') }}" id="netto">
+                                        <span class="input-group-addon">Kg</span>
+                                    </div>
+                                </div>
+                            @endif
+
 
                             <div class="form-group ">
                                 <label>Harga</label>
-                                <input class="form-control" name="harga" value="{{ old('harga') }}">
+                                <div class="form-group input-group">
+                                    <span class="input-group-addon">Rp</span>
+                                    <input type="number" class="form-control" name="harga"
+                                        value="{{ old('harga') }}" id="harga">
+                                </div>
                             </div>
+
                             <div class="form-group ">
                                 <label>Uang</label>
-                                <input class="form-control" name="uang" value="{{ old('uang') }}">
-                            </div>
-                            <div class="form-group ">
-                                <label>Timbangan 1</label>
-                                <input class="form-control" name="timbangan_first" value="{{ old('timbangan_first') }}">
-                            </div>
-                            <div class="form-group ">
-                                <label>Timbangan 2</label>
-                                <input class="form-control" name="timbangan_second"
-                                    value="{{ old('timbangan_second') }}">
-                            </div>
-                            <div class="form-group ">
-                                <label>Bruto</label>
-                                <input class="form-control" name="bruto" value="{{ old('bruto') }}">
-                            </div>
-                            <div class="form-group ">
-                                <label>Sortasi</label>
-                                <input class="form-control" name="sortasi" value="{{ old('sortasi') }}">
-                            </div>
-
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
-                        </div>
-                    </form>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-
-
-        <!-- /.row -->
-        <!-- Modal EDIT-->
-        <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="myModalEdit"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <form role="form" method="POST" id="form-edit">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal"
-                                aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalEdit">Ubah Pabrik</h4>
-                        </div>
-                        <div class="modal-body">
-
-
-                            @method('PUT')
-                            @csrf
-                            <div class="form-group "> {{-- has-success, has-warning, has-error --}}
-                                <label>Nama</label>
-                                <input class="form-control" name="nama_pabrik" id="modal-namapabrik">
+                                <div class="form-group input-group">
+                                    <span class="input-group-addon">Rp</span>
+                                    <input type="text" class="form-control" readonly name="uang"
+                                        value="{{ old('uang') }}" id="uang">
+                                </div>
                             </div>
 
                         </div>
@@ -265,9 +292,85 @@
             <!-- /.modal-dialog -->
         </div>
 
-        <!-- /.row -->
-
-
-        <!-- /.row -->
     </div>
+@endsection
+
+@section('script')
+    <script>
+        $(document).ready(function() {
+
+            let menu = $('#menu').val()
+
+
+            function formatRupiah(angka) {
+                return new Intl.NumberFormat('id-ID').format(angka);
+            }
+
+            function hitungRUMAH_LAHAN() {
+                var netto = parseFloat($('#netto').val()) || 0;
+                var harga = parseFloat($('#harga').val()) || 0;
+                var total = netto * harga;
+                $('#uang').val(formatRupiah(total));
+            }
+
+
+            function hitungRam() {
+                let nama = $('#nama').val(menu);
+                let timbang1 = parseFloat($('#timbangan_first').val()) || 0;
+                let timbang2 = parseFloat($('#timbangan_second').val()) || 0;
+                let bruto = timbang1 - timbang2;
+
+                let sortasiPersen = parseFloat($('#sortasi').val()) || 0;
+                let sortasiNilai = bruto * (sortasiPersen / 100);
+                let netto = bruto - sortasiNilai;
+
+                let harga = parseFloat($('#harga').val()) || 0;
+                let uang = netto * harga;
+
+                $('#bruto').val(bruto.toFixed(2));
+                $('#netto').val(netto.toFixed(2));
+                $('#uang').val(formatRupiah(uang));
+
+            }
+
+            if (menu == 'RAM') {
+                $('#nama, #timbangan_first, #timbangan_second, #sortasi, #harga').on('input', hitungRam);
+            } else {
+                $('#netto, #harga').on('input', hitungRUMAH_LAHAN);
+            }
+
+            $('#btn-create').on('click', function() {
+                $('#mainForm')[0].reset(); // Kosongkan form
+                $('#mymodalCreateEdit').text('Tambah TBS ' + menu);
+                $('#mainForm').attr('action', '/pembelian/tbs/' + menu + '/view');
+                $('#formMethod').val('POST')
+            });
+
+
+            $('.btn-edit').on('click', function() {
+                let id = $(this).data('id');
+                $('#mainForm')[0].reset(); // Kosongkan form
+                $('#mymodalCreateEdit').text('Edit TBS ' + menu);
+                $('#mainForm').attr('action', '/pembelian/tbs/' + menu + '/view/' + id);
+                $('#formMethod').val('PUT')
+
+
+                $('#nama_customer').val($(this).data('nama'));
+                $('#netto').val($(this).data('netto'));
+                $('#harga').val($(this).data('harga'));
+                $('#uang').val($(this).data('uang'));
+                if (menu == 'RAM') {
+
+                    // console.log('wkwkkww', $(this).data('timbangan1'));
+                    $('#timbangan_first').val($(this).data('timbangan1'));
+                    $('#timbangan_second').val($(this).data('timbangan2'));
+                    $('#bruto').val($(this).data('bruto'));
+                    $('#sortasi').val($(this).data('sortasi'));
+                }
+
+            });
+
+
+        });
+    </script>
 @endsection
