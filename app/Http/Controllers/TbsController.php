@@ -134,4 +134,17 @@ class TbsController extends Controller
         $pembelianTBs->update($validated);
         return redirect('pembelian/tbs/' . $menu . '/view');
     }
+
+    public function destroy($menu, $id)
+    {
+        $TBS_TYPE =  Utils::mappingTBS_type($menu);
+
+        if ($TBS_TYPE == null) {
+            return "NOT FOUND";
+        }
+        $karyawan = Pembelian_tbs::findOrFail($id);
+
+        $karyawan->delete();
+        return redirect('/pembelian/tbs/' . $menu . '/view')->with('success', 'Karyawan berhasil dihapus!');
+    }
 }

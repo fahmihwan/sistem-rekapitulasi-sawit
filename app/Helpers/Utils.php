@@ -25,4 +25,14 @@ class Utils
 
         return $map[$menu] ?? null;
     }
+
+    public static function mappingDO_type(string $menu): array|null
+    {
+        $map = [
+            'PLASMA' => ['id' => 1, 'text' => 'PLASMA'],
+            'LU' => ['id' => 2, 'text' => 'LU (Lahan Usaha'],
+        ];
+
+        return $map[$menu] ?? null;
+    }
 }

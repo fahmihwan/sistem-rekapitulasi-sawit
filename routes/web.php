@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PabrikController;
+use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\TbsController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,3 +25,10 @@ Route::delete('/master/pabrik/{id}', [PabrikController::class, 'destroy']);
 Route::get('/pembelian/tbs/{menu}/view', [TbsController::class, 'index']);
 Route::post('/pembelian/tbs/{menu}/view', [TbsController::class, 'store']);
 Route::put('/pembelian/tbs/{menu}/view/{id}', [TbsController::class, 'update']);
+Route::delete('/pembelian/tbs/{menu}/delete/{id}', [TbsController::class, 'destroy']);
+
+
+Route::get('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'index']);
+Route::post('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'store']);
+Route::put('/penjualan/tbs/{menu}/view/{id}', [PenjualanController::class, 'update']);
+Route::delete('/penjualan/tbs/{menu}/delete/{id}', [PenjualanController::class, 'destroy']);

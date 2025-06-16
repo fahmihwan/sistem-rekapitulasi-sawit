@@ -21,6 +21,7 @@
     <link href="{{ asset('/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
 
 
+
     {{-- <link href="../css/bootstrap.min.css" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
@@ -75,10 +76,13 @@
     <!-- jQuery -->
     {{-- <script src="../js/jquery.min.js"></script> --}}
     <script src="{{ asset('/js/jquery.min.js') }}"></script>
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 
-    @yield('script')
+
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
+
+    @yield('script')
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="{{ asset('/js/metisMenu.min.js') }}"></script>

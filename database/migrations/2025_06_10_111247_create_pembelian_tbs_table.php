@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pembelian_tbs', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('nama_customer', 50)->nullable();
             $table->unsignedBigInteger('tbs_type_id');
             $table->foreign('tbs_type_id')->references('id')->on('m_type_tbs')->onDelete('cascade');

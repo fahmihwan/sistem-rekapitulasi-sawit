@@ -57,10 +57,10 @@
                         class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
-                        <a href="flot.html">Plasma</a>
+                        <a href="/penjualan/tbs/PLASMA/view">Plasma</a>
                     </li>
                     <li>
-                        <a href="flot.html">LU</a>
+                        <a href="/penjualan/tbs/LU/view">LU (Lahan Usaha)</a>
                     </li>
                 </ul>
                 <!-- /.nav-second-level -->
