@@ -43,9 +43,9 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Kategori Karyawan</th>
                                         <th>Tarif per KG</th>
-                                        <th>Type Karyawan</th>
-                                        <th>Tarif active</th>
+                                        <th>Tarif Aktif</th>
                                         <th>Created at</th>
                                         <th>#</th>
                                     </tr>
@@ -77,12 +77,12 @@
                                                 </form>
 
 
-                                                <button type="button" class="btn btn-warning btn-circle btn-edit"
+                                                {{-- <button type="button" class="btn btn-warning btn-circle btn-edit"
                                                     data-toggle="modal" data-target="#modalEdit"
                                                     data-id="{{ $item->id }}" data-tarifperkg="{{ $item->tarif_perkg }}"
                                                     data-typekaryawan="{{ $item->type_karyawan }}">
                                                     <i class="fa fa-edit"></i>
-                                                </button>
+                                                </button> --}}
                                             </td>
                                         </tr>
                                     @endforeach
@@ -110,11 +110,15 @@
 
                         <ul>
                             <li>Tarif digunakan untuk penggajian karyawan.</li>
-                            <li>Pastikan <b>Tarif Aktif</b> sudah benar sebelum melakukan proses <i>penjualan</i>.</li>
-                            <li>Jika Anda menambahkan data baru, maka data terakhir untuk tarif sesuai dengan <b>Tipe
-                                    Karyawan</b> tersebut akan menjadi tarif yang aktif.</li>
-                            <li>Jika Anda menghapus data dengan tarif yang <i>aktif</i>, maka untuk transaksi penjualan
-                                selanjutnya akan mengambil data tarif dengan tanggal <i>created_at</i> dari data sebelumnya.
+                            <li>Pastikan <b>Tarif Aktif</b> untuk SOPIR dan TKBM tersedia "<i class="fa fa-check"></i>"
+                                sebelum melakukan proses
+                                <i>penjualan</i>.
+                            </li>
+                            <li>Jika Anda menambahkan data baru, maka data tersebut akan menjadi <b>Tarif Aktif</b>. sesudi
+                                Kategori Karyawan</li>
+                            <li>Jika Anda menghapus data <b>Tarif Aktif</b>, maka untuk transaksi penjualan
+                                selanjutnya akan mengambil data <b>Tarif Aktif</b> dengan tanggal <i>created_at</i> dari
+                                data sebelumnya.
                             </li>
                         </ul>
                     </div>
@@ -144,7 +148,8 @@
                             @csrf
                             <div class="form-group "> {{-- has-success, has-warning, has-error --}}
                                 <label>Tarif per KG</label>
-                                <input class="form-control" name="tarif_perkg" value="{{ old('tarif_perkg') }}">
+                                <input type="number" class="form-control" name="tarif_perkg"
+                                    value="{{ old('tarif_perkg') }}">
                             </div>
 
 
@@ -184,8 +189,7 @@
                 <div class="modal-content">
                     <form role="form" method="POST" id="form-edit">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal"
-                                aria-hidden="true">&times;</button>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="myModalEdit">Ubah Tarif</h4>
                         </div>
                         <div class="modal-body">

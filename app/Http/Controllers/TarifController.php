@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Utils;
 use App\Models\M_tarif;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -40,10 +41,6 @@ class TarifController extends Controller
     public function store(Request $request)
     {
 
-        // return $request->all();
-
-        // $table->integer('tarif_perkg');
-        // $table->enum('type_karyawan', ['SOPIR', 'TKBM']);
         $validated = $request->validate([
             'tarif_perkg' => 'required|integer',
             'type_karyawan' => 'required|max:50',

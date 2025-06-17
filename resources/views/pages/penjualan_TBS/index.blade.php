@@ -217,10 +217,11 @@
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="mymodalCreateEdit">Pembelian {{ $title }}</h4>
                         </div>
+
+
                         <div class="modal-body">
                             <input type="hidden" id="formMethod" name="_method" value="POST">
                             @csrf
-
                             <div class="form-group">
                                 <label for="sopir_id">Pilih Sopir</label><br>
                                 <select name="sopir_id" id="sopir_id" class="form-control"
@@ -317,6 +318,25 @@
                                 </div>
                             </div>
 
+                            {{-- <div class="row">
+                                <div class="col-md-6">
+                                    <label>Tarif sopir saat ini</label>
+                                    <div class="form-group input-group">
+                                        <span class="input-group-addon">Rp</span>
+                                        <input type="number" class="form-control" disabled
+                                            value={{ $data_tarif['tarif_sopir_perkg'] }}>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Tarif TKBM saat ini</label>
+                                    <div class="form-group input-group">
+                                        <span class="input-group-addon">Rp</span>
+                                        <input type="number" class="form-control" disabled
+                                            value={{ $data_tarif['tarif_tkbm_perkg'] }}>
+                                    </div>
+                                </div>
+                            </div> --}}
                             <div class="form-group ">
                                 <label>Uang</label>
                                 <div class="form-group input-group">
@@ -328,8 +348,24 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
+
+                            <div style="display: flex; justify-content: space-between; color: red">
+
+                                <div>
+                                    <p style="margin: 0;  text-align: left; ">* Tarif <b>Sopir</b> saat ini
+                                        Rp.{{ $data_tarif['tarif_sopir_perkg'] }}/kg
+                                    </p>
+                                    <p style="margin: 0; text-align: left">* Tarif <b>TKBM</b> saat ini
+                                        Rp.{{ $data_tarif['tarif_tkbm_perkg'] }}/kg
+                                    </p>
+                                </div>
+
+                                <div class="">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                </div>
+
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -347,6 +383,17 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
+
+
+            const dataTarif = @json($data_tarif)
+
+
+
+            if (dataTarif.tarif_sopir_id == null || dataTarif?.tarif_tkbm_id == null) {
+                alert('tarif belum di set')
+                window.location.href = '/master/tarif'
+            }
+
 
             let menu = $('#menu').val()
 

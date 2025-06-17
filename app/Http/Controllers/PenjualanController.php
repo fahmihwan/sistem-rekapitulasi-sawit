@@ -9,11 +9,13 @@ use App\Models\Penjualan;
 use App\Models\Tkbm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PenjualanController extends Controller
 {
     public function index(Request $request, string $menu)
     {
+        // return Utils::getTarifActive();
 
         $tanggal = $request->input('tanggal');
         $perPage = $request->input('per_page', 10);
@@ -59,7 +61,8 @@ class PenjualanController extends Controller
             'items' =>  $data,
             'title' => $DO_TYPE['text'],
             'menu' => $menu,
-            'karyawans' => $karyawans
+            'karyawans' => $karyawans,
+            'data_tarif' => Utils::getTarifActive(),
         ]);
     }
 
@@ -67,10 +70,36 @@ class PenjualanController extends Controller
 
     public function store(Request $request, $menu)
     {
+
+
+
+        // foreach (Utils::getTarifActive() as $d) {
+        //     return $d;
+        // }
+
+        // [
+        //     "tarif_sopir_id"=> 1,
+        //     "tarif_tkbm_id"=>3,
+        // ]
+
+        // return $tarifActive['tarif_sopir_id'];
         try {
             DB::beginTransaction();
+
+            $tarifActive  = Utils::getTarifActive();
+            if (empty($tarifActive['tarif_sopir_id'])) {
+                return 'Tarif SOPIR belum di tentukan';
+            }
+
+            if (empty($tarifActive['tarif_tkbm_id'])) {
+                return 'Tarif TKBM belum di tentukan';
+            }
+
+
             $request->merge([
-                'uang' => str_replace('.', '', $request->input('uang'))
+                'uang' => str_replace('.', '', $request->input('uang')),
+                'tarif_sopir_id' => $tarifActive['tarif_sopir_id'],
+                'tarif_tkbm_id' => $tarifActive['tarif_tkbm_id']
             ]);
 
             $rules = [
@@ -78,6 +107,8 @@ class PenjualanController extends Controller
                 'tkbm_id' => 'required|array',
                 'timbangan_first' => 'required|numeric',
                 'timbangan_second' => 'required|numeric',
+                'tarif_sopir_id' => 'required|numeric',
+                'tarif_tkbm_id' => 'required|numeric',
                 'sortasi' => 'required|numeric',
                 'bruto' => 'required|numeric',
                 'netto' => 'required|numeric',
@@ -87,6 +118,7 @@ class PenjualanController extends Controller
 
 
             $validated = $request->validate($rules);
+
             $DO_TYPE =  Utils::mappingDO_type($menu);
             if ($DO_TYPE == null) {
                 return "NOT FOUND";
@@ -96,8 +128,10 @@ class PenjualanController extends Controller
             $penjualan =  Penjualan::create($validated);
 
             $data = [];
+
             foreach ($validated['tkbm_id'] as $d) {
                 $data[] = [
+                    'id' => (string) Str::uuid(),
                     'karyawan_id' => $d,
                     'penjualan_id' => $penjualan->id
                 ];
@@ -151,6 +185,7 @@ class PenjualanController extends Controller
             $data = [];
             foreach ($validated['tkbm_id'] as $d) {
                 $data[] = [
+                    'id' => (string) Str::uuid(),
                     'karyawan_id' => $d,
                     'penjualan_id' => $penjualan->id
                 ];
