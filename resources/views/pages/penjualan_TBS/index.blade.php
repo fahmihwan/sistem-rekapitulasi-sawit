@@ -133,21 +133,6 @@
                                         <th>Timbangan 2</th>
                                         <th>Bruto</th>
                                         <th>Sortasi</th>
-
-                                        {{-- $table->uuid('id')->primary();
-                                        $table->foreign('do_type_id')->references('id')->on('m_karyawans')->onDelete('cascade');
-                                        $table->integer('timbangan_first')->nullable();
-                                        $table->integer('timbangan_second')->nullable();
-                                        $table->decimal('bruto', 10, 2)->nullable();
-                                        $table->decimal('sortasi', 10, 2)->nullable();
-                                        $table->decimal('netto', 10, 2)->nullable();
-                                        $table->integer('harga')->nullable();
-                                        $table->integer('uang')->nullable();
-                                        $table->timestamps();
-                                        $table->softDeletes(); --}}
-
-
-
                                         <th>Netto</th>
                                         <th>Harga</th>
                                         <th>Uang</th>
@@ -294,8 +279,8 @@
                                     <div class="form-group ">
                                         <label>Bruto</label>
                                         <div class="form-group input-group">
-                                            <input class="form-control" name="bruto" value="{{ old('bruto') }}"
-                                                readonly id="bruto">
+                                            <input class="form-control" type="number" name="bruto"
+                                                value="{{ old('bruto') }}" readonly id="bruto">
                                             <span class="input-group-addon">Kg</span>
                                         </div>
                                     </div>
@@ -317,8 +302,8 @@
                             <div class="form-group ">
                                 <label>Netto</label>
                                 <div class="form-group input-group">
-                                    <input class="form-control" name="netto" readonly value="{{ old('netto') }}"
-                                        id="netto">
+                                    <input type="number" class="form-control" name="netto" readonly
+                                        value="{{ old('netto') }}" id="netto">
                                     <span class="input-group-addon">Kg</span>
                                 </div>
                             </div>
@@ -388,8 +373,8 @@
             }
 
             function hitungRUMAH_LAHAN() {
-                var netto = parseFloat($('#netto').val()) || 0;
-                var harga = parseFloat($('#harga').val()) || 0;
+                var netto = parseInt($('#netto').val()) || 0;
+                var harga = parseInt($('#harga').val()) || 0;
                 var total = netto * harga;
                 $('#uang').val(formatRupiah(total));
             }
@@ -399,13 +384,13 @@
             function hitungRam() {
                 // let nama = $('#nama').val(menu);
 
-                // let timbang1 = parseFloat($('#timbangan_first').val()) || 0;
-                // let timbang2 = parseFloat($('#timbangan_second').val()) || 0;
+                let timbang1 = parseInt($('#timbangan_first').val()) || 0;
+                let timbang2 = parseInt($('#timbangan_second').val()) || 0;
 
-                $('#timbangan_first').val(1500)
-                $('#timbangan_second').val(1000)
-                let timbang1 = 1500;
-                let timbang2 = 1000;
+                // $('#timbangan_first').val(1500)
+                // $('#timbangan_second').val(1000)
+                // let timbang1 = 1500;
+                // let timbang2 = 1000;
 
 
                 let bruto = timbang1 - timbang2;
@@ -414,11 +399,11 @@
                 let sortasiNilai = bruto * (sortasiPersen / 100);
                 let netto = bruto - sortasiNilai;
 
-                let harga = parseFloat($('#harga').val()) || 0;
+                let harga = parseInt($('#harga').val()) || 0;
                 let uang = netto * harga;
 
-                $('#bruto').val(bruto.toFixed(2));
-                $('#netto').val(netto.toFixed(2));
+                $('#bruto').val(Math.ceil(bruto));
+                $('#netto').val(Math.ceil(netto));
                 $('#uang').val(formatRupiah(uang));
 
             }
@@ -448,7 +433,7 @@
                 const tkbms = $(this).data('tkbms');
                 const karyawanIds = tkbms.map(t => t.karyawan_id);
 
-                console.log($(this).data('nama'));
+                // console.log($(this).data('nama'));
                 $('#sopir_id').val($(this).data('nama')).trigger('change');;
                 $('#tkbm_id').val(karyawanIds).trigger('change');;
 

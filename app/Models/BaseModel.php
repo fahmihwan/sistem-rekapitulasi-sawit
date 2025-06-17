@@ -13,7 +13,7 @@ class BaseModel extends Model
 
     public function getTimbanganSecondFormattedAttribute()
     {
-        return $this->timbangan_first . ' kg';
+        return $this->timbangan_second . ' kg';
     }
 
     public function getTimbanganFirstFormattedAttribute()

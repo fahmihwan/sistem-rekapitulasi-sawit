@@ -81,7 +81,7 @@
                 <a href="tables.html"><i class="fa fa-table fa-fw"></i> Perhitungan Laba</a>
             </li>
             <li>
-                <a href="tables.html"><i class="fa fa-table fa-fw"></i> Laporan Stok</a>
+                <a href="/laporan/laporan-stock"><i class="fa fa-table fa-fw"></i> Laporan Stok</a>
             </li>
             <li>
                 <a href=""><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>

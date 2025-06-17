@@ -64,9 +64,9 @@ class TbsController extends Controller
 
         $rules = [
             'nama_customer' => 'required|max:50',
-            'netto' => 'required|numeric',
-            'harga' => 'required|numeric',
-            'uang' => 'required|numeric'
+            'netto' => 'required|integer',
+            'harga' => 'required|integer',
+            'uang' => 'required|integer'
         ];
 
         $TBS_TYPE =  Utils::mappingTBS_type($menu);
@@ -82,10 +82,10 @@ class TbsController extends Controller
             $validated = $request->validate($rules);
             $validated['tbs_type_id'] = $TBS_TYPE['id'];
         } else if ($menu == 'RAM') {
-            $rules['timbangan_first'] = 'required|numeric';
-            $rules['timbangan_second'] = 'required|numeric';
+            $rules['timbangan_first'] = 'required|integer';
+            $rules['timbangan_second'] = 'required|integer';
             $rules['sortasi'] = 'required|numeric';
-            $rules['bruto'] = 'required|numeric';
+            $rules['bruto'] = 'required|integer';
             $validated = $request->validate($rules);
             $validated['tbs_type_id'] = $TBS_TYPE['id'];
         } else {
@@ -105,9 +105,9 @@ class TbsController extends Controller
         // return $request->all();
         $rules = [
             'nama_customer' => 'required|max:50',
-            'netto' => 'required|numeric',
-            'harga' => 'required|numeric',
-            'uang' => 'required|numeric'
+            'netto' => 'required|integer',
+            'harga' => 'required|integer',
+            'uang' => 'required|integer'
         ];
 
         $TBS_TYPE =  Utils::mappingTBS_type($menu);
@@ -121,10 +121,10 @@ class TbsController extends Controller
         } else if ($menu == 'LAHAN') {
             $validated = $request->validate($rules);
         } else if ($menu == 'RAM') {
-            $rules['timbangan_first'] = 'required|numeric';
-            $rules['timbangan_second'] = 'required|numeric';
+            $rules['timbangan_first'] = 'required|integer';
+            $rules['timbangan_second'] = 'required|integer';
             $rules['sortasi'] = 'required|numeric';
-            $rules['bruto'] = 'required|numeric';
+            $rules['bruto'] = 'required|integer';
             $validated = $request->validate($rules);
         } else {
             return "NOT FOUND";

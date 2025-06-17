@@ -51,14 +51,14 @@ class DatabaseSeeder extends Seeder
         M_type_tbs::create(['type_tbs' => 'TBS LAHAN']);
         M_type_tbs::create(['type_tbs' => 'TBS RAM']);
 
-        Pembelian_tbs::factory(100)->create();
+        // Pembelian_tbs::factory(100)->create();
 
         M_delivery_order_type::create(['delivery_order_type' => 'PLASMA']);
         M_delivery_order_type::create(['delivery_order_type' => 'LU (Lahan Usaha)']);
 
-        Penjualan::factory(10)->create();
+        // Penjualan::factory(10)->create();
 
-        Tkbm::factory(50)->create();
+        // Tkbm::factory(50)->create();
         // Penjualan::create([
         //     'id'               => Str::uuid(), // atau biarkan kosong kalau pakai trait UsesUuid
         //     'sopir_id'         => 4,

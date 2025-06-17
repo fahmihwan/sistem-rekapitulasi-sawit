@@ -223,8 +223,8 @@
                                         <div class="form-group ">
                                             <label>Bruto</label>
                                             <div class="form-group input-group">
-                                                <input class="form-control" name="bruto" value="{{ old('bruto') }}"
-                                                    readonly id="bruto">
+                                                <input type="number" class="form-control" name="bruto"
+                                                    value="{{ old('bruto') }}" readonly id="bruto">
                                                 <span class="input-group-addon">Kg</span>
                                             </div>
                                         </div>
@@ -247,7 +247,7 @@
                                     <label>Netto</label>
                                     <div class="form-group input-group">
                                         <input class="form-control" name="netto" readonly value="{{ old('netto') }}"
-                                            id="netto">
+                                            id="netto" type="number">
                                         <span class="input-group-addon">Kg</span>
                                     </div>
                                 </div>
@@ -308,8 +308,8 @@
             }
 
             function hitungRUMAH_LAHAN() {
-                var netto = parseFloat($('#netto').val()) || 0;
-                var harga = parseFloat($('#harga').val()) || 0;
+                var netto = parseInt($('#netto').val()) || 0;
+                var harga = parseInt($('#harga').val()) || 0;
                 var total = netto * harga;
                 $('#uang').val(formatRupiah(total));
             }
@@ -317,19 +317,19 @@
 
             function hitungRam() {
                 let nama = $('#nama').val(menu);
-                let timbang1 = parseFloat($('#timbangan_first').val()) || 0;
-                let timbang2 = parseFloat($('#timbangan_second').val()) || 0;
+                let timbang1 = parseInt($('#timbangan_first').val()) || 0;
+                let timbang2 = parseInt($('#timbangan_second').val()) || 0;
                 let bruto = timbang1 - timbang2;
 
                 let sortasiPersen = parseFloat($('#sortasi').val()) || 0;
                 let sortasiNilai = bruto * (sortasiPersen / 100);
                 let netto = bruto - sortasiNilai;
 
-                let harga = parseFloat($('#harga').val()) || 0;
+                let harga = parseInt($('#harga').val()) || 0;
                 let uang = netto * harga;
 
-                $('#bruto').val(bruto.toFixed(2));
-                $('#netto').val(netto.toFixed(2));
+                $('#bruto').val(Math.ceil(bruto));
+                $('#netto').val(Math.ceil(netto));
                 $('#uang').val(formatRupiah(uang));
 
             }

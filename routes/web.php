@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PabrikController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\TbsController;
@@ -31,3 +32,6 @@ Route::get('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'index']);
 Route::post('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'store']);
 Route::put('/penjualan/tbs/{menu}/view/{id}', [PenjualanController::class, 'update']);
 Route::delete('/penjualan/tbs/{menu}/delete/{id}', [PenjualanController::class, 'destroy']);
+
+
+Route::get('/laporan/laporan-stock', [LaporanController::class, 'laporan_stock']);
