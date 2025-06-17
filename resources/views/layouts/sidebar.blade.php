@@ -14,7 +14,7 @@
             </li>
             <li>
                 {{-- class="flex {{ request()->is('admin/dashboard') ? 'bg-white text-black' : 'text-gray-200' }} items-center py-2 px-3 text-base font-normal  rounded-lg  hover:bg-gray-100 hover:text-black "> --}}
-                <a href="/dashboard" class="active"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                <a href="/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
             </li>
             <li>
                 <a href="/master/karyawan"><i class="fa fa-bar-chart-o fa-fw"></i> Master Data<span

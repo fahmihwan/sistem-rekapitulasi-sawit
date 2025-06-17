@@ -30,7 +30,7 @@ class Utils
     {
         $map = [
             'PLASMA' => ['id' => 1, 'text' => 'PLASMA'],
-            'LU' => ['id' => 2, 'text' => 'LU (Lahan Usaha'],
+            'LU' => ['id' => 2, 'text' => 'LU (Lahan Usaha)'],
         ];
 
         return $map[$menu] ?? null;

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Penjualan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class TkbmFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'karyawan_id' => $this->faker->numberBetween(3, 13),
+            'penjualan_id' => Penjualan::factory(),
         ];
     }
 }

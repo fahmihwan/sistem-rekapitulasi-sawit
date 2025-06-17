@@ -78,7 +78,6 @@
     <script src="{{ asset('/js/jquery.min.js') }}"></script>
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 
-
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
 
@@ -94,7 +93,6 @@
     <!-- Custom Theme JavaScript -->
     <script src="{{ asset('/js/startmin.js') }}"></script>
 
-    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
 
     <script>
         $(document).ready(function() {

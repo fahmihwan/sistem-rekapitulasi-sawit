@@ -1,14 +1,13 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PabrikController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\TbsController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/dashboard', function () {
-    return view('pages.dashboard');
-});
+Route::get('/dashboard', [DashboardController::class, 'index']);
 
 // Route::get("/karyawans", )
 Route::get('/master/karyawan', [KaryawanController::class, 'index']);

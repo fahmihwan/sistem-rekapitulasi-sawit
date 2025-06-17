@@ -52,7 +52,6 @@ class PenjualanController extends Controller
 
         $data = $query->paginate($perPage)->appends($request->query());
 
-        return $data;
 
         $karyawans = M_karyawan::all();
 
@@ -114,8 +113,10 @@ class PenjualanController extends Controller
     }
 
 
-    public function update(Request $request, $menu)
+    public function update(Request $request, $menu, $id)
     {
+
+
         try {
             DB::beginTransaction();
             $request->merge([
@@ -142,8 +143,11 @@ class PenjualanController extends Controller
             };
             $validated['do_type_id'] = $DO_TYPE['id'];
 
-            $penjualan =  Penjualan::create($validated);
 
+            $penjualan = Penjualan::findOrFail($id);
+            $penjualan->update($validated);
+
+            Tkbm::where('penjualan_id', $id)->delete();
             $data = [];
             foreach ($validated['tkbm_id'] as $d) {
                 $data[] = [
@@ -151,7 +155,6 @@ class PenjualanController extends Controller
                     'penjualan_id' => $penjualan->id
                 ];
             }
-
             Tkbm::insert($data);
             DB::commit();
             return redirect('/penjualan/tbs/' . $menu . '/view')->with('success', 'Transaksi berhasil disimpan.');

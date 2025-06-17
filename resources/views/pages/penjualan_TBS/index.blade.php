@@ -159,10 +159,10 @@
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->sopir->nama }}</td>
+                                            <td>{{ $item->sopir->nama ?? '-' }}</td>
                                             <td>
                                                 @foreach ($item->tkbms as $d)
-                                                    <p style="padding: 0; margin: 0">- {{ $d->karyawan->nama }}</p>
+                                                    <p style="margin: 0; padding: 0;">- {{ $d->karyawan->nama ?? '-' }}</p>
                                                 @endforeach
                                             </td>
                                             <td>{{ $item->timbangan_first_formatted }}</td>
@@ -173,9 +173,9 @@
                                             <td>{{ $item->harga_formatted }}</td>
                                             <td>{{ $item->uang_formatted }}</td>
                                             <td class="center">{{ $item->formatted_created_at }}</td>
-                                            <td class="center" style="display: flex">
+                                            <td style="display: flex; border-bottom: 1px">
                                                 <form method="POST"
-                                                    action="/penjualan/tbs/{{ $menu }}/deletes/{{ $item->id }}">
+                                                    action="/penjualan/tbs/{{ $menu }}/delete/{{ $item->id }}">
                                                     @method('delete')
                                                     @csrf
                                                     <button type="submit" class="btn btn-danger btn-circle"
@@ -183,7 +183,8 @@
                                                         <i class="fa fa-trash"></i></button>
                                                 </form>
 
-                                                <button data-id="{{ $item->id }}" data-nama="{{ $item->sopir->id }}"
+                                                <button data-id="{{ $item->id }}"
+                                                    data-nama="{{ $item->sopir->id ?? '' }}"
                                                     data-tkbms='@json($item->tkbms)'
                                                     data-timbangan1="{{ $item->timbangan_first }}"
                                                     data-timbangan2="{{ $item->timbangan_second }}"
