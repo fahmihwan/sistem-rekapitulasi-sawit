@@ -23,6 +23,8 @@ class PenjualanFactory extends Factory
             // 'id' => (string) Str::uuid(),
             'sopir_id'        =>  1,
             'do_type_id'      =>  $this->faker->numberBetween(1, 2),
+            'tarif_sopir_id' => 1,
+            'tarif_tkbm_id'  => 2,
             'timbangan_first'  => $this->faker->numberBetween(1000, 5000),
             'timbangan_second' => $this->faker->numberBetween(1000, 5000),
             'bruto'            => $this->faker->randomFloat(2, 1000, 5000),

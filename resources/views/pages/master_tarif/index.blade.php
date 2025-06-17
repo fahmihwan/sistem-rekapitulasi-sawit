@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">Master Karyawan</h1>
+                <h1 class="page-header">Master Tarif</h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -27,12 +27,12 @@
                     <div class="panel-heading ">
                         <div style=" display: flex; justify-content: space-between; align-items: center">
                             <div>
-                                Master Karyawan
+                                Master Tarif
                             </div>
 
                             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
                                 data-target="#modalCreate">
-                                <i class="fa fa-user-plus"></i> Tambah Data
+                                <i class="fa fa-plus"></i> Tambah Data
                             </button>
                         </div>
                     </div>
@@ -43,8 +43,9 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Nama</th>
-                                        <th>Kategori</th>
+                                        <th>Tarif per KG</th>
+                                        <th>Type Karyawan</th>
+                                        <th>Tarif active</th>
                                         <th>Created at</th>
                                         <th>#</th>
                                     </tr>
@@ -53,15 +54,21 @@
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->nama }}</td>
                                             <td>{{ $item->type_karyawan }}</td>
+                                            <td>{{ $item->tarif_perkg }}</td>
+
+                                            <td>
+                                                @if ($item->is_active_tarif)
+                                                    <i class="fa fa-check"></i>
+                                                @endif
+                                            </td>
                                             <td class="center">{{ $item->formatted_created_at }}</td>
 
                                             {{-- <button type="submit"
                                                 class="font-medium text-red-600  hover:underline ml-3">Hapus</button> --}}
 
                                             <td class="center" style="display: flex">
-                                                <form method="POST" action="/master/karyawan/{{ $item->id }}">
+                                                <form method="POST" action="/master/tarif/{{ $item->id }}">
                                                     @method('delete')
                                                     @csrf
                                                     <button type="submit" class="btn btn-danger btn-circle"
@@ -72,9 +79,8 @@
 
                                                 <button type="button" class="btn btn-warning btn-circle btn-edit"
                                                     data-toggle="modal" data-target="#modalEdit"
-                                                    data-id="{{ $item->id }}" data-nama="{{ $item->nama }}"
-                                                    data-typekaryawan="{{ $item->type_karyawan }}" {{-- data-bs-toggle="modal" --}}
-                                                    {{-- data-bs-target="#editModal" --}}>
+                                                    data-id="{{ $item->id }}" data-tarifperkg="{{ $item->tarif_perkg }}"
+                                                    data-typekaryawan="{{ $item->type_karyawan }}">
                                                     <i class="fa fa-edit"></i>
                                                 </button>
                                             </td>
@@ -94,6 +100,31 @@
             <!-- /.col-lg-12 -->
         </div>
 
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-yellow">
+                    <div class="panel-heading">
+                        Peringatan!
+                    </div>
+                    <div class="panel-body">
+
+                        <ul>
+                            <li>Tarif digunakan untuk penggajian karyawan.</li>
+                            <li>Pastikan <b>Tarif Aktif</b> sudah benar sebelum melakukan proses <i>penjualan</i>.</li>
+                            <li>Jika Anda menambahkan data baru, maka data terakhir untuk tarif sesuai dengan <b>Tipe
+                                    Karyawan</b> tersebut akan menjadi tarif yang aktif.</li>
+                            <li>Jika Anda menghapus data dengan tarif yang <i>aktif</i>, maka untuk transaksi penjualan
+                                selanjutnya akan mengambil data tarif dengan tanggal <i>created_at</i> dari data sebelumnya.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="panel-footer">
+                        Readme
+                    </div>
+                </div>
+                <!-- /.col-lg-4 -->
+            </div>
+        </div>
 
 
         <!-- Modal CREATE-->
@@ -101,10 +132,10 @@
             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <form role="form" method="POST" action="/master/karyawan">
+                    <form role="form" method="POST" action="/master/tarif">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalCreate">Tambah Karyawan</h4>
+                            <h4 class="modal-title" id="myModalCreate">Tambah tarif</h4>
                         </div>
                         <div class="modal-body">
 
@@ -112,69 +143,10 @@
                             @method('POST')
                             @csrf
                             <div class="form-group "> {{-- has-success, has-warning, has-error --}}
-                                <label>Nama</label>
-                                <input class="form-control" name="nama" value="{{ old('nama') }}">
-                                {{-- <p class="help-block">Example block-level help text here.</p> --}}
+                                <label>Tarif per KG</label>
+                                <input class="form-control" name="tarif_perkg" value="{{ old('tarif_perkg') }}">
                             </div>
 
-                            <div class="form-group">
-                                <label>Kategori</label>
-                                {{-- <div class="radio">
-                                <label>
-                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>Radio 1
-                                </label>
-                            </div> --}}
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="type_karyawan" id="optionsRadios2" value="TKBM">TKBM
-                                    </label>
-                                </div>
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="type_karyawan" id="optionsRadios3" value="SOPIR">Sopir
-                                    </label>
-                                </div>
-                                {{-- <select id="status" name="status" required>
-                                <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                                <option value="nonaktif" {{ old('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
-                            </select><br><br> --}}
-                            </div>
-
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
-                        </div>
-                    </form>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-
-
-        <!-- /.row -->
-        <!-- Modal EDIT-->
-        <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="myModalEdit"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <form role="form" method="POST" id="form-edit">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalEdit">Ubah Karyawan</h4>
-                        </div>
-                        <div class="modal-body">
-
-
-                            @method('PUT')
-                            @csrf
-                            <div class="form-group "> {{-- has-success, has-warning, has-error --}}
-                                <label>Nama</label>
-                                <input class="form-control" name="nama" id="modal-nama">
-                                {{-- <p class="help-block">Example block-level help text here.</p> --}}
-                            </div>
 
                             <div class="form-group">
                                 <label>Kategori</label>
@@ -203,6 +175,56 @@
             <!-- /.modal-dialog -->
         </div>
 
+
+        <!-- /.row -->
+        <!-- Modal EDIT-->
+        <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="myModalEdit"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form role="form" method="POST" id="form-edit">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"
+                                aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalEdit">Ubah Tarif</h4>
+                        </div>
+                        <div class="modal-body">
+
+
+                            @method('PUT')
+                            @csrf
+                            <div class="form-group "> {{-- has-success, has-warning, has-error --}}
+                                <label>Tarif per KG</label>
+                                <input class="form-control" name="tarif_perkg" id="modal-tarifperkg">
+                            </div>
+
+
+                            <div class="form-group">
+                                <label>Kategori</label>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="type_karyawan" id="modal-type1" value="TKBM">TKBM
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="type_karyawan" id="modal-type2" value="SOPIR">Sopir
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
         <!-- /.row -->
 
 
@@ -211,19 +233,23 @@
 @endsection
 
 @section('script')
+    {{-- <script src="{{ asset('/js/jquery.min.js') }}"></script> --}}
+
+@section('script')
     <script>
         $(document).ready(function() {
 
             $('.btn-edit').on('click', function() {
                 var userId = $(this).data('id');
-                var nama = $(this).data('nama');
+                var nama = $(this).data('tarifperkg');
                 var type = $(this).data('typekaryawan');
 
-                $('#form-edit').attr('action', '/master/karyawan/' + userId);
+                $('#form-edit').attr('action', '/master/tarif/' + userId);
                 // Isi field
-                $('#modal-nama').val(nama);
+                $('#modal-tarifperkg').val(nama);
                 $("input[name='type_karyawan'][value='" + type + "']").prop('checked', true);
             });
         });
     </script>
+@endsection
 @endsection

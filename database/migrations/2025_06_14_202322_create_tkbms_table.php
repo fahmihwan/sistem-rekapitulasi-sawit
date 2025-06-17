@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tkbms', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->unsignedBigInteger('karyawan_id');
             $table->foreign('karyawan_id')->references('id')->on('m_karyawans')->onDelete('cascade');
             $table->uuid('penjualan_id');

@@ -17,6 +17,10 @@ return new class extends Migration
             $table->foreign('sopir_id')->references('id')->on('m_karyawans')->onDelete('cascade');
             $table->unsignedBigInteger('do_type_id');
             $table->foreign('do_type_id')->references('id')->on('m_karyawans')->onDelete('cascade');
+            $table->unsignedBigInteger('tarif_tkbm_id');
+            $table->foreign('tarif_tkbm_id')->references('id')->on('m_tarifs')->onDelete('cascade');
+            $table->unsignedBigInteger('tarif_sopir_id');
+            $table->foreign('tarif_sopir_id')->references('id')->on('m_tarifs')->onDelete('cascade');
             $table->integer('timbangan_first')->default(0);
             $table->integer('timbangan_second')->default(0);
             $table->integer('bruto')->default(0);

@@ -5,6 +5,7 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PabrikController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\TarifController;
 use App\Http\Controllers\TbsController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,13 @@ Route::get('/master/pabrik', [PabrikController::class, 'index']);
 Route::post('/master/pabrik', [PabrikController::class, 'store']);
 Route::put('/master/pabrik/{id}', [PabrikController::class, 'update']);
 Route::delete('/master/pabrik/{id}', [PabrikController::class, 'destroy']);
+
+
+
+Route::get('/master/tarif', [TarifController::class, 'index']);
+Route::post('/master/tarif', [TarifController::class, 'store']);
+Route::put('/master/tarif/{id}', [TarifController::class, 'update']);
+Route::delete('/master/tarif/{id}', [TarifController::class, 'destroy']);
 
 
 Route::get('/pembelian/tbs/{menu}/view', [TbsController::class, 'index']);

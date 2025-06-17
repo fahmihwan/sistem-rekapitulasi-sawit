@@ -433,6 +433,8 @@
                 const tkbms = $(this).data('tkbms');
                 const karyawanIds = tkbms.map(t => t.karyawan_id);
 
+
+
                 // console.log($(this).data('nama'));
                 $('#sopir_id').val($(this).data('nama')).trigger('change');;
                 $('#tkbm_id').val(karyawanIds).trigger('change');;

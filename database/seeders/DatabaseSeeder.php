@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\M_delivery_order_type;
 use App\Models\M_karyawan;
 use App\Models\M_pabrik;
+use App\Models\M_tarif;
 use App\Models\M_type_tbs;
 use App\Models\Pembelian_tbs;
 use App\Models\Penjualan;
@@ -51,6 +52,12 @@ class DatabaseSeeder extends Seeder
         M_type_tbs::create(['type_tbs' => 'TBS LAHAN']);
         M_type_tbs::create(['type_tbs' => 'TBS RAM']);
 
+
+        M_tarif::create(['tarif_perkg' => 20, 'type_karyawan' => 'SOPIR']);
+        M_tarif::create(['tarif_perkg' => 30, 'type_karyawan' => 'TKBM']);
+
+
+
         // Pembelian_tbs::factory(100)->create();
 
         M_delivery_order_type::create(['delivery_order_type' => 'PLASMA']);
@@ -59,17 +66,6 @@ class DatabaseSeeder extends Seeder
         // Penjualan::factory(10)->create();
 
         // Tkbm::factory(50)->create();
-        // Penjualan::create([
-        //     'id'               => Str::uuid(), // atau biarkan kosong kalau pakai trait UsesUuid
-        //     'sopir_id'         => 4,
-        //     'do_type_id'       => 2,
-        //     'timbangan_first'  => 3200,
-        //     'timbangan_second' => 1500,
-        //     'bruto'            => 4700.50,
-        //     'sortasi'          => 100.25,
-        //     'netto'            => 4600.25,
-        //     'harga'            => 8000,
-        //     'uang'             => 36802000,
-        // ]);
+
     }
 }

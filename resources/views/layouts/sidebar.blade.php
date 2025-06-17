@@ -26,6 +26,9 @@
                     <li>
                         <a href="/master/pabrik">Master Pabrik</a>
                     </li>
+                    <li>
+                        <a href="/master/tarif">Master Tarif</a>
+                    </li>
                     {{-- <li>
                         <a href="flot.html">Master Data Harga</a>
                     </li>

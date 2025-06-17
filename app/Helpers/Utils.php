@@ -2,8 +2,22 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Facades\DB;
+
 class Utils
 {
+
+    public static function getLatestTarifIdsPerType()
+    {
+        return DB::table('m_tarifs')
+            ->select(DB::raw('MAX(id) as max_id'), 'type_karyawan')
+            ->whereNull('deleted_at')
+            ->groupBy('type_karyawan')
+            ->get();
+    }
+
+
+
     public static function formatRupiah($angka)
     {
         return 'Rp ' . number_format($angka, 0, ',', '.');
