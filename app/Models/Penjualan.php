@@ -27,6 +27,10 @@ class Penjualan extends BaseModel
         return $this->belongsTo(M_karyawan::class, 'sopir_id');
     }
 
+    public function pabrik()
+    {
+        return $this->belongsTo(M_pabrik::class);
+    }
 
 
 

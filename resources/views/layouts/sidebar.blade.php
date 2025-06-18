@@ -68,7 +68,7 @@
                 </ul>
                 <!-- /.nav-second-level -->
             </li>
-            <li>
+            {{-- <li>
                 <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i>Slip Gaji<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
@@ -78,8 +78,11 @@
                         <a href="flot.html">TKBM</a>
                     </li>
                 </ul>
-                <!-- /.nav-second-level -->
+            </li> --}}
+            <li>
+                <a href="/slipgaji/karyawan"><i class="fa fa-table fa-fw"></i> Slip Gaji</a>
             </li>
+
             <li>
                 <a href="tables.html"><i class="fa fa-table fa-fw"></i> Perhitungan Laba</a>
             </li>

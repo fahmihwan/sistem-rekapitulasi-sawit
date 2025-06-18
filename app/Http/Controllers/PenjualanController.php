@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Utils;
 use App\Models\M_karyawan;
+use App\Models\M_pabrik;
 use App\Models\Pembelian_tbs;
 use App\Models\Penjualan;
 use App\Models\Tkbm;
@@ -15,7 +16,6 @@ class PenjualanController extends Controller
 {
     public function index(Request $request, string $menu)
     {
-        // return Utils::getTarifActive();
 
         $tanggal = $request->input('tanggal');
         $perPage = $request->input('per_page', 10);
@@ -28,6 +28,7 @@ class PenjualanController extends Controller
 
         // return Tkbm::all();
         $query = Penjualan::with([
+            'pabrik:id,nama_pabrik',
             'sopir:id,nama',
             'tkbms:id,karyawan_id,penjualan_id',
             'tkbms.karyawan:id,nama'
@@ -54,7 +55,7 @@ class PenjualanController extends Controller
 
         $data = $query->paginate($perPage)->appends($request->query());
 
-
+        // return $data;
         $karyawans = M_karyawan::all();
 
         return view('pages.penjualan_TBS.index', [
@@ -63,6 +64,7 @@ class PenjualanController extends Controller
             'menu' => $menu,
             'karyawans' => $karyawans,
             'data_tarif' => Utils::getTarifActive(),
+            'data_pabrik' => M_pabrik::all()
         ]);
     }
 
@@ -71,18 +73,6 @@ class PenjualanController extends Controller
     public function store(Request $request, $menu)
     {
 
-
-
-        // foreach (Utils::getTarifActive() as $d) {
-        //     return $d;
-        // }
-
-        // [
-        //     "tarif_sopir_id"=> 1,
-        //     "tarif_tkbm_id"=>3,
-        // ]
-
-        // return $tarifActive['tarif_sopir_id'];
         try {
             DB::beginTransaction();
 
@@ -103,6 +93,7 @@ class PenjualanController extends Controller
             ]);
 
             $rules = [
+                'pabrik_id' => 'required|integer',
                 'sopir_id' => 'required|integer',
                 'tkbm_id' => 'required|array',
                 'timbangan_first' => 'required|numeric',
@@ -158,6 +149,7 @@ class PenjualanController extends Controller
             ]);
 
             $rules = [
+                'pabrik_id' => 'required|integer',
                 'sopir_id' => 'required|integer',
                 'tkbm_id' => 'required|array',
                 'timbangan_first' => 'required|numeric',

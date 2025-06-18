@@ -18,8 +18,8 @@ class TkbmFactory extends Factory
     public function definition(): array
     {
         return [
-            'karyawan_id' => $this->faker->numberBetween(3, 13),
-            'penjualan_id' => Penjualan::factory(),
+            'karyawan_id' => $this->faker->numberBetween(3, 8),
+            // 'penjualan_id' => Penjualan::factory(),
         ];
     }
 }

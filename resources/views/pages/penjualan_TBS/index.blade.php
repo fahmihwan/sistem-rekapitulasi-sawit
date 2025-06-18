@@ -127,6 +127,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Pabrik</th>
                                         <th>Sopir</th>
                                         <th>TKBM</th>
                                         <th>Timbangan 1</th>
@@ -144,6 +145,7 @@
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->pabrik->nama_pabrik ?? '-' }}</td>
                                             <td>{{ $item->sopir->nama ?? '-' }}</td>
                                             <td>
                                                 @foreach ($item->tkbms as $d)
@@ -170,6 +172,7 @@
 
                                                 <button data-id="{{ $item->id }}"
                                                     data-nama="{{ $item->sopir->id ?? '' }}"
+                                                    data-pabrik="{{ $item->pabrik_id ?? '' }}"
                                                     data-tkbms='@json($item->tkbms)'
                                                     data-timbangan1="{{ $item->timbangan_first }}"
                                                     data-timbangan2="{{ $item->timbangan_second }}"
@@ -222,17 +225,36 @@
                         <div class="modal-body">
                             <input type="hidden" id="formMethod" name="_method" value="POST">
                             @csrf
-                            <div class="form-group">
-                                <label for="sopir_id">Pilih Sopir</label><br>
-                                <select name="sopir_id" id="sopir_id" class="form-control"
-                                    style="width: 100%; height: 200px !important;">
-                                    <option value="">-- Pilih Sopir --</option>
-                                    @foreach ($karyawans as $karyawan)
-                                        @if ($karyawan->type_karyawan == 'SOPIR')
-                                            <option value="{{ $karyawan->id }}">{{ $karyawan->nama }}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="pabrik_id">Pilih Pabrik</label><br>
+                                        <select name="pabrik_id" id="pabrik_id" class="form-control"
+                                            style="width: 100%; height: 200px !important;">
+                                            <option value="">-- Pilih Sopir --</option>
+                                            @foreach ($data_pabrik as $pabrik)
+                                                <option value="{{ $pabrik->id }}">{{ $pabrik->nama_pabrik }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label for="sopir_id">Pilih Sopir</label><br>
+                                        <select name="sopir_id" id="sopir_id" class="form-control"
+                                            style="width: 100%; height: 200px !important;">
+                                            <option value="">-- Pilih Sopir --</option>
+                                            @foreach ($karyawans as $karyawan)
+                                                @if ($karyawan->type_karyawan == 'SOPIR')
+                                                    <option value="{{ $karyawan->id }}">{{ $karyawan->nama }}</option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                </div>
                             </div>
 
 
@@ -398,20 +420,27 @@
             let menu = $('#menu').val()
 
             $(document).ready(function() {
+                $('#pabrik_id').select2({
+                    placeholder: "Pilih User",
+                    allowClear: true,
+                    dropdownParent: $('#modalCreateEdit')
+                });
+
+
                 $('#sopir_id').select2({
                     placeholder: "Pilih User",
                     allowClear: true,
                     dropdownParent: $('#modalCreateEdit')
                 });
-            });
 
-            $(document).ready(function() {
                 $('#tkbm_id').select2({
                     placeholder: "Pilih User",
                     allowClear: true,
                     dropdownParent: $('#modalCreateEdit')
                 });
             });
+
+
 
 
 
@@ -483,6 +512,7 @@
 
 
                 // console.log($(this).data('nama'));
+                $('#pabrik_id').val($(this).data('pabrik')).trigger('change');;
                 $('#sopir_id').val($(this).data('nama')).trigger('change');;
                 $('#tkbm_id').val(karyawanIds).trigger('change');;
 

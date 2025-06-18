@@ -5,6 +5,7 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PabrikController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\SlipGajiController;
 use App\Http\Controllers\TarifController;
 use App\Http\Controllers\TbsController;
 use Illuminate\Support\Facades\Route;
@@ -22,8 +23,6 @@ Route::post('/master/pabrik', [PabrikController::class, 'store']);
 Route::put('/master/pabrik/{id}', [PabrikController::class, 'update']);
 Route::delete('/master/pabrik/{id}', [PabrikController::class, 'destroy']);
 
-
-
 Route::get('/master/tarif', [TarifController::class, 'index']);
 Route::post('/master/tarif', [TarifController::class, 'store']);
 Route::put('/master/tarif/{id}', [TarifController::class, 'update']);
@@ -40,6 +39,12 @@ Route::get('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'index']);
 Route::post('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'store']);
 Route::put('/penjualan/tbs/{menu}/view/{id}', [PenjualanController::class, 'update']);
 Route::delete('/penjualan/tbs/{menu}/delete/{id}', [PenjualanController::class, 'destroy']);
+
+
+Route::get('/slipgaji/karyawan', [SlipGajiController::class, 'index']);
+// Route::post('/master/karyawan', [SlipGajiController::class, 'store']);
+// Route::put('/master/karyawan/{id}', [SlipGajiController::class, 'update']);
+// Route::delete('/master/karyawan/{id}', [SlipGajiController::class, 'destroy']);
 
 
 Route::get('/laporan/laporan-stock', [LaporanController::class, 'laporan_stock']);

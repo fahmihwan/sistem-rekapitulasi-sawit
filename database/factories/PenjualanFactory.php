@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,17 +22,39 @@ class PenjualanFactory extends Factory
     {
         return [
             // 'id' => (string) Str::uuid(),
-            'sopir_id'        =>  1,
-            'do_type_id'      =>  $this->faker->numberBetween(1, 2),
+            'pabrik_id'      =>  $this->faker->numberBetween(1, 3),
+            'sopir_id'        =>  $this->faker->numberBetween(1, 2),
+            // 'do_type_id'      =>  $this->faker->numberBetween(1, 2),
+            'do_type_id' => 1,
             'tarif_sopir_id' => 1,
             'tarif_tkbm_id'  => 2,
-            'timbangan_first'  => $this->faker->numberBetween(1000, 5000),
-            'timbangan_second' => $this->faker->numberBetween(1000, 5000),
-            'bruto'            => $this->faker->randomFloat(2, 1000, 5000),
-            'sortasi'          => $this->faker->randomFloat(2, 10, 100),
-            'netto'            => $this->faker->randomFloat(2, 1000, 4900),
-            'harga'            => $this->faker->numberBetween(5000, 15000),
-            'uang'             => $this->faker->numberBetween(1000000, 5000000),
+            'timbangan_first'  => $this->faker->numberBetween(4000, 5000),
+            'timbangan_second' => $this->faker->numberBetween(2000, 3000),
+            'bruto'            => $this->faker->numberBetween(1000, 5000),
+            'sortasi'          => $this->faker->randomFloat(2, 1, 10),
+            'netto'            => $this->faker->numberBetween(1000, 5000),
+            'harga'            => $this->faker->numberBetween(5000, 10000),
+            'uang'             => $this->faker->numberBetween(2000, 3000),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
+    }
+
+
+    public function createdWithinLastWeek(int $index, int $total)
+    {
+        return $this->state(function (array $attributes) use ($index, $total) {
+            // Hitung timestamp awal (1 minggu lalu)
+            $startDate = Carbon::now()->subWeek();
+            // Hitung jarak dalam detik antara start sampai now
+            $diffInSeconds = Carbon::now()->diffInSeconds($startDate);
+            // Hitung posisi timestamp berdasarkan index
+            $secondsToAdd = intval(($diffInSeconds / max($total - 1, 1)) * $index);
+            $createdAt = $startDate->copy()->addSeconds($secondsToAdd);
+            return [
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
+            ];
+        });
     }
 }
