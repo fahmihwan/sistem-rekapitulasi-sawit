@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">Master Karyawan</h1>
+                <h1 class="page-header">Slip Gaji</h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -60,23 +60,9 @@
                                                 class="font-medium text-red-600  hover:underline ml-3">Hapus</button> --}}
 
                                             <td class="center" style="display: flex">
-                                                {{-- <form method="POST" action="/master/karyawan/{{ $item->id }}">
-                                                    @method('delete')
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-danger btn-circle"
-                                                        style="margin-right: 5px">
-                                                        <i class="fa fa-trash"></i></button>
-                                                </form>
- --}}
+                                                <a href="/slipgaji/karyawan/{{ $item->id }}?bulan={{ request('bulan') ?? now()->format('m') }}&tahun={{ request('tahun') ?? now()->format('Y') }}"
+                                                    class="btn btn-info  btn-edit">Detail</a>
 
-                                                <button type="button" class="btn btn-info  btn-edit" data-toggle="modal"
-                                                    data-target="#modalEdit" data-id="{{ $item->id }}"
-                                                    data-nama="{{ $item->nama }}"
-                                                    data-typekaryawan="{{ $item->type_karyawan }}" {{-- data-bs-toggle="modal" --}}
-                                                    {{-- data-bs-target="#editModal" --}}>
-                                                    Detail &nbsp;
-                                                    <i class="fa fa-edit"></i>
-                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach

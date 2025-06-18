@@ -20,6 +20,10 @@
     <link href="{{ asset('/css/startmin.css') }}" rel="stylesheet">
     <link href="{{ asset('/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
 
+    <!-- jQuery UI (kompatibel dengan jQuery 2.1.3) -->
+
+
+
 
 
     {{-- <link href="../css/bootstrap.min.css" rel="stylesheet">
@@ -80,6 +84,9 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
+
+    {{-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script> --}}
 
     @yield('script')
 

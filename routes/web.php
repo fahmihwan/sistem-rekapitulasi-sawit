@@ -42,6 +42,7 @@ Route::delete('/penjualan/tbs/{menu}/delete/{id}', [PenjualanController::class, 
 
 
 Route::get('/slipgaji/karyawan', [SlipGajiController::class, 'index']);
+Route::get('/slipgaji/karyawan/{id}', [SlipGajiController::class, 'detail']);
 // Route::post('/master/karyawan', [SlipGajiController::class, 'store']);
 // Route::put('/master/karyawan/{id}', [SlipGajiController::class, 'update']);
 // Route::delete('/master/karyawan/{id}', [SlipGajiController::class, 'destroy']);
