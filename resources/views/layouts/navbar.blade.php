@@ -71,7 +71,7 @@
         </li>
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                <i class="fa fa-user fa-fw"></i> secondtruth <b class="caret"></b>
+                <i class="fa fa-user fa-fw"></i> {{ auth()->user()->username }} <b class="caret"></b>
             </a>
             <ul class="dropdown-menu dropdown-user">
                 <li>
@@ -82,7 +82,13 @@
                 </li>
                 <li class="divider"></li>
                 <li>
-                    <a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                    <form action="/logout" method="POST" style=" all: unset">
+                        @csrf
+                        <button type="submit"
+                            style="background: none; border: none; text-align: left; padding-left:20px; height: 30px; margin: 0; width: 100%"
+                            class="fa fa-sign-out fa-fw">Logout</button>
+                    </form>
+                    {{-- <a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a> --}}
                 </li>
             </ul>
         </li>

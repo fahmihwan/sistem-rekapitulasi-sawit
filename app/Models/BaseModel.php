@@ -53,4 +53,18 @@ class BaseModel extends Model
             ->timezone('Asia/Jakarta')
             ->translatedFormat('l, d-F-Y H:i') . " WIB";
     }
+
+    public function getFormattedTglPembelianAttribute()
+    {
+        return Carbon::parse($this->tanggal_pembelian)
+            ->timezone('Asia/Jakarta')
+            ->translatedFormat('l, d-F-Y');
+    }
+
+    public function getFormattedTglPenjualanAttribute()
+    {
+        return Carbon::parse($this->tanggal_penjualan)
+            ->timezone('Asia/Jakarta')
+            ->translatedFormat('l, d-F-Y');
+    }
 }

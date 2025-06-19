@@ -91,6 +91,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Tgl Pembelian / Periode</th>
                                         <th>Nama</th>
                                         @if ($menu == 'RAM')
                                             <th>Timbagan 1</th>
@@ -102,7 +103,7 @@
                                         <th>Netto</th>
                                         <th>Harga</th>
                                         <th>Uang</th>
-                                        <th>Created at</th>
+                                        {{-- <th>Created at</th> --}}
                                         <th>#</th>
                                     </tr>
                                 </thead>
@@ -110,6 +111,7 @@
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->formatted_tgl_pembelian }} / {{ $item->periode }}</td>
                                             <td>{{ $item->nama_customer }}</td>
                                             @if ($menu == 'RAM')
                                                 <td>{{ $item->timbangan_first_formatted }}</td>
@@ -121,7 +123,7 @@
                                             <td>{{ $item->harga_formatted }}</td>
                                             <td>{{ $item->uang_formatted }}</td>
 
-                                            <td class="center">{{ $item->formatted_created_at }}</td>
+                                            {{-- <td class="center">{{ $item->formatted_created_at }}</td> --}}
 
                                             <td class="center" style="display: flex">
                                                 <form method="POST"
@@ -134,6 +136,8 @@
                                                 </form>
 
                                                 <button data-id="{{ $item->id }}"
+                                                    data-tanggalpembelian={{ $item->tanggal_pembelian }}
+                                                    data-periode={{ $item->periode }}
                                                     data-nama="{{ $item->nama_customer }}"
                                                     @if ($menu == 'RAM') data-timbangan1="{{ $item->timbangan_first }}"
                                                         data-timbangan2="{{ $item->timbangan_second }}"
@@ -185,13 +189,30 @@
                         <div class="modal-body">
                             <input type="hidden" id="formMethod" name="_method" value="POST">
 
-
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group "> {{-- has-success, has-warning, has-error --}}
+                                        <label>Tgl Pembelian</label>
+                                        <input type="date" class="form-control" name="tanggal_pembelian"
+                                            value="{{ old('tanggal_pembelian') }}" id="tanggal_pembelian">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group "> {{-- has-success, has-warning, has-error --}}
+                                        <label>Periode</label>
+                                        <input type="number" class="form-control" name="periode"
+                                            value="{{ old('periode') }}" id="periode">
+                                    </div>
+                                </div>
+                            </div>
                             @csrf
+                            {{-- <div class="row"> --}}
                             <div class="form-group "> {{-- has-success, has-warning, has-error --}}
                                 <label>Nama Customer</label>
                                 <input class="form-control" name="nama_customer" value="{{ old('nama_customer') }}"
                                     id="nama_customer">
                             </div>
+                            {{-- </div> --}}
 
 
                             @if ($menu == 'RAM')
@@ -344,6 +365,10 @@
                 $('#mainForm')[0].reset(); // Kosongkan form
                 $('#mymodalCreateEdit').text('Tambah TBS ' + menu);
                 $('#mainForm').attr('action', '/pembelian/tbs/' + menu + '/view');
+                $('#tanggal_pembelian').prop('disabled', false);
+                $('#periode').prop('disabled', false);
+
+
                 $('#formMethod').val('POST')
             });
 
@@ -354,6 +379,13 @@
                 $('#mymodalCreateEdit').text('Edit TBS ' + menu);
                 $('#mainForm').attr('action', '/pembelian/tbs/' + menu + '/view/' + id);
                 $('#formMethod').val('PUT')
+
+
+                $('#tanggal_pembelian').val($(this).data('tanggalpembelian'));
+                $('#periode').val($(this).data('periode'));
+
+                $('#tanggal_pembelian').prop('disabled', true);
+                $('#periode').prop('disabled', true);
 
 
                 $('#nama_customer').val($(this).data('nama'));

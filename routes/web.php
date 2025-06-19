@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LaporanController;
@@ -10,9 +11,12 @@ use App\Http\Controllers\TarifController;
 use App\Http\Controllers\TbsController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', [AuthController::class, 'login']);
+Route::post('/auth', [AuthController::class, 'authenticated']);
+Route::post('/logout', [AuthController::class, 'logout']);
+
 Route::get('/dashboard', [DashboardController::class, 'index']);
 
-// Route::get("/karyawans", )
 Route::get('/master/karyawan', [KaryawanController::class, 'index']);
 Route::post('/master/karyawan', [KaryawanController::class, 'store']);
 Route::put('/master/karyawan/{id}', [KaryawanController::class, 'update']);

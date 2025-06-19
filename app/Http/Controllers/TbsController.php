@@ -28,7 +28,7 @@ class TbsController extends Controller
 
         // Filter tanggal (jika diisi)
         if ($request->filled('tanggal')) {
-            $query->whereDate('created_at', $tanggal);
+            $query->whereDate('tanggal_pembelian', $tanggal);
         }
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -43,10 +43,11 @@ class TbsController extends Controller
                     ->orWhere('sortasi', 'ILIKE', "%$search%");
             });
         }
-        $query->orderBy('created_at', 'desc');
+        $query->orderBy('tanggal_pembelian', 'desc');
 
         $data = $query->paginate($perPage)->appends($request->query());
 
+        // return $data;
         // dd($data);
         return view('pages.pembelian_TBS.index', [
             'items' =>  $data,
@@ -63,6 +64,8 @@ class TbsController extends Controller
         ]);
 
         $rules = [
+            'tanggal_pembelian' => 'required',
+            'periode' => 'required|integer',
             'nama_customer' => 'required|max:50',
             'netto' => 'required|integer',
             'harga' => 'required|integer',

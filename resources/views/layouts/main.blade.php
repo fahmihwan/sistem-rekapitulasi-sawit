@@ -87,6 +87,8 @@
 
     {{-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <x-alert />
 
     @yield('script')
 

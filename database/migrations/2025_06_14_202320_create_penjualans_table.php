@@ -29,6 +29,8 @@ return new class extends Migration
             $table->unsignedBigInteger('tarif_sopir_id');
             $table->foreign('tarif_sopir_id')->references('id')->on('m_tarifs')->onDelete('cascade');
 
+            $table->date('tanggal_penjualan')->nullable();
+
             $table->integer('timbangan_first')->default(0);
             $table->integer('timbangan_second')->default(0);
             $table->integer('bruto')->default(0);

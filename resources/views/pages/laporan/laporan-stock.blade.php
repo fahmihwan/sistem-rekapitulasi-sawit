@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">Master Karyawan</h1>
+                <h1 class="page-header">Laporan Stok</h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -27,7 +27,7 @@
                     <div class="panel-heading ">
                         <div style=" display: flex; justify-content: space-between; align-items: center">
                             <div>
-                                Master Karyawan
+                                Laporan Stok
                             </div>
 
                             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
@@ -49,8 +49,8 @@
                                         <th>Total netto masuk</th>
                                         <th>Total bruto keluar</th>
                                         <th>Total netto keluar</th>
-                                        <th>Saldo bruto Bulan ini</th>
-                                        <th>Saldo netto bulan ini</th>
+                                        <th>Total bruto Bulan ini</th>
+                                        <th>Total netto bulan ini</th>
                                     </tr>
                                 </thead>
                                 <tbody>
