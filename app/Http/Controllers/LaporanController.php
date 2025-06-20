@@ -7,10 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class LaporanController extends Controller
 {
-    public function laporan_stock()
+    public function laporan_semua_stok()
     {
-
-
         $data = DB::select("SELECT 
                         x.bulan,
                         x.tahun,

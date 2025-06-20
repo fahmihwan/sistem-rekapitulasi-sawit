@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\Utils;
 use App\Models\M_type_tbs;
 use App\Models\Pembelian_tbs;
+use App\Models\Periode;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\FuncCall;
 
@@ -24,9 +25,9 @@ class TbsController extends Controller
         }
 
 
-        $query = Pembelian_tbs::where('tbs_type_id', $TBS_TYPE['id']);
+        $query = Pembelian_tbs::with('periode:id,periode,periode_mulai,periode_berakhir,stok')->where('tbs_type_id', $TBS_TYPE['id']);
 
-        // Filter tanggal (jika diisi)
+
         if ($request->filled('tanggal')) {
             $query->whereDate('tanggal_pembelian', $tanggal);
         }
@@ -43,29 +44,30 @@ class TbsController extends Controller
                     ->orWhere('sortasi', 'ILIKE', "%$search%");
             });
         }
-        $query->orderBy('tanggal_pembelian', 'desc');
+        $query->orderBy('created_at', 'desc');
 
         $data = $query->paginate($perPage)->appends($request->query());
 
-        // return $data;
-        // dd($data);
+
         return view('pages.pembelian_TBS.index', [
             'items' =>  $data,
             'title' => $TBS_TYPE['text'],
-            'menu' => $menu
-
+            'menu' => $menu,
+            'periodes' => Periode::where('periode_berakhir', null)->get()
         ]);
     }
 
     public function store(Request $request, $menu)
     {
+
         $request->merge([
             'uang' => str_replace('.', '', $request->input('uang'))
         ]);
 
+
         $rules = [
-            'tanggal_pembelian' => 'required',
-            'periode' => 'required|integer',
+            'tanggal_pembelian' => 'required|date',
+            'periode_id' => 'required',
             'nama_customer' => 'required|max:50',
             'netto' => 'required|integer',
             'harga' => 'required|integer',

@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('pembelian_tbs', function (Blueprint $table) {
             $table->uuid('id')->primary();
+
+            $table->uuid('periode_id');
+            $table->foreign('periode_id')->references('id')->on('periodes')->onDelete('cascade');
+
             $table->date('tanggal_pembelian');
-            $table->integer('periode');
+
             $table->string('nama_customer', 50)->nullable();
             $table->unsignedBigInteger('tbs_type_id');
             $table->foreign('tbs_type_id')->references('id')->on('m_type_tbs')->onDelete('cascade');

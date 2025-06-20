@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('penjualans', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
+            $table->uuid('periode_id');
+            $table->foreign('periode_id')->references('id')->on('periodes')->onDelete('cascade');
+
             $table->unsignedBigInteger('pabrik_id');
             $table->foreign('pabrik_id')->references('id')->on('m_pabriks')->onDelete('cascade');
 

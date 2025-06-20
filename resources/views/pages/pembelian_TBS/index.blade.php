@@ -40,6 +40,7 @@
 
                     <div>
                         <form method="GET" id="perPageForm" class="container-filter-datatables">
+
                             <div class="container-left-datatables">
                                 <span style="margin-left: 5px; margin-right: 5px">Show</span>
                                 <select class="form-control" name="per_page" style="width: 100px"
@@ -53,8 +54,6 @@
                                 </select>
                                 <span style="margin-left: 5px; margin-right: 5px">entries</span>
                             </div>
-
-
 
 
                             <div class="container-right-datatables">
@@ -111,7 +110,7 @@
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->formatted_tgl_pembelian }} / {{ $item->periode }}</td>
+                                            <td>{{ $item->formatted_tgl_pembelian }} / {{ $item->periode->periode }}</td>
                                             <td>{{ $item->nama_customer }}</td>
                                             @if ($menu == 'RAM')
                                                 <td>{{ $item->timbangan_first_formatted }}</td>
@@ -137,7 +136,7 @@
 
                                                 <button data-id="{{ $item->id }}"
                                                     data-tanggalpembelian={{ $item->tanggal_pembelian }}
-                                                    data-periode={{ $item->periode }}
+                                                    data-periode={{ $item->periode->periode }}
                                                     data-nama="{{ $item->nama_customer }}"
                                                     @if ($menu == 'RAM') data-timbangan1="{{ $item->timbangan_first }}"
                                                         data-timbangan2="{{ $item->timbangan_second }}"
@@ -194,25 +193,40 @@
                                     <div class="form-group "> {{-- has-success, has-warning, has-error --}}
                                         <label>Tgl Pembelian</label>
                                         <input type="date" class="form-control" name="tanggal_pembelian"
-                                            value="{{ old('tanggal_pembelian') }}" id="tanggal_pembelian">
+                                            value="{{ now()->toDateString() }}" id="tanggal_pembelian" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group "> {{-- has-success, has-warning, has-error --}}
+                                    <div class="form-group" id="form-periode-select">
                                         <label>Periode</label>
-                                        <input type="number" class="form-control" name="periode"
-                                            value="{{ old('periode') }}" id="periode">
+                                        <select name="periode_id" id="periode_id_select" class="form-control"
+                                            style="width: 100%; " required>
+                                            <option value="">-- Pilih Periode --</option>
+                                            @foreach ($periodes as $p)
+                                                <option value="{{ $p->id }}"
+                                                    {{ old('periode_id') == $p->id ? 'selected' : '' }}>
+                                                    {{ $p->periode }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
+
+
+
+                                    <div class="form-group" id="form-periode-text">
+                                        <label>Peroide</label>
+                                        <input class="form-control" name="" value="" id="periode_id_text">
+                                    </div>
+
                                 </div>
                             </div>
                             @csrf
-                            {{-- <div class="row"> --}}
+
                             <div class="form-group "> {{-- has-success, has-warning, has-error --}}
                                 <label>Nama Customer</label>
                                 <input class="form-control" name="nama_customer" value="{{ old('nama_customer') }}"
-                                    id="nama_customer">
+                                    id="nama_customer" required>
                             </div>
-                            {{-- </div> --}}
+
 
 
                             @if ($menu == 'RAM')
@@ -222,7 +236,7 @@
                                             <label>Timbangan 1</label>
                                             <div class="form-group input-group">
                                                 <input type="number" class="form-control" name="timbangan_first"
-                                                    value="{{ old('timbangan_first') }}" id="timbangan_first">
+                                                    value="{{ old('timbangan_first') }}" id="timbangan_first" required>
                                                 <span class="input-group-addon">Kg</span>
                                             </div>
                                         </div>
@@ -231,8 +245,9 @@
                                         <div class="form-group ">
                                             <label>Timbangan 2</label>
                                             <div class="form-group input-group">
-                                                <input type="number" class="form-control" name="timbangan_second"
-                                                    value="{{ old('timbangan_second') }}" id="timbangan_second">
+                                                <input required type="number" class="form-control"
+                                                    name="timbangan_second" value="{{ old('timbangan_second') }}"
+                                                    id="timbangan_second">
                                                 <span class="input-group-addon">Kg</span>
                                             </div>
                                         </div>
@@ -244,7 +259,7 @@
                                         <div class="form-group ">
                                             <label>Bruto</label>
                                             <div class="form-group input-group">
-                                                <input type="number" class="form-control" name="bruto"
+                                                <input required type="number" class="form-control" name="bruto"
                                                     value="{{ old('bruto') }}" readonly id="bruto">
                                                 <span class="input-group-addon">Kg</span>
                                             </div>
@@ -254,8 +269,8 @@
                                         <div class="form-group ">
                                             <label>Sortasi</label>
                                             <div class="form-group input-group">
-                                                <input class="form-control" name="sortasi" value="{{ old('sortasi') }}"
-                                                    id="sortasi">
+                                                <input required class="form-control" name="sortasi"
+                                                    value="{{ old('sortasi') }}" id="sortasi">
                                                 <span class="input-group-addon">%</span>
                                             </div>
                                         </div>
@@ -267,8 +282,8 @@
                                 <div class="form-group ">
                                     <label>Netto</label>
                                     <div class="form-group input-group">
-                                        <input class="form-control" name="netto" readonly value="{{ old('netto') }}"
-                                            id="netto" type="number">
+                                        <input required class="form-control" name="netto" readonly
+                                            value="{{ old('netto') }}" id="netto" type="number">
                                         <span class="input-group-addon">Kg</span>
                                     </div>
                                 </div>
@@ -276,7 +291,7 @@
                                 <div class="form-group ">
                                     <label>Netto</label>
                                     <div class="form-group input-group">
-                                        <input class="form-control" type="number" name="netto"
+                                        <input required class="form-control" type="number" name="netto"
                                             value="{{ old('netto') }}" id="netto">
                                         <span class="input-group-addon">Kg</span>
                                     </div>
@@ -288,7 +303,7 @@
                                 <label>Harga</label>
                                 <div class="form-group input-group">
                                     <span class="input-group-addon">Rp</span>
-                                    <input type="number" class="form-control" name="harga"
+                                    <input required type="number" class="form-control" name="harga"
                                         value="{{ old('harga') }}" id="harga">
                                 </div>
                             </div>
@@ -297,7 +312,7 @@
                                 <label>Uang</label>
                                 <div class="form-group input-group">
                                     <span class="input-group-addon">Rp</span>
-                                    <input type="text" class="form-control" readonly name="uang"
+                                    <input required type="text" class="form-control" readonly name="uang"
                                         value="{{ old('uang') }}" id="uang">
                                 </div>
                             </div>
@@ -325,7 +340,10 @@
 
 
             function formatRupiah(angka) {
-                return new Intl.NumberFormat('id-ID').format(angka);
+                return new Intl.NumberFormat('id-ID', {
+                    maximumFractionDigits: 0,
+                    minimumFractionDigits: 0,
+                }).format(angka);
             }
 
             function hitungRUMAH_LAHAN() {
@@ -366,9 +384,9 @@
                 $('#mymodalCreateEdit').text('Tambah TBS ' + menu);
                 $('#mainForm').attr('action', '/pembelian/tbs/' + menu + '/view');
                 $('#tanggal_pembelian').prop('disabled', false);
-                $('#periode').prop('disabled', false);
-
-
+                // $('#periode_id').prop('disabled', false);
+                $('#form-periode-select').show()
+                $('#form-periode-text').hide()
                 $('#formMethod').val('POST')
             });
 
@@ -380,18 +398,21 @@
                 $('#mainForm').attr('action', '/pembelian/tbs/' + menu + '/view/' + id);
                 $('#formMethod').val('PUT')
 
+                $('#form-periode-select').hide()
+                $('#form-periode-text').show()
 
                 $('#tanggal_pembelian').val($(this).data('tanggalpembelian'));
-                $('#periode').val($(this).data('periode'));
+                $('#periode_id_text').val($(this).data('periode'));
 
                 $('#tanggal_pembelian').prop('disabled', true);
-                $('#periode').prop('disabled', true);
+                $('#periode_id_text').prop('disabled', true);
 
 
                 $('#nama_customer').val($(this).data('nama'));
                 $('#netto').val($(this).data('netto'));
                 $('#harga').val($(this).data('harga'));
-                $('#uang').val($(this).data('uang'));
+                $('#uang').val(formatRupiah($(this).data('uang')));
+
                 if (menu == 'RAM') {
 
                     // console.log('wkwkkww', $(this).data('timbangan1'));

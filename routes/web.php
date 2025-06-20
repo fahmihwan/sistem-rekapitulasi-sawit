@@ -6,6 +6,7 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PabrikController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\SlipGajiController;
 use App\Http\Controllers\TarifController;
 use App\Http\Controllers\TbsController;
@@ -16,6 +17,12 @@ Route::post('/auth', [AuthController::class, 'authenticated']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
+
+Route::get('/periode', [PeriodeController::class, 'index']);
+Route::post('/periode', [PeriodeController::class, 'store']);
+Route::put('/periode/{id}', [PeriodeController::class, 'update']);
+Route::delete('/periode/{id}', [PeriodeController::class, 'destroy']);
+
 
 Route::get('/master/karyawan', [KaryawanController::class, 'index']);
 Route::post('/master/karyawan', [KaryawanController::class, 'store']);
@@ -52,4 +59,4 @@ Route::get('/slipgaji/karyawan/{id}', [SlipGajiController::class, 'detail']);
 // Route::delete('/master/karyawan/{id}', [SlipGajiController::class, 'destroy']);
 
 
-Route::get('/laporan/laporan-stock', [LaporanController::class, 'laporan_stock']);
+Route::get('/laporan/laporan-stock', [LaporanController::class, 'laporan_semua_stok']);

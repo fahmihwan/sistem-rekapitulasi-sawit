@@ -9,6 +9,7 @@ use App\Models\M_tarif;
 use App\Models\M_type_tbs;
 use App\Models\Pembelian_tbs;
 use App\Models\Penjualan;
+use App\Models\Periode;
 use App\Models\Tkbm;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;use Illuminate\Support\Str;
@@ -63,10 +64,23 @@ class DatabaseSeeder extends Seeder
         M_delivery_order_type::create(['delivery_order_type' => 'LU (Lahan Usaha)']);
 
 
+        $periode = null;
+        for ($i = 0; $i < 20; $i++) {
+            $periode = Periode::create([
+                'id' => Str::uuid(),
+                'periode' => $i + 1,
+                'periode_mulai' => '2025-06-01',
+                'periode_berakhir' => '2025-06-04',
+                'stok' => 0,
+            ])->id;
+        }
+
+
+
         Pembelian_tbs::create([
             'id' => Str::uuid(),
             'nama_customer' => 'Pak Budi',
-            'periode' => 1,
+            'periode_id' => $periode,
             'tanggal_pembelian' => now()->toDateString(),
             'tbs_type_id' => 3, // pastikan ID ini ada di tabel m_type_tbs
             'netto' => 1000,
@@ -81,7 +95,7 @@ class DatabaseSeeder extends Seeder
 
         Pembelian_tbs::create([
             'id' => Str::uuid(),
-            'periode' => 1,
+            'periode_id' => $periode,
             'tanggal_pembelian' => now()->toDateString(),
             'nama_customer' => 'Pak angga',
             'tbs_type_id' => 3, // pastikan ID ini ada di tabel m_type_tbs
@@ -99,6 +113,7 @@ class DatabaseSeeder extends Seeder
         $penjualanUUid = Str::uuid();
         Penjualan::create([
             'id' => $penjualanUUid,
+            'periode_id' => $periode,
             'pabrik_id' => 1,          // pastikan data pabrik dengan ID ini ada
             'sopir_id' => 2,           // ID sopir dari m_karyawans
             'do_type_id' => 1,         // dari m_delivery_order_types
@@ -116,13 +131,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-        for ($i = 0; $i < 3; $i++) {
-            Tkbm::create([
-                'id' => Str::uuid(),
-                'karyawan_id' => rand(3, 5),       // 
-                'penjualan_id' => $penjualanUUid, // pastikan UUID ini valid dari tabel penjualans
-            ]);
-        }
+        // for ($i = 0; $i < 3; $i++) {
+        //     Tkbm::create([
+        //         'id' => Str::uuid(),
+        //         'karyawan_id' => rand(3, 5),       // 
+        //         'penjualan_id' => $penjualanUUid, // pastikan UUID ini valid dari tabel penjualans
+        //     ]);
+        // }
 
 
 

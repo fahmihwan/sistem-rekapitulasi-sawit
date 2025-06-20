@@ -39,6 +39,9 @@
                 <!-- /.nav-second-level -->
             </li>
             <li>
+                <a href="/periode"><i class="fa fa-table fa-fw"></i>Periode & Stok</a>
+            </li>
+            <li>
                 <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Pembelian TBS<span
                         class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -86,6 +89,7 @@
             <li>
                 <a href="tables.html"><i class="fa fa-table fa-fw"></i> Perhitungan Laba</a>
             </li>
+
             <li>
                 <a href="/laporan/laporan-stock"><i class="fa fa-table fa-fw"></i> Laporan Stok</a>
             </li>
