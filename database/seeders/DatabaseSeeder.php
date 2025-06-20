@@ -64,71 +64,71 @@ class DatabaseSeeder extends Seeder
         M_delivery_order_type::create(['delivery_order_type' => 'LU (Lahan Usaha)']);
 
 
-        $periode = null;
-        for ($i = 0; $i < 20; $i++) {
-            $periode = Periode::create([
-                'id' => Str::uuid(),
-                'periode' => $i + 1,
-                'periode_mulai' => '2025-06-01',
-                'periode_berakhir' => '2025-06-04',
-                'stok' => 0,
-            ])->id;
-        }
+        // $periode = null;
+        // for ($i = 0; $i < 20; $i++) {
+        //     $periode = Periode::create([
+        //         'id' => Str::uuid(),
+        //         'periode' => $i + 1,
+        //         'periode_mulai' => '2025-06-01',
+        //         'periode_berakhir' => '2025-06-04',
+        //         'stok' => 0,
+        //     ])->id;
+        // }
 
 
 
-        Pembelian_tbs::create([
-            'id' => Str::uuid(),
-            'nama_customer' => 'Pak Budi',
-            'periode_id' => $periode,
-            'tanggal_pembelian' => now()->toDateString(),
-            'tbs_type_id' => 3, // pastikan ID ini ada di tabel m_type_tbs
-            'netto' => 1000,
-            'harga' => 3000,
-            'uang' => 2999220,
-            'timbangan_first' => 2036,
-            'timbangan_second' => 1000,
-            'bruto' => 1036,
-            'sortasi' => 3.50,
-        ]);
+        // Pembelian_tbs::create([
+        //     'id' => Str::uuid(),
+        //     'nama_customer' => 'Pak Budi',
+        //     'periode_id' => $periode,
+        //     'tanggal_pembelian' => now()->toDateString(),
+        //     'tbs_type_id' => 3, // pastikan ID ini ada di tabel m_type_tbs
+        //     'netto' => 1000,
+        //     'harga' => 3000,
+        //     'uang' => 2999220,
+        //     'timbangan_first' => 2036,
+        //     'timbangan_second' => 1000,
+        //     'bruto' => 1036,
+        //     'sortasi' => 3.50,
+        // ]);
 
 
-        Pembelian_tbs::create([
-            'id' => Str::uuid(),
-            'periode_id' => $periode,
-            'tanggal_pembelian' => now()->toDateString(),
-            'nama_customer' => 'Pak angga',
-            'tbs_type_id' => 3, // pastikan ID ini ada di tabel m_type_tbs
-            'netto' => 2000,
-            'harga' => 3050,
-            'uang' =>  6098414,
-            'timbangan_first' => 3072,
-            'timbangan_second' => 1000,
-            'bruto' => 2072,
-            'sortasi' => 3.50,
-        ]);
+        // Pembelian_tbs::create([
+        //     'id' => Str::uuid(),
+        //     'periode_id' => $periode,
+        //     'tanggal_pembelian' => now()->toDateString(),
+        //     'nama_customer' => 'Pak angga',
+        //     'tbs_type_id' => 3, // pastikan ID ini ada di tabel m_type_tbs
+        //     'netto' => 2000,
+        //     'harga' => 3050,
+        //     'uang' =>  6098414,
+        //     'timbangan_first' => 3072,
+        //     'timbangan_second' => 1000,
+        //     'bruto' => 2072,
+        //     'sortasi' => 3.50,
+        // ]);
 
 
 
-        $penjualanUUid = Str::uuid();
-        Penjualan::create([
-            'id' => $penjualanUUid,
-            'periode_id' => $periode,
-            'pabrik_id' => 1,          // pastikan data pabrik dengan ID ini ada
-            'sopir_id' => 2,           // ID sopir dari m_karyawans
-            'do_type_id' => 1,         // dari m_delivery_order_types
-            'tarif_tkbm_id' => 2,      // dari m_tarifs
-            'tarif_sopir_id' => 1,     // dari m_tarifs
+        // $penjualanUUid = Str::uuid();
+        // Penjualan::create([
+        //     'id' => $penjualanUUid,
+        //     'periode_id' => $periode,
+        //     'pabrik_id' => 1,          // pastikan data pabrik dengan ID ini ada
+        //     'sopir_id' => 2,           // ID sopir dari m_karyawans
+        //     'do_type_id' => 1,         // dari m_delivery_order_types
+        //     'tarif_tkbm_id' => 2,      // dari m_tarifs
+        //     'tarif_sopir_id' => 1,     // dari m_tarifs
 
-            'tanggal_penjualan' => now()->addDay()->toDateString(),
-            'timbangan_first' => 3590,
-            'timbangan_second' => 1000,
-            'bruto' => 2590,
-            'sortasi' => 3.50,
-            'netto' => 2500,
-            'harga' => 3000,
-            'uang' => 7498050,
-        ]);
+        //     'tanggal_penjualan' => now()->addDay()->toDateString(),
+        //     'timbangan_first' => 3590,
+        //     'timbangan_second' => 1000,
+        //     'bruto' => 2590,
+        //     'sortasi' => 3.50,
+        //     'netto' => 2500,
+        //     'harga' => 3000,
+        //     'uang' => 7498050,
+        // ]);
 
 
         // for ($i = 0; $i < 3; $i++) {

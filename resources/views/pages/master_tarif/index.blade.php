@@ -55,7 +55,7 @@
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $item->type_karyawan }}</td>
-                                            <td>{{ $item->tarif_perkg }}</td>
+                                            <td>Rp {{ $item->tarif_perkg }}</td>
 
                                             <td>
                                                 @if ($item->is_active_tarif)
