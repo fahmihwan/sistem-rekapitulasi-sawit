@@ -34,6 +34,13 @@ class Penjualan extends BaseModel
         return $this->belongsTo(M_pabrik::class);
     }
 
+
+    public function periode()
+    {
+        return $this->belongsTo(Periode::class);
+    }
+
+
     public function getFormattedTglPenjualanAttribute()
     {
         return Carbon::parse($this->tanggal_penjualan)

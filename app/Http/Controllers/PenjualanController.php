@@ -7,6 +7,7 @@ use App\Models\M_karyawan;
 use App\Models\M_pabrik;
 use App\Models\Pembelian_tbs;
 use App\Models\Penjualan;
+use App\Models\Periode;
 use App\Models\Tkbm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +29,7 @@ class PenjualanController extends Controller
 
         // return Tkbm::all();
         $query = Penjualan::with([
+            'periode:id,periode,periode_mulai,periode_berakhir,stok',
             'pabrik:id,nama_pabrik',
             'sopir:id,nama',
             'tkbms:id,karyawan_id,penjualan_id',
@@ -64,7 +66,8 @@ class PenjualanController extends Controller
             'menu' => $menu,
             'karyawans' => $karyawans,
             'data_tarif' => Utils::getTarifActive(),
-            'data_pabrik' => M_pabrik::all()
+            'data_pabrik' => M_pabrik::all(),
+            'periodes' => Periode::where('periode_berakhir', null)->get()
         ]);
     }
 
@@ -93,6 +96,8 @@ class PenjualanController extends Controller
             ]);
 
             $rules = [
+                'tanggal_penjualan' => 'required|date',
+                'periode_id' => 'required',
                 'pabrik_id' => 'required|integer',
                 'sopir_id' => 'required|integer',
                 'tkbm_id' => 'required|array',
@@ -140,6 +145,7 @@ class PenjualanController extends Controller
 
     public function update(Request $request, $menu, $id)
     {
+        // return $request->all();
 
 
         try {

@@ -145,6 +145,7 @@
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->formatted_tgl_penjualan }} / {{ $item->periode->periode }}</td>
                                             <td>{{ $item->pabrik->nama_pabrik ?? '-' }}</td>
                                             <td>{{ $item->sopir->nama ?? '-' }}</td>
                                             <td>
@@ -171,6 +172,8 @@
                                                 </form>
 
                                                 <button data-id="{{ $item->id }}"
+                                                    data-tanggalpenjualan={{ $item->tanggal_penjualan }}
+                                                    data-periode={{ $item->periode->periode }}
                                                     data-nama="{{ $item->sopir->id ?? '' }}"
                                                     data-pabrik="{{ $item->pabrik_id ?? '' }}"
                                                     data-tkbms='@json($item->tkbms)'
@@ -225,6 +228,38 @@
                         <div class="modal-body">
                             <input type="hidden" id="formMethod" name="_method" value="POST">
                             @csrf
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group "> {{-- has-success, has-warning, has-error --}}
+                                        <label>Tgl Penjualan</label>
+                                        <input type="date" class="form-control" name="tanggal_penjualan"
+                                            value="{{ now()->toDateString() }}" id="tanggal_penjualan" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group" id="form-periode-select">
+                                        <label>Periode</label>
+                                        <select name="periode_id" id="periode_id_select" class="form-control"
+                                            style="width: 100%; ">
+                                            <option value="">-- Pilih Periode --</option>
+                                            @foreach ($periodes as $p)
+                                                <option value="{{ $p->id }}"
+                                                    {{ old('periode_id') == $p->id ? 'selected' : '' }}>
+                                                    {{ $p->periode }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="form-group" id="form-periode-text">
+                                        <label>Peroide</label>
+                                        <input class="form-control" name="" value="" id="periode_id_text">
+                                    </div>
+
+                                </div>
+                            </div>
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -445,7 +480,10 @@
 
 
             function formatRupiah(angka) {
-                return new Intl.NumberFormat('id-ID').format(angka);
+                return new Intl.NumberFormat('id-ID', {
+                    maximumFractionDigits: 0,
+                    minimumFractionDigits: 0,
+                }).format(angka);
             }
 
             function hitungRUMAH_LAHAN() {
@@ -458,16 +496,8 @@
 
 
             function hitungRam() {
-                // let nama = $('#nama').val(menu);
-
                 let timbang1 = parseInt($('#timbangan_first').val()) || 0;
                 let timbang2 = parseInt($('#timbangan_second').val()) || 0;
-
-                // $('#timbangan_first').val(1500)
-                // $('#timbangan_second').val(1000)
-                // let timbang1 = 1500;
-                // let timbang2 = 1000;
-
 
                 let bruto = timbang1 - timbang2;
 
@@ -494,6 +524,10 @@
                 $('#mainForm')[0].reset(); // Kosongkan form
                 $('#mymodalCreateEdit').text('Tambah TBS ' + menu);
                 $('#mainForm').attr('action', '/penjualan/tbs/' + menu + '/view');
+                $('#tanggal_penjualan').prop('disabled', false);
+                $('#form-periode-select').show()
+                $('#form-periode-text').hide()
+
                 $('#formMethod').val('POST')
             });
 
@@ -505,13 +539,21 @@
                 $('#mainForm').attr('action', '/penjualan/tbs/' + menu + '/view/' + id);
                 $('#formMethod').val('PUT')
 
+                $('#form-periode-select').hide()
+                $('#form-periode-text').show()
+
+
+
+                $('#tanggal_penjualan').val($(this).data('tanggalpenjualan'));
+                $('#periode_id_text').val($(this).data('periode'));
+
+                $('#tanggal_penjualan').prop('disabled', true);
+                $('#periode_id_text').prop('disabled', true);
+
 
                 const tkbms = $(this).data('tkbms');
                 const karyawanIds = tkbms.map(t => t.karyawan_id);
 
-
-
-                // console.log($(this).data('nama'));
                 $('#pabrik_id').val($(this).data('pabrik')).trigger('change');;
                 $('#sopir_id').val($(this).data('nama')).trigger('change');;
                 $('#tkbm_id').val(karyawanIds).trigger('change');;
@@ -519,7 +561,8 @@
 
                 $('#netto').val($(this).data('netto'));
                 $('#harga').val($(this).data('harga'));
-                $('#uang').val($(this).data('uang'));
+                // $('#uang').val($(this).data('uang'));
+                $('#uang').val(formatRupiah($(this).data('uang')));
 
                 $('#timbangan_first').val($(this).data('timbangan1'));
                 $('#timbangan_second').val($(this).data('timbangan2'));

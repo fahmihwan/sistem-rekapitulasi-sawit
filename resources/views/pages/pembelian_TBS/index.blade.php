@@ -187,20 +187,20 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" id="formMethod" name="_method" value="POST">
-
+                            @csrf
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group "> {{-- has-success, has-warning, has-error --}}
                                         <label>Tgl Pembelian</label>
                                         <input type="date" class="form-control" name="tanggal_pembelian"
-                                            value="{{ now()->toDateString() }}" id="tanggal_pembelian" required>
+                                            value="{{ now()->toDateString() }}" id="tanggal_pembelian">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="form-periode-select">
                                         <label>Periode</label>
                                         <select name="periode_id" id="periode_id_select" class="form-control"
-                                            style="width: 100%; " required>
+                                            style="width: 100%; ">
                                             <option value="">-- Pilih Periode --</option>
                                             @foreach ($periodes as $p)
                                                 <option value="{{ $p->id }}"
@@ -219,7 +219,6 @@
 
                                 </div>
                             </div>
-                            @csrf
 
                             <div class="form-group "> {{-- has-success, has-warning, has-error --}}
                                 <label>Nama Customer</label>
