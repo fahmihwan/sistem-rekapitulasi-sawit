@@ -15,37 +15,22 @@ class PeriodeController extends Controller
         $search = $request->input('search');
 
         $query = Periode::query();
-        // $query = Penjualan::with([
-        //     'pabrik:id,nama_pabrik',
-        //     'sopir:id,nama',
-        //     'tkbms:id,karyawan_id,penjualan_id',
-        //     'tkbms.karyawan:id,nama'
-        // ])->where('do_type_id', $DO_TYPE['id']);
-        // // return $query->get();
 
-
-
-        // if ($request->filled('tanggal')) {
-        //     $query->whereDate('created_at', $tanggal);
-        // }
-        // if ($search) {
-        //     $query->where(function ($q) use ($search) {
-        //         $q->where('netto', 'ILIKE', "%$search%")
-        //             ->orWhere('harga', 'ILIKE', "%$search%")
-        //             ->orWhere('uang', 'ILIKE', "%$search%")
-        //             ->orWhere('timbangan_first', 'ILIKE', "%$search%")
-        //             ->orWhere('timbangan_second', 'ILIKE', "%$search%")
-        //             ->orWhere('bruto', 'ILIKE', "%$search%")
-        //             ->orWhere('sortasi', 'ILIKE', "%$search%");
-        //     });
-        // }
+        if ($request->filled('tanggal')) {
+            $query->whereDate('periode_mulai', $tanggal);
+        }
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('periode', 'ILIKE', "%$search%");
+                // ->orWhere('harga', 'ILIKE', "%$search%")
+                // ->orWhere('uang', 'ILIKE', "%$search%");
+            });
+        }
         $query->orderBy('periode', 'desc');
 
         $data = $query->paginate($perPage)->appends($request->query());
 
-
-        // return Periode::orderBy('periode', 'desc')->first();
-        return view('pages.periode.index', [
+        return view('pages.laba.index', [
             'items' =>  $data,
             'get_first_periode' => Periode::orderBy('periode', 'desc')->first()
         ]);

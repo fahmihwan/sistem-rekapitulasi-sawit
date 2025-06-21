@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\LabaController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PabrikController;
 use App\Http\Controllers\PenjualanController;
@@ -51,6 +52,7 @@ Route::post('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'store'])
 Route::put('/penjualan/tbs/{menu}/view/{id}', [PenjualanController::class, 'update']);
 Route::delete('/penjualan/tbs/{menu}/delete/{id}', [PenjualanController::class, 'destroy']);
 
+Route::get('/laba', [LabaController::class, 'index']);
 
 Route::get('/slipgaji/karyawan', [SlipGajiController::class, 'index']);
 Route::get('/slipgaji/karyawan/{id}', [SlipGajiController::class, 'detail']);
