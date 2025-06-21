@@ -13,53 +13,57 @@ use App\Http\Controllers\TarifController;
 use App\Http\Controllers\TbsController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [AuthController::class, 'login']);
-Route::post('/auth', [AuthController::class, 'authenticated']);
-Route::post('/logout', [AuthController::class, 'logout']);
+Route::middleware(['guest'])->group(function () {
+    Route::get('/', [AuthController::class, 'login'])->name('login');
+    Route::post('/auth', [AuthController::class, 'authenticated']);
+});
 
-Route::get('/dashboard', [DashboardController::class, 'index']);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 
-Route::get('/periode', [PeriodeController::class, 'index']);
-Route::post('/periode', [PeriodeController::class, 'store']);
-Route::put('/periode/{id}', [PeriodeController::class, 'update']);
-Route::delete('/periode/{id}', [PeriodeController::class, 'destroy']);
-
-
-Route::get('/master/karyawan', [KaryawanController::class, 'index']);
-Route::post('/master/karyawan', [KaryawanController::class, 'store']);
-Route::put('/master/karyawan/{id}', [KaryawanController::class, 'update']);
-Route::delete('/master/karyawan/{id}', [KaryawanController::class, 'destroy']);
-
-Route::get('/master/pabrik', [PabrikController::class, 'index']);
-Route::post('/master/pabrik', [PabrikController::class, 'store']);
-Route::put('/master/pabrik/{id}', [PabrikController::class, 'update']);
-Route::delete('/master/pabrik/{id}', [PabrikController::class, 'destroy']);
-
-Route::get('/master/tarif', [TarifController::class, 'index']);
-Route::post('/master/tarif', [TarifController::class, 'store']);
-Route::put('/master/tarif/{id}', [TarifController::class, 'update']);
-Route::delete('/master/tarif/{id}', [TarifController::class, 'destroy']);
+    Route::get('/periode', [PeriodeController::class, 'index']);
+    Route::post('/periode', [PeriodeController::class, 'store']);
+    Route::put('/periode/{id}', [PeriodeController::class, 'update']);
+    Route::delete('/periode/{id}', [PeriodeController::class, 'destroy']);
 
 
-Route::get('/pembelian/tbs/{menu}/view', [TbsController::class, 'index']);
-Route::post('/pembelian/tbs/{menu}/view', [TbsController::class, 'store']);
-Route::put('/pembelian/tbs/{menu}/view/{id}', [TbsController::class, 'update']);
-Route::delete('/pembelian/tbs/{menu}/delete/{id}', [TbsController::class, 'destroy']);
+    Route::get('/master/karyawan', [KaryawanController::class, 'index']);
+    Route::post('/master/karyawan', [KaryawanController::class, 'store']);
+    Route::put('/master/karyawan/{id}', [KaryawanController::class, 'update']);
+    Route::delete('/master/karyawan/{id}', [KaryawanController::class, 'destroy']);
+
+    Route::get('/master/pabrik', [PabrikController::class, 'index']);
+    Route::post('/master/pabrik', [PabrikController::class, 'store']);
+    Route::put('/master/pabrik/{id}', [PabrikController::class, 'update']);
+    Route::delete('/master/pabrik/{id}', [PabrikController::class, 'destroy']);
+
+    Route::get('/master/tarif', [TarifController::class, 'index']);
+    Route::post('/master/tarif', [TarifController::class, 'store']);
+    Route::put('/master/tarif/{id}', [TarifController::class, 'update']);
+    Route::delete('/master/tarif/{id}', [TarifController::class, 'destroy']);
 
 
-Route::get('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'index']);
-Route::post('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'store']);
-Route::put('/penjualan/tbs/{menu}/view/{id}', [PenjualanController::class, 'update']);
-Route::delete('/penjualan/tbs/{menu}/delete/{id}', [PenjualanController::class, 'destroy']);
-
-Route::get('/laba', [LabaController::class, 'index']);
-Route::get('/laba/{id}', [LabaController::class, 'detail']);
-
-Route::get('/slipgaji/karyawan', [SlipGajiController::class, 'index']);
-Route::get('/slipgaji/karyawan/{id}', [SlipGajiController::class, 'detail']);
-// Route::post('/master/karyawan', [SlipGajiController::class, 'store']);
-// Route::put('/master/karyawan/{id}', [SlipGajiController::class, 'update']);
-// Route::delete('/master/karyawan/{id}', [SlipGajiController::class, 'destroy']);
+    Route::get('/pembelian/tbs/{menu}/view', [TbsController::class, 'index']);
+    Route::post('/pembelian/tbs/{menu}/view', [TbsController::class, 'store']);
+    Route::put('/pembelian/tbs/{menu}/view/{id}', [TbsController::class, 'update']);
+    Route::delete('/pembelian/tbs/{menu}/delete/{id}', [TbsController::class, 'destroy']);
 
 
-Route::get('/laporan/laporan-stock', [LaporanController::class, 'laporan_semua_stok']);
+    Route::get('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'index']);
+    Route::post('/penjualan/tbs/{menu}/view', [PenjualanController::class, 'store']);
+    Route::put('/penjualan/tbs/{menu}/view/{id}', [PenjualanController::class, 'update']);
+    Route::delete('/penjualan/tbs/{menu}/delete/{id}', [PenjualanController::class, 'destroy']);
+
+    Route::get('/laba', [LabaController::class, 'index']);
+    Route::get('/laba/{id}', [LabaController::class, 'detail']);
+
+    Route::get('/slipgaji/karyawan', [SlipGajiController::class, 'index']);
+    Route::get('/slipgaji/karyawan/{id}', [SlipGajiController::class, 'detail']);
+    // Route::post('/master/karyawan', [SlipGajiController::class, 'store']);
+    // Route::put('/master/karyawan/{id}', [SlipGajiController::class, 'update']);
+    // Route::delete('/master/karyawan/{id}', [SlipGajiController::class, 'destroy']);
+
+
+    Route::get('/laporan/laporan-stock', [LaporanController::class, 'laporan_semua_stok']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
