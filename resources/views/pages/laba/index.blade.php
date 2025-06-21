@@ -24,32 +24,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="panel panel-default">
-                    {{-- <div class="panel-heading ">
-                        <div style=" display: flex; justify-content: space-between; align-items: center">
-                            <div>
-                                Stok periode
-                            </div>
 
-                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
-                                data-target="#modalCreateEdit">
-                                <i class="fa fa-plus"></i> Tambah Data
-                            </button>
-                        </div>
-                    </div> --}}
 
                     <div class="panel panel-default">
-                        {{-- <div class="panel-heading ">
-                            <div style=" display: flex; justify-content: space-between; align-items: center">
-                                <div>
-                                    Master TBS
-                                </div>
-
-                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" id="btn-create"
-                                    data-target="#modalCreateEdit">
-                                    <i class="fa fa-plus"></i> Tambah Data
-                                </button>
-                            </div>
-                        </div> --}}
 
                         <div class="panel-heading ">
                             <div style=" display: flex; justify-content: space-between; align-items: center">
@@ -147,30 +124,23 @@
                                                 <td class="center">{{ $item->formatted_created_at }}</td>
                                                 <td style="display: flex; border-bottom: 1px">
 
-                                                    <button type="button" class="btn btn-sm  btn-warning btn-edit"
+                                                    {{-- <button type="button" class="btn btn-sm  btn-warning btn-edit"
                                                         style="margin-right: 10px" data-id="{{ $item->id }}"
                                                         data-periodeakhir={{ $item->periode_berakhir }}
                                                         data-periodemulai={{ $item->periode_mulai }} data-bs-toggle="modal"
                                                         data-toggle="modal" data-target="#modalCreateEdit"
-                                                        type="button">TUTUP PERIODE</button>
+                                                        type="button">TUTUP PERIODE</button> --}}
 
-
-                                                    @if ($item->periode_berakhir != null)
+                                                    <a href="/laba/{{ $item->id }}"
+                                                        class="btn btn-info  btn-edit">Detail</a>
+                                                    {{-- @if ($item->periode_berakhir != null)
                                                         <button data-bs-toggle="modal" type="button"
                                                             class="btn  btn-circle btn-edit"
                                                             style="background-color: gray; color:white"
                                                             onclick="alert('Periode sudah ditutup');">
                                                             <i class="fa fa-lock"></i>
                                                         </button>
-                                                    @else
-                                                        <form method="POST" action="/periode/{{ $item->id }}">
-                                                            @method('delete')
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-danger btn-circle "
-                                                                style="margin-right: 5px">
-                                                                <i class="fa fa-trash"></i></button>
-                                                        </form>
-                                                    @endif
+                                                    @endif --}}
 
                                                 </td>
                                             </tr>

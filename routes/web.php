@@ -53,6 +53,7 @@ Route::put('/penjualan/tbs/{menu}/view/{id}', [PenjualanController::class, 'upda
 Route::delete('/penjualan/tbs/{menu}/delete/{id}', [PenjualanController::class, 'destroy']);
 
 Route::get('/laba', [LabaController::class, 'index']);
+Route::get('/laba/{id}', [LabaController::class, 'detail']);
 
 Route::get('/slipgaji/karyawan', [SlipGajiController::class, 'index']);
 Route::get('/slipgaji/karyawan/{id}', [SlipGajiController::class, 'detail']);

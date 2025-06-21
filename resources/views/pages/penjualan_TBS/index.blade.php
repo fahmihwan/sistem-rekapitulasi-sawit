@@ -127,6 +127,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Tgl Penjualan / Periode</th>
                                         <th>Pabrik</th>
                                         <th>Sopir</th>
                                         <th>TKBM</th>
@@ -145,7 +146,8 @@
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->formatted_tgl_penjualan }} / {{ $item->periode->periode }}</td>
+                                            <td>{{ $item->formatted_tgl_penjualan }} / <span class=""
+                                                    style="color: red">{{ $item->periode->periode }}</span> </td>
                                             <td>{{ $item->pabrik->nama_pabrik ?? '-' }}</td>
                                             <td>{{ $item->sopir->nama ?? '-' }}</td>
                                             <td>

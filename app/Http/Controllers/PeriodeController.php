@@ -30,7 +30,7 @@ class PeriodeController extends Controller
 
         $data = $query->paginate($perPage)->appends($request->query());
 
-        return view('pages.laba.index', [
+        return view('pages.periode.index', [
             'items' =>  $data,
             'get_first_periode' => Periode::orderBy('periode', 'desc')->first()
         ]);
