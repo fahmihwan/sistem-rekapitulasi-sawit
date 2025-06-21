@@ -171,21 +171,33 @@
                                                         <i class="fa fa-trash"></i></button>
                                                 </form>
 
-                                                <button data-id="{{ $item->id }}"
-                                                    data-tanggalpenjualan={{ $item->tanggal_penjualan }}
-                                                    data-periode={{ $item->periode->periode }}
-                                                    data-nama="{{ $item->sopir->id ?? '' }}"
-                                                    data-pabrik="{{ $item->pabrik_id ?? '' }}"
-                                                    data-tkbms='@json($item->tkbms)'
-                                                    data-timbangan1="{{ $item->timbangan_first }}"
-                                                    data-timbangan2="{{ $item->timbangan_second }}"
-                                                    data-bruto="{{ $item->bruto }}" data-sortasi="{{ $item->sortasi }}"
-                                                    data-netto="{{ $item->netto }}" data-harga="{{ $item->harga }}"
-                                                    data-uang="{{ $item->uang }}" data-bs-toggle="modal" type="button"
-                                                    class="btn btn-warning btn-circle btn-edit" data-toggle="modal"
-                                                    data-target="#modalCreateEdit" data-id="{{ $item->id }}"><i
-                                                        class="fa fa-edit"></i>
-                                                </button>
+                                                @if ($item->periode->periode_berakhir != null)
+                                                    <button data-bs-toggle="modal" type="button"
+                                                        class="btn  btn-circle btn-edit"
+                                                        style="background-color: gray; color:white"
+                                                        onclick="alert('Periode sudah ditutup');">
+                                                        <i class="fa fa-lock"></i>
+                                                    </button>
+                                                @else
+                                                    <button data-id="{{ $item->id }}"
+                                                        data-tanggalpenjualan={{ $item->tanggal_penjualan }}
+                                                        data-periode={{ $item->periode->periode }}
+                                                        data-nama="{{ $item->sopir->id ?? '' }}"
+                                                        data-pabrik="{{ $item->pabrik_id ?? '' }}"
+                                                        data-tkbms='@json($item->tkbms)'
+                                                        data-timbangan1="{{ $item->timbangan_first }}"
+                                                        data-timbangan2="{{ $item->timbangan_second }}"
+                                                        data-bruto="{{ $item->bruto }}"
+                                                        data-sortasi="{{ $item->sortasi }}"
+                                                        data-netto="{{ $item->netto }}" data-harga="{{ $item->harga }}"
+                                                        data-uang="{{ $item->uang }}" data-bs-toggle="modal"
+                                                        type="button" class="btn btn-warning btn-circle btn-edit"
+                                                        data-toggle="modal" data-target="#modalCreateEdit"
+                                                        data-id="{{ $item->id }}"><i class="fa fa-edit"></i>
+                                                    </button>
+                                                @endif
+
+
                                             </td>
                                         </tr>
                                     @endforeach
@@ -220,7 +232,8 @@
                 <div class="modal-content">
                     <form id='mainForm' role="form" method=POST action={{ '/penjualan/tbs/' . $menu . '/view' }}>
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <button type="button" class="close" data-dismiss="modal"
+                                aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="mymodalCreateEdit">Pembelian {{ $title }}</h4>
                         </div>
 
