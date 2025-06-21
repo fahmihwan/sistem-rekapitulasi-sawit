@@ -120,9 +120,9 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Periode</th>
-                                            <th>Tanggal Mulai</th>
-                                            <th>Tanggal Berakhir</th>
-                                            <th>Stok</th>
+                                            <th>Periode Mulai</th>
+                                            <th>Periode Berakhir</th>
+                                            <th>Stok Netto</th>
                                             <th>Created At</th>
                                             <th>#</th>
                                         </tr>
@@ -131,35 +131,47 @@
                                         @foreach ($items as $item)
                                             <tr class="">
                                                 <td>{{ $loop->iteration }}</td>
+                                                {{-- <span class="label label-info">Info</span> --}}
                                                 <td>{{ $item->label_periode }}</td>
                                                 <td>{{ $item->formatted_mulai }}</td>
-                                                <td>{{ $item->formatted_berakhir }}</td>
+                                                <td>
+                                                    @if ($item->formatted_berakhir == null)
+                                                        <span class="label label-success" style="font-size: 12px">Periode
+                                                            masih berjalan</span>
+                                                    @else
+                                                        {{ $item->formatted_berakhir }}
+                                                    @endif
+                                                </td>
                                                 <td>{{ $item->stok }}</td>
 
                                                 <td class="center">{{ $item->formatted_created_at }}</td>
                                                 <td style="display: flex; border-bottom: 1px">
-                                                    <form method="POST" action="/periode/{{ $item->id }}">
-                                                        @method('delete')
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-danger btn-circle"
-                                                            style="margin-right: 5px">
-                                                            <i class="fa fa-trash"></i></button>
-                                                    </form>
 
-                                                    <button data-id="{{ $item->id }}"
-                                                        data-nama="{{ $item->sopir->id ?? '' }}"
-                                                        data-pabrik="{{ $item->pabrik_id ?? '' }}"
-                                                        data-tkbms='@json($item->tkbms)'
-                                                        data-timbangan1="{{ $item->timbangan_first }}"
-                                                        data-timbangan2="{{ $item->timbangan_second }}"
-                                                        data-bruto="{{ $item->bruto }}"
-                                                        data-sortasi="{{ $item->sortasi }}"
-                                                        data-netto="{{ $item->netto }}" data-harga="{{ $item->harga }}"
-                                                        data-uang="{{ $item->uang }}" data-bs-toggle="modal"
-                                                        type="button" class="btn btn-warning btn-circle btn-edit"
+                                                    <button type="button" class="btn btn-sm  btn-warning btn-edit"
+                                                        style="margin-right: 10px" data-id="{{ $item->id }}"
+                                                        data-periodeakhir={{ $item->periode_berakhir }}
+                                                        data-periodemulai={{ $item->periode_mulai }} data-bs-toggle="modal"
                                                         data-toggle="modal" data-target="#modalCreateEdit"
-                                                        data-id="{{ $item->id }}"><i class="fa fa-edit"></i>
-                                                    </button>
+                                                        type="button">TUTUP PERIODE</button>
+
+
+                                                    @if ($item->periode_berakhir != null)
+                                                        <button data-bs-toggle="modal" type="button"
+                                                            class="btn  btn-circle btn-edit"
+                                                            style="background-color: gray; color:white"
+                                                            onclick="alert('Periode sudah ditutup');">
+                                                            <i class="fa fa-lock"></i>
+                                                        </button>
+                                                    @else
+                                                        <form method="POST" action="/periode/{{ $item->id }}">
+                                                            @method('delete')
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-danger btn-circle "
+                                                                style="margin-right: 5px">
+                                                                <i class="fa fa-trash"></i></button>
+                                                        </form>
+                                                    @endif
+
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -201,7 +213,7 @@
                                 <input type="hidden" id="formMethod" name="_method" value="POST">
                                 @csrf
 
-                                <div class="form-group "> {{-- has-success, has-warning, has-error --}}
+                                <div class="form-group">
                                     <label>Periode ke</label>
                                     <input class="form-control" name="periode"
                                         value="{{ isset($get_first_periode->periode) ? $get_first_periode->periode + 1 : 1 }}"
@@ -210,16 +222,16 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Tanggal mulai</label>
+                                            <label>Periode mulai</label>
                                             <input class="form-control" name="periode_mulai" type="date"
-                                                value="{{ now()->toDateString() }}">
+                                                value="{{ now()->toDateString() }}" id="periode_mulai">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Tanggal Selesai</label>
+                                            <label>Periode berakhir</label>
                                             <input class="form-control" name="periode_berakhir" type="date"
-                                                value="" readonly>
+                                                value="" readonly id="periode_berakhir">
                                         </div>
                                     </div>
                                 </div>
@@ -257,18 +269,32 @@
                     $('#mainForm')[0].reset();
                     $('#mymodalCreateEdit').text('Buat periode baru ');
                     $('#mainForm').attr('action', '/periode');
-                    $('#formMethod')
-                        .val('POST')
+                    $('#formMethod').val('POST')
+
+
+                    $('#periode_mulai').prop('readonly', false);
+                    $('#periode_berakhir').prop('readonly', true);
+
                 });
 
 
                 $('.btn-edit').on('click', function() {
-                    // let id = $(this).data('id');
-                    // $('#mainForm')[0].reset();
-                    // $('#mymodalCreateEdit').text('Edit TBS ' + menu);
-                    // $('#mainForm').attr('action', '/penjualan/tbs/' + menu + '/view/' + id);
-                    // $('#formMethod').val('PUT')
+                    let id = $(this).data('id');
+                    $('#mainForm')[0].reset();
+                    $('#mymodalCreateEdit').text('Tutup Periode');
+                    $('#mainForm').attr('action', '/periode/' + id);
+                    $('#formMethod').val('PUT')
 
+                    $('#periode_mulai').prop('readonly', true);
+                    $('#periode_berakhir').prop('readonly', false);
+
+
+                    $('#periode_mulai').val($(this).data('periodemulai'))
+                    $('#periode_berakhir').val($(this).data('periodeakhir'))
+
+
+                    // data - periodeakhir = {{ $item->periode_berakhir }}
+                    // data - periodemulai = {{ $item->periode_mulai }}
 
                     // const tkbms = $(this).data('tkbms');
                     // const karyawanIds = tkbms.map(t => t.karyawan_id);

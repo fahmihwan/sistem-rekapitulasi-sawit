@@ -7,6 +7,7 @@ use App\Models\M_type_tbs;
 use App\Models\Pembelian_tbs;
 use App\Models\Periode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Expr\FuncCall;
 
 class TbsController extends Controller
@@ -14,6 +15,7 @@ class TbsController extends Controller
     public function index(Request $request, string $menu)
     {
 
+        // return Periode::all();
 
         $tanggal = $request->input('tanggal');
         $perPage = $request->input('per_page', 10);
@@ -48,7 +50,7 @@ class TbsController extends Controller
 
         $data = $query->paginate($perPage)->appends($request->query());
 
-
+        // return $data;
         return view('pages.pembelian_TBS.index', [
             'items' =>  $data,
             'title' => $TBS_TYPE['text'],
@@ -97,8 +99,22 @@ class TbsController extends Controller
             return "NOT FOUND";
         }
 
-        Pembelian_tbs::create($validated);
-        return redirect('pembelian/tbs/' . $menu . '/view');
+        try {
+            DB::beginTransaction();
+            Pembelian_tbs::create($validated);
+
+            $periode = Periode::findOrFail($validated['periode_id']);
+            $stok = $periode->stok + $validated['netto'];
+            $periode->update([
+                'stok' => $stok,
+            ]);
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Data berhasil disimpan!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
+        }
     }
 
     public function update(Request $request, $menu, $id)
@@ -107,7 +123,6 @@ class TbsController extends Controller
             'uang' => str_replace('.', '', $request->input('uang'))
         ]);
 
-        // return $request->all();
         $rules = [
             'nama_customer' => 'required|max:50',
             'netto' => 'required|integer',
@@ -134,9 +149,31 @@ class TbsController extends Controller
         } else {
             return "NOT FOUND";
         }
-        $pembelianTBs =  Pembelian_tbs::findOrFail($id);
 
-        $pembelianTBs->update($validated);
+
+        try {
+            DB::beginTransaction();
+            $pembelianTBs =  Pembelian_tbs::findOrFail($id);
+            $periode = Periode::findOrFail($pembelianTBs->periode_id);
+
+            if ($periode->periode_berakhir != null) {
+                redirect()->back()->with('error', 'Periode telah ditutup');
+            }
+
+            $stok = $periode->stok - $pembelianTBs->netto + $validated['netto'];
+
+            $periode->update([
+                'stok' => $stok,
+            ]);
+            $pembelianTBs->update($validated);
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Data berhasil disimpan!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
+        }
+
         return redirect('pembelian/tbs/' . $menu . '/view');
     }
 

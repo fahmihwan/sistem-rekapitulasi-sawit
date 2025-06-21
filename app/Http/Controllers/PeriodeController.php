@@ -77,7 +77,7 @@ class PeriodeController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            'nama_pabrik' => 'required|max:50',
+            'periode_berakhir' => 'nullable|date'
         ]);
 
         $karyawan =  Periode::findOrFail($id);

@@ -110,7 +110,9 @@
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->formatted_tgl_pembelian }} / {{ $item->periode->periode }}</td>
+
+                                            <td>{{ $item->formatted_tgl_pembelian }} / <span class=""
+                                                    style="color: red">{{ $item->periode->periode }}</span> </td>
                                             <td>{{ $item->nama_customer }}</td>
                                             @if ($menu == 'RAM')
                                                 <td>{{ $item->timbangan_first_formatted }}</td>
@@ -134,20 +136,30 @@
                                                         <i class="fa fa-trash"></i></button>
                                                 </form>
 
-                                                <button data-id="{{ $item->id }}"
-                                                    data-tanggalpembelian={{ $item->tanggal_pembelian }}
-                                                    data-periode={{ $item->periode->periode }}
-                                                    data-nama="{{ $item->nama_customer }}"
-                                                    @if ($menu == 'RAM') data-timbangan1="{{ $item->timbangan_first }}"
+                                                @if ($item->periode->periode_berakhir != null)
+                                                    <button data-bs-toggle="modal" type="button"
+                                                        class="btn  btn-circle btn-edit"
+                                                        style="background-color: gray; color:white"
+                                                        onclick="alert('Periode sudah ditutup');">
+                                                        <i class="fa fa-lock"></i>
+                                                    </button>
+                                                @else
+                                                    <button data-id="{{ $item->id }}"
+                                                        data-tanggalpembelian={{ $item->tanggal_pembelian }}
+                                                        data-periode={{ $item->periode->periode }}
+                                                        data-nama="{{ $item->nama_customer }}"
+                                                        @if ($menu == 'RAM') data-timbangan1="{{ $item->timbangan_first }}"
                                                         data-timbangan2="{{ $item->timbangan_second }}"
                                                         data-bruto="{{ $item->bruto }}"
                                                         data-sortasi="{{ $item->sortasi }}" @endif
-                                                    data-netto="{{ $item->netto }}" data-harga="{{ $item->harga }}"
-                                                    data-uang="{{ $item->uang }}" data-bs-toggle="modal" type="button"
-                                                    class="btn btn-warning btn-circle btn-edit" data-toggle="modal"
-                                                    data-target="#modalCreateEdit" data-id="{{ $item->id }}"><i
-                                                        class="fa fa-edit"></i>
-                                                </button>
+                                                        data-netto="{{ $item->netto }}" data-harga="{{ $item->harga }}"
+                                                        data-uang="{{ $item->uang }}" data-bs-toggle="modal"
+                                                        type="button" class="btn btn-warning btn-circle btn-edit"
+                                                        data-toggle="modal" data-target="#modalCreateEdit"
+                                                        data-id="{{ $item->id }}"><i class="fa fa-edit"></i>
+                                                    </button>
+                                                @endif
+
                                             </td>
                                         </tr>
                                     @endforeach
@@ -225,7 +237,6 @@
                                 <input class="form-control" name="nama_customer" value="{{ old('nama_customer') }}"
                                     id="nama_customer" required>
                             </div>
-
 
 
                             @if ($menu == 'RAM')
@@ -391,11 +402,14 @@
 
 
             $('.btn-edit').on('click', function() {
+
                 let id = $(this).data('id');
                 $('#mainForm')[0].reset(); // Kosongkan form
                 $('#mymodalCreateEdit').text('Edit TBS ' + menu);
                 $('#mainForm').attr('action', '/pembelian/tbs/' + menu + '/view/' + id);
                 $('#formMethod').val('PUT')
+
+                // periode_berakhir
 
                 $('#form-periode-select').hide()
                 $('#form-periode-text').show()
@@ -413,8 +427,6 @@
                 $('#uang').val(formatRupiah($(this).data('uang')));
 
                 if (menu == 'RAM') {
-
-                    // console.log('wkwkkww', $(this).data('timbangan1'));
                     $('#timbangan_first').val($(this).data('timbangan1'));
                     $('#timbangan_second').val($(this).data('timbangan2'));
                     $('#bruto').val($(this).data('bruto'));

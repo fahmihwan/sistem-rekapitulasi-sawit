@@ -41,7 +41,7 @@ class Periode extends BaseModel
     public function getFormattedBerakhirAttribute()
     {
         if (is_null($this->periode_berakhir)) {
-            return 'periode belum selesai';
+            return null;
         }
 
         return Carbon::parse($this->periode_berakhir)->translatedFormat('d F Y');
