@@ -29,12 +29,9 @@
                     <li>
                         <a href="/master/tarif">Master Tarif</a>
                     </li>
-                    {{-- <li>
-                        <a href="flot.html">Master Data Harga</a>
-                    </li>
                     <li>
-                        <a href="flot.html">TBS RAM</a>
-                    </li> --}}
+                        <a href="/master/ops">Master Ops</a>
+                    </li>
                 </ul>
                 <!-- /.nav-second-level -->
             </li>
@@ -69,7 +66,6 @@
                         <a href="/penjualan/tbs/LU/view">LU (Lahan Usaha)</a>
                     </li>
                 </ul>
-                <!-- /.nav-second-level -->
             </li>
             {{-- <li>
                 <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i>Slip Gaji<span class="fa arrow"></span></a>

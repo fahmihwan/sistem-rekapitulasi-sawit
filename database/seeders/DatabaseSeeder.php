@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\M_delivery_order_type;
 use App\Models\M_karyawan;
+use App\Models\M_ops;
 use App\Models\M_pabrik;
 use App\Models\M_tarif;
 use App\Models\M_type_tbs;
@@ -58,7 +59,8 @@ class DatabaseSeeder extends Seeder
         M_tarif::create(['tarif_perkg' => 20, 'type_karyawan' => 'SOPIR']);
         M_tarif::create(['tarif_perkg' => 30, 'type_karyawan' => 'TKBM']);
 
-
+        M_ops::create(['ops' => 50]);
+        M_ops::create(['ops' => 120]);
 
         M_delivery_order_type::create(['delivery_order_type' => 'PLASMA']);
         M_delivery_order_type::create(['delivery_order_type' => 'LU (Lahan Usaha)']);

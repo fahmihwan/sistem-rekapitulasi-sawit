@@ -83,6 +83,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <x-alert />
 
+
+    <script>
+        $(document).ready(function() {
+            $('#dataTables-example').DataTable({
+                responsive: true
+            });
+
+
+
+
+        });
+    </script>
+
     @yield('script')
 
     <!-- Metis Menu Plugin JavaScript -->
@@ -95,14 +108,6 @@
     <!-- Custom Theme JavaScript -->
     <script src="{{ asset('/js/startmin.js') }}"></script>
 
-
-    <script>
-        $(document).ready(function() {
-            $('#dataTables-example').DataTable({
-                responsive: true
-            });
-        });
-    </script>
 
 </body>
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LabaController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\OpsController;
 use App\Http\Controllers\PabrikController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PeriodeController;
@@ -41,6 +42,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/master/tarif', [TarifController::class, 'store']);
     Route::put('/master/tarif/{id}', [TarifController::class, 'update']);
     Route::delete('/master/tarif/{id}', [TarifController::class, 'destroy']);
+
+    Route::get('/master/ops', [OpsController::class, 'index']);
+    Route::post('/master/ops', [OpsController::class, 'store']);
+    Route::put('/master/ops/{id}', [OpsController::class, 'update']);
+    Route::delete('/master/ops/{id}', [OpsController::class, 'destroy']);
 
 
     Route::get('/pembelian/tbs/{menu}/view', [TbsController::class, 'index']);

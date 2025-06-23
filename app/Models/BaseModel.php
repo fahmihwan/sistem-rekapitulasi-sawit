@@ -12,7 +12,6 @@ class BaseModel extends Model
 {
 
 
-
     public function getFormattedCreatedAtAttribute()
     {
         return Carbon::parse($this->created_at)
