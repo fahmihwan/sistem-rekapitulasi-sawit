@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Utils;
+use App\Models\M_ops;
 use App\Models\Periode;
 use Illuminate\Http\Request;
 
@@ -14,7 +16,9 @@ class PeriodeController extends Controller
         $perPage = $request->input('per_page', 10);
         $search = $request->input('search');
 
-        $query = Periode::query();
+        $query = Periode::with(['ops' => function ($q) {
+            $q->withTrashed();
+        }]);
 
         if ($request->filled('tanggal')) {
             $query->whereDate('periode_mulai', $tanggal);
@@ -30,11 +34,14 @@ class PeriodeController extends Controller
 
         $data = $query->paginate($perPage)->appends($request->query());
 
+        // return Utils::getOpsActive();
         return view('pages.periode.index', [
             'items' =>  $data,
+            'data_tarif_ops' => Utils::getOpsActive(),
             'get_first_periode' => Periode::orderBy('periode', 'desc')->first()
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -45,8 +52,16 @@ class PeriodeController extends Controller
 
         $validated = $request->validate([
             'periode' => 'required|integer',
-            'periode_mulai' => 'required|date'
+            'periode_mulai' => 'required|date',
+            'ops_id' => 'nullable|integer|exists:m_ops,id',
         ]);
+
+        $isExist = Periode::where('periode', $validated['periode'])->exists();
+
+        if ($isExist) {
+            return redirect('/periode')->with('error', 'periode sudah tersedia!');
+        }
+
 
         $validated['periode_berakhir'] = null;
         $validated['stok'] = 0;
@@ -62,7 +77,9 @@ class PeriodeController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            'periode_berakhir' => 'nullable|date'
+            'periode_mulai' => 'required|date',
+            'periode_berakhir' => 'nullable|date',
+            'ops_id' => 'nullable|integer'
         ]);
 
         $karyawan =  Periode::findOrFail($id);

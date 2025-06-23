@@ -9,12 +9,6 @@ class Utils
 
     public static function getTarifActive()
     {
-        // $data = DB::table('m_tarifs')
-        //     ->select(DB::raw('MAX(id) as id', 'tarif_perkg'),  'type_karyawan')
-        //     ->whereNull('deleted_at')
-        //     ->groupBy('type_karyawan')
-        //     ->get();
-
         $data = DB::select("SELECT mt.id, mt.type_karyawan, mt.tarif_perkg
                             FROM m_tarifs mt
                             JOIN (
@@ -45,6 +39,33 @@ class Utils
 
         return $result;
     }
+
+    public static function getOpsActive()
+    {
+        $data = DB::select("SELECT ops2.id, ops2.ops, ops2.deleted_at, x.is_active_ops, ops2.created_at from m_ops ops2 
+                inner join (
+                    select max(id) as max_id, true as is_active_ops from m_ops ops where ops.deleted_at is null
+                ) as x on ops2.id = x.max_id
+                where ops2.deleted_at is null
+                order by ops2.id desc");
+
+
+        $result = [
+            // 'ops_id' => null,
+            // 'ops' =>  0
+        ];
+
+        foreach ($data as $item) {
+            $result[] = [
+                'ops_id' => $item->id,
+                'ops' => $item->ops
+            ];
+        }
+
+        return $result;
+    }
+
+
 
 
 

@@ -17,6 +17,10 @@ class Periode extends BaseModel
     protected $guarded = ['id'];
 
 
+    public function ops()
+    {
+        return $this->belongsTo(M_ops::class);
+    }
 
     public function getLabelPeriodeAttribute()
     {

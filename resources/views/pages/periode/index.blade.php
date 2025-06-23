@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">Stok periode</h1>
+                <h1 class="page-header">Periode</h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -122,7 +122,7 @@
                                             <th>Periode</th>
                                             <th>Periode Mulai</th>
                                             <th>Periode Berakhir</th>
-                                            <th>Stok Netto</th>
+                                            <th>OPS</th>
                                             <th>Created At</th>
                                             <th>#</th>
                                         </tr>
@@ -142,17 +142,20 @@
                                                         {{ $item->formatted_berakhir }}
                                                     @endif
                                                 </td>
-                                                <td>{{ $item->stok }}</td>
+                                                <td>{{ $item->ops->ops }}</td>
 
                                                 <td class="center">{{ $item->formatted_created_at }}</td>
                                                 <td style="display: flex; border-bottom: 1px">
 
                                                     <button type="button" class="btn btn-sm  btn-warning btn-edit"
                                                         style="margin-right: 10px" data-id="{{ $item->id }}"
-                                                        data-periodeakhir={{ $item->periode_berakhir }}
-                                                        data-periodemulai={{ $item->periode_mulai }} data-bs-toggle="modal"
-                                                        data-toggle="modal" data-target="#modalCreateEdit"
-                                                        type="button">TUTUP PERIODE</button>
+                                                        data-mulai="{{ $item->periode_mulai }}"
+                                                        data-berakhir="{{ $item->periode_berakhir }}"
+                                                        data-periode="{{ $item->periode }}"
+                                                        data-idops="{{ $item->ops->id }}" data-ops="{{ $item->ops->ops }}"
+                                                        data-bs-toggle="modal" data-toggle="modal"
+                                                        data-target="#modalCreateEdit" type="button">TUTUP PERIODE
+                                                    </button>
 
 
                                                     @if ($item->periode_berakhir != null)
@@ -213,11 +216,29 @@
                                 <input type="hidden" id="formMethod" name="_method" value="POST">
                                 @csrf
 
-                                <div class="form-group">
-                                    <label>Periode ke</label>
-                                    <input class="form-control" name="periode"
-                                        value="{{ isset($get_first_periode->periode) ? $get_first_periode->periode + 1 : 1 }}"
-                                        readonly>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Periode ke</label>
+                                            <input class="form-control" name="periode" id="periodeke"
+                                                value="{{ isset($get_first_periode->periode) ? $get_first_periode->periode + 1 : 1 }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group" id="form-periode-select">
+                                            <label>OPS</label>
+                                            <select name="ops_id" id="ops_id_select" class="form-control"
+                                                style="width: 100%; ">
+                                                <option value="">-- Pilih Periode --</option>
+                                                @foreach ($data_tarif_ops as $p)
+                                                    <option value="{{ $p['ops_id'] }}"
+                                                        {{ old('ops_id') == $p['ops_id'] ? 'selected' : '' }}>
+                                                        {{ $p['ops'] }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -240,7 +261,6 @@
 
                             </div>
                             <div class="modal-footer">
-
                                 <div class="">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary">Save changes</button>
@@ -275,6 +295,7 @@
                     $('#periode_mulai').prop('readonly', false);
                     $('#periode_berakhir').prop('readonly', true);
 
+                    // $('#ops_id_select').val('').trigger('change');
                 });
 
 
@@ -285,33 +306,30 @@
                     $('#mainForm').attr('action', '/periode/' + id);
                     $('#formMethod').val('PUT')
 
-                    $('#periode_mulai').prop('readonly', true);
+
+                    $('#periodeke').prop('readonly', true)
                     $('#periode_berakhir').prop('readonly', false);
 
+                    const ops = $(this).data('ops')
+                    const idops = $(this).data('idops')
 
-                    $('#periode_mulai').val($(this).data('periodemulai'))
-                    $('#periode_berakhir').val($(this).data('periodeakhir'))
+                    if ($('#ops_id_select option[value="' + idops + '"]').length === 0) {
+                        $('#ops_id_select').append(
+                            $('<option>', {
+                                value: idops,
+                                text: ops
+                            })
+                        );
 
+                    }
+                    // $(`#ops_id_select option[value="${idops}"]`).remove();
 
+                    $('#ops_id_select').val(idops).trigger('change');
 
+                    $('#periodeke').val($(this).data('periode'))
+                    $('#periode_mulai').val($(this).data('mulai'))
+                    $('#periode_berakhir').val($(this).data('berakhir'))
 
-                    // const tkbms = $(this).data('tkbms');
-                    // const karyawanIds = tkbms.map(t => t.karyawan_id);
-
-
-                    // $('#pabrik_id').val($(this).data('pabrik')).trigger('change');;
-                    // $('#sopir_id').val($(this).data('nama')).trigger('change');;
-                    // $('#tkbm_id').val(karyawanIds).trigger('change');;
-
-
-                    // $('#netto').val($(this).data('netto'));
-                    // $('#harga').val($(this).data('harga'));
-                    // $('#uang').val($(this).data('uang'));
-
-                    // $('#timbangan_first').val($(this).data('timbangan1'));
-                    // $('#timbangan_second').val($(this).data('timbangan2'));
-                    // $('#bruto').val($(this).data('bruto'));
-                    // $('#sortasi').val($(this).data('sortasi'));
                 });
 
 

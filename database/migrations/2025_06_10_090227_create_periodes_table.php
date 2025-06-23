@@ -17,6 +17,8 @@ return new class extends Migration
             $table->date('periode_mulai')->nullable();
             $table->date('periode_berakhir')->nullable();
             $table->integer('stok');
+            $table->unsignedBigInteger('ops_id');
+            $table->foreign('ops_id')->references('id')->on('m_ops')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });
