@@ -153,7 +153,7 @@
     <script>
         $(document).ready(function() {
 
-            $('.jelect').jelect();
+
             // $("#datepicker").datepicker({
 
             //     changeMonth: true,

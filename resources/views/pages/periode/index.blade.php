@@ -237,7 +237,6 @@
                                                 @endforeach
                                             </select>
                                         </div>
-
                                     </div>
                                 </div>
                                 <div class="row">
@@ -320,7 +319,6 @@
                                 text: ops
                             })
                         );
-
                     }
                     // $(`#ops_id_select option[value="${idops}"]`).remove();
 

@@ -138,7 +138,7 @@
                                         <th>Netto</th>
                                         <th>Harga</th>
                                         <th>Uang</th>
-                                        <th>Created at</th>
+                                        {{-- <th>Created at</th> --}}
                                         <th>#</th>
                                     </tr>
                                 </thead>
@@ -146,14 +146,35 @@
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->formatted_tgl_penjualan }} / <span class=""
-                                                    style="color: red">{{ $item->periode->periode }}</span> </td>
+                                            <td>{{ $item->formatted_tgl_penjualan }} /
+
+                                                <span class="label label-success">{{ $item->periode->periode }}</span>
+                                                {{-- <span class=""
+                                                    style="color: red">{{ $item->periode->periode }}</span>  --}}
+
+                                            </td>
                                             <td>{{ $item->pabrik->nama_pabrik ?? '-' }}</td>
-                                            <td>{{ $item->sopir->nama ?? '-' }}</td>
                                             <td>
-                                                @foreach ($item->tkbms as $d)
-                                                    <p style="margin: 0; padding: 0;">- {{ $d->karyawan->nama ?? '-' }}</p>
-                                                @endforeach
+                                                <span
+                                                    class="label label-primary">{{ $item->tarif_sopir->tarif_perkg }}</span>
+                                                {{ $item->sopir->nama ?? '-' }}
+                                            </td>
+                                            <td>
+                                                <div style="display: flex">
+                                                    <div style="margin-right: 5px">
+                                                        <span
+                                                            class="label label-primary">{{ $item->tarif_tkbm->tarif_perkg }}</span>
+                                                    </div>
+                                                    <div>
+                                                        @foreach ($item->tkbms as $d)
+                                                            <p style="margin: 0; padding: 0;">-
+                                                                {{ $d->karyawan->nama ?? '-' }}
+                                                            </p>
+                                                        @endforeach
+                                                    </div>
+
+                                                </div>
+
                                             </td>
                                             <td>{{ $item->timbangan_first_formatted }}</td>
                                             <td>{{ $item->timbangan_second_formatted }}</td>
@@ -162,7 +183,7 @@
                                             <td>{{ $item->netto_formatted }}</td>
                                             <td>{{ $item->harga_formatted }}</td>
                                             <td>{{ $item->uang_formatted }}</td>
-                                            <td class="center">{{ $item->formatted_created_at }}</td>
+                                            {{-- <td class="center">{{ $item->formatted_created_at }}</td> --}}
                                             <td style="display: flex; border-bottom: 1px">
                                                 <form method="POST"
                                                     action="/penjualan/tbs/{{ $menu }}/delete/{{ $item->id }}">
@@ -182,6 +203,10 @@
                                                     </button>
                                                 @else
                                                     <button data-id="{{ $item->id }}"
+                                                        data-tarifsopirid="{{ $item->tarif_sopir_id }}"
+                                                        data-tariftkbmid="{{ $item->tarif_tkbm_id }}"
+                                                        data-tarifsopirtext="{{ $item->tarif_sopir->tarif_perkg }}"
+                                                        data-tariftkbmtext="{{ $item->tarif_tkbm->tarif_perkg }}"
                                                         data-tanggalpenjualan={{ $item->tanggal_penjualan }}
                                                         data-periode={{ $item->periode->periode }}
                                                         data-nama="{{ $item->sopir->id ?? '' }}"
@@ -266,8 +291,6 @@
                                         </select>
                                     </div>
 
-
-
                                     <div class="form-group" id="form-periode-text">
                                         <label>Peroide</label>
                                         <input class="form-control" name="" value="" id="periode_id_text">
@@ -279,12 +302,14 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="pabrik_id">Pilih Pabrik</label><br>
+                                        <label for="pabrik_id">Pilih Pabrik </label><br>
                                         <select name="pabrik_id" id="pabrik_id" class="form-control"
                                             style="width: 100%; height: 200px !important;">
-                                            <option value="">-- Pilih Sopir --</option>
+                                            <option value="">-- Pilih --</option>
                                             @foreach ($data_pabrik as $pabrik)
-                                                <option value="{{ $pabrik->id }}">{{ $pabrik->nama_pabrik }}</option>
+                                                <option value="{{ $pabrik->id }}"
+                                                    {{ old('pabrik_id') == $pabrik->id ? 'selected' : '' }}>
+                                                    {{ $pabrik->nama_pabrik }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -306,9 +331,55 @@
 
                                 </div>
                             </div>
+                            <div class="row">
 
 
 
+                                <div class="col-md-3">
+                                    <div class="form-group" id="form-periode-select">
+                                        <label>Tarif Sopir</label>
+                                        <select name="tarif_sopir_id" id="tarif_sopir_id_select" class="form-control"
+                                            style="width: 100%; ">
+                                            <option value="">-- Pilih --</option>
+                                            @foreach ($data_list_tarif as $p)
+                                                @if ($p->type_karyawan == 'SOPIR')
+                                                    <option value="{{ $p->id }}"
+                                                        {{ old('tarif_sopir_id') == $p->id ? 'selected' : '' }}>
+                                                        {{ $p->tarif_perkg }}</option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group" id="form-periode-select">
+                                        <label>Tarif TKBM</label>
+                                        <select name="tarif_tkbm_id" id="tarif_tkbm_id_select" class="form-control"
+                                            style="width: 100%; ">
+                                            <option value="">-- Pilih --</option>
+                                            @foreach ($data_list_tarif as $p)
+                                                @if ($p->type_karyawan == 'TKBM')
+                                                    <option value="{{ $p->id }}"
+                                                        {{ old('tarif_tkbm_id') == $p->id ? 'selected' : '' }}>
+                                                        {{ $p->tarif_perkg }}</option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group ">
+                                        <label>Harga Pabrik</label>
+                                        <div class="form-group input-group">
+                                            <span class="input-group-addon">Rp</span>
+                                            <input type="number" class="form-control" name="harga"
+                                                value="{{ old('harga') }}" id="harga">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
                             <div class="form-group">
                                 <label for="tkbm_id">Pilih TKBM</label><br>
                                 <select name="tkbm_id[]" multiple="multiple" id="tkbm_id" class="form-control"
@@ -325,42 +396,29 @@
 
 
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group ">
-                                        <label>Timbangan 1</label>
-                                        <div class="form-group input-group">
+                                        <label>Timbangan 1 (kg)</label>
+                                        <div class="form-group ">
                                             <input type="number" class="form-control" name="timbangan_first"
                                                 value="{{ old('timbangan_first') }}" id="timbangan_first">
-                                            <span class="input-group-addon">Kg</span>
+                                            {{-- <span class="input-group-addon">Kg</span> --}}
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group ">
-                                        <label>Timbangan 2</label>
-                                        <div class="form-group input-group">
+                                        <label>Timbangan 2 (kg)</label>
+                                        <div class="form-group ">
                                             <input type="number" class="form-control" name="timbangan_second"
                                                 value="{{ old('timbangan_second') }}" id="timbangan_second">
-                                            <span class="input-group-addon">Kg</span>
+                                            {{-- <span class="input-group-addon">Kg</span> --}}
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group ">
-                                        <label>Bruto</label>
-                                        <div class="form-group input-group">
-                                            <input class="form-control" type="number" name="bruto"
-                                                value="{{ old('bruto') }}" readonly id="bruto">
-                                            <span class="input-group-addon">Kg</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group ">
-                                        <label>Sortasi</label>
+                                        <label>Sortasi (%)</label>
                                         <div class="form-group input-group">
                                             <input class="form-control" name="sortasi" value="{{ old('sortasi') }}"
                                                 id="sortasi">
@@ -370,53 +428,60 @@
                                 </div>
                             </div>
 
-
-
-                            <div class="form-group ">
-                                <label>Netto</label>
-                                <div class="form-group input-group">
-                                    <input type="number" class="form-control" name="netto" readonly
-                                        value="{{ old('netto') }}" id="netto">
-                                    <span class="input-group-addon">Kg</span>
-                                </div>
-                            </div>
-
-                            <div class="form-group ">
-                                <label>Harga</label>
-                                <div class="form-group input-group">
-                                    <span class="input-group-addon">Rp</span>
-                                    <input type="number" class="form-control" name="harga"
-                                        value="{{ old('harga') }}" id="harga">
-                                </div>
-                            </div>
-
-                            {{-- <div class="row">
-                                <div class="col-md-6">
-                                    <label>Tarif sopir saat ini</label>
-                                    <div class="form-group input-group">
-                                        <span class="input-group-addon">Rp</span>
-                                        <input type="number" class="form-control" disabled
-                                            value={{ $data_tarif['tarif_sopir_perkg'] }}>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group ">
+                                        <label>Bruto</label>
+                                        <div class="form-group input-group">
+                                            <input class="form-control" type="number" name="bruto"
+                                                value="{{ old('bruto') }}" readonly id="bruto">
+                                            <span class="input-group-addon">Kg</span>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div class="col-md-6">
-                                    <label>Tarif TKBM saat ini</label>
-                                    <div class="form-group input-group">
-                                        <span class="input-group-addon">Rp</span>
-                                        <input type="number" class="form-control" disabled
-                                            value={{ $data_tarif['tarif_tkbm_perkg'] }}>
+                                <div class="col-md-4">
+                                    <div class="form-group ">
+                                        <label>Netto</label>
+                                        <div class="form-group input-group">
+                                            <input type="number" class="form-control" name="netto" readonly
+                                                value="{{ old('netto') }}" id="netto">
+                                            <span class="input-group-addon">Kg</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div> --}}
-                            <div class="form-group ">
-                                <label>Uang</label>
-                                <div class="form-group input-group">
-                                    <span class="input-group-addon">Rp</span>
-                                    <input type="text" class="form-control" readonly name="uang"
-                                        value="{{ old('uang') }}" id="uang">
+                                <div class="col-md-4">
+                                    <div class="form-group ">
+                                        <label>Uang</label>
+                                        <div class="form-group input-group">
+                                            <span class="input-group-addon">Rp</span>
+                                            <input type="text" class="form-control" readonly name="uang"
+                                                value="{{ old('uang') }}" id="uang">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                </div>
+                                <div class="col-md-6">
+                                    {{-- <div class="form-group ">
+                                        <label>Uang</label>
+                                        <div class="form-group input-group">
+                                            <span class="input-group-addon">Rp</span>
+                                            <input type="text" class="form-control" readonly name="uang"
+                                                value="{{ old('uang') }}" id="uang">
+                                        </div>
+                                    </div> --}}
+                                </div>
+                            </div>
+
+
+
+
+
 
                         </div>
                         <div class="modal-footer">
@@ -556,6 +621,45 @@
 
                 $('#form-periode-select').hide()
                 $('#form-periode-text').show()
+
+
+
+                const tarifSopirId = $(this).data('tarifsopirid');
+                const tarifTkbmId = $(this).data('tariftkbmid');
+                const tarifSopirText = $(this).data('tarifsopirtext');
+                const tarifTkbmText = $(this).data('tariftkbmtext');
+
+                console.log(tarifSopirId, tarifSopirText);
+                console.log(tarifTkbmId, tarifTkbmText);
+
+
+                if ($('#tarif_sopir_id_select option[value="' + tarifSopirId + '"]').length === 0) {
+                    $('#tarif_sopir_id_select').append(
+                        $('<option>', {
+                            value: tarifSopirId,
+                            text: tarifSopirText
+                        })
+                    );
+                }
+                $('#tarif_sopir_id_select').val(tarifSopirId).trigger('change');
+
+
+
+
+                if ($('#tarif_tkbm_id_select option[value="' + tarifTkbmId + '"]').length === 0) {
+                    $('#tarif_tkbm_id_select').append(
+                        $('<option>', {
+                            value: tarifTkbmId,
+                            text: tarifTkbmText
+                        })
+                    );
+                }
+                $('#tarif_tkbm_id_select').val(tarifTkbmId).trigger('change');
+
+
+
+
+
 
 
 

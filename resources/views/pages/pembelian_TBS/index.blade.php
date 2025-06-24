@@ -111,8 +111,9 @@
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
 
-                                            <td>{{ $item->formatted_tgl_pembelian }} / <span class=""
-                                                    style="color: red">{{ $item->periode->periode }}</span> </td>
+                                            <td>{{ $item->formatted_tgl_pembelian }} /
+                                                <span class="label label-success">{{ $item->periode->periode }}</span>
+                                                {{-- <span class="" style="color: red">{{ $item->periode->periode }}</span> </td> --}}
                                             <td>{{ $item->nama_customer }}</td>
                                             @if ($menu == 'RAM')
                                                 <td>{{ $item->timbangan_first_formatted }}</td>

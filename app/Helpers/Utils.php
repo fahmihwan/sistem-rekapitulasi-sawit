@@ -40,6 +40,21 @@ class Utils
         return $result;
     }
 
+    public static function getListTarif()
+    {
+        $data = DB::select("SELECT mt.id, mt.type_karyawan, mt.tarif_perkg
+                    FROM m_tarifs mt
+                    JOIN (
+                        SELECT MAX(id) AS max_id, type_karyawan
+                        FROM m_tarifs
+                        WHERE deleted_at IS NULL
+                        GROUP BY type_karyawan
+                    ) sub ON mt.id = sub.max_id AND mt.type_karyawan = sub.type_karyawan
+                    WHERE mt.deleted_at IS NULL");
+
+        return $data;
+    }
+
     public static function getOpsActive()
     {
         $data = DB::select("SELECT ops2.id, ops2.ops, ops2.deleted_at, x.is_active_ops, ops2.created_at from m_ops ops2 

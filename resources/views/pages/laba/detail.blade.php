@@ -189,12 +189,14 @@
                                     </tr>
                                     <tr>
                                         <th>OPS</th>
-                                        <td>Rp {{ number_format($penjualan->sum('netto') * 120, 0, ',', '.') }}</td>
+                                        <td>Rp
+                                            {{ number_format($penjualan->sum('netto') * $periode->ops->ops, 0, ',', '.') }}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>Laba Bersih</th>
                                         <td style="background-color: yellow">Rp
-                                            {{ number_format($penjualan->sum('uang') - $pembelian->sum('uang') - $penjualan->sum('netto') * 120, 0, ',', '.') }}
+                                            {{ number_format($penjualan->sum('uang') - $pembelian->sum('uang') - $penjualan->sum('netto') * $periode->ops->ops, 0, ',', '.') }}
                                         </td>
                                     </tr>
                                     {{-- @foreach ($penjualan as $item)

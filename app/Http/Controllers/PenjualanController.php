@@ -29,14 +29,14 @@ class PenjualanController extends Controller
 
         // return Tkbm::all();
         $query = Penjualan::with([
-            'periode:id,periode,periode_mulai,periode_berakhir,stok',
+            'tarif_sopir' => fn($q) => $q->withTrashed(),
+            'tarif_tkbm' => fn($q) => $q->withTrashed(),
+            'periode' => fn($q) => $q->withTrashed()->select('id', 'periode', 'periode_mulai', 'periode_berakhir', 'stok'),
             'pabrik:id,nama_pabrik',
             'sopir:id,nama',
             'tkbms:id,karyawan_id,penjualan_id',
             'tkbms.karyawan:id,nama'
         ])->where('do_type_id', $DO_TYPE['id']);
-        // return $query->get();
-
 
 
         if ($request->filled('tanggal')) {
@@ -57,7 +57,6 @@ class PenjualanController extends Controller
 
         $data = $query->paginate($perPage)->appends($request->query());
 
-        // return $data;
         $karyawans = M_karyawan::all();
 
         return view('pages.penjualan_TBS.index', [
@@ -65,6 +64,7 @@ class PenjualanController extends Controller
             'title' => $DO_TYPE['text'],
             'menu' => $menu,
             'karyawans' => $karyawans,
+            'data_list_tarif' => Utils::getListTarif(),
             'data_tarif' => Utils::getTarifActive(),
             'data_pabrik' => M_pabrik::all(),
             'periodes' => Periode::where('periode_berakhir', null)->get()
@@ -79,20 +79,20 @@ class PenjualanController extends Controller
         try {
             DB::beginTransaction();
 
-            $tarifActive  = Utils::getTarifActive();
-            if (empty($tarifActive['tarif_sopir_id'])) {
-                return 'Tarif SOPIR belum di tentukan';
-            }
+            // $tarifActive  = Utils::getTarifActive();
+            // if (empty($tarifActive['tarif_sopir_id'])) {
+            //     return 'Tarif SOPIR belum di tentukan';
+            // }
 
-            if (empty($tarifActive['tarif_tkbm_id'])) {
-                return 'Tarif TKBM belum di tentukan';
-            }
+            // if (empty($tarifActive['tarif_tkbm_id'])) {
+            //     return 'Tarif TKBM belum di tentukan';
+            // }
 
 
             $request->merge([
                 'uang' => str_replace('.', '', $request->input('uang')),
-                'tarif_sopir_id' => $tarifActive['tarif_sopir_id'],
-                'tarif_tkbm_id' => $tarifActive['tarif_tkbm_id']
+                // 'tarif_sopir_id' => $tarifActive['tarif_sopir_id'],
+                // 'tarif_tkbm_id' => $tarifActive['tarif_tkbm_id']
             ]);
 
             $rules = [
@@ -160,6 +160,8 @@ class PenjualanController extends Controller
                 'tkbm_id' => 'required|array',
                 'timbangan_first' => 'required|numeric',
                 'timbangan_second' => 'required|numeric',
+                'tarif_sopir_id' => 'required|numeric',
+                'tarif_tkbm_id' => 'required|numeric',
                 'sortasi' => 'required|numeric',
                 'bruto' => 'required|numeric',
                 'netto' => 'required|numeric',

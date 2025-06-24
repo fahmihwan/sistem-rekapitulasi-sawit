@@ -33,4 +33,18 @@ $(function() {
     if (element.is('li')) {
         element.addClass('active');
     }
+
+    // var currentUrl = window.location.href.split(/[?#]/)[0];
+    // console.log(currentUrl);
+    // $('#side-menu a').each(function () {
+    //     if (this.href === currentUrl) {
+    //         $(this).addClass('active');
+
+    //         // Expand parent menu
+    //         $(this).parents('li').addClass('active'); // Untuk semua parent <li>
+    //         $(this).closest('ul').addClass('in');     // Bootstrap-style collapse
+    //         $(this).parents('ul').addClass('mm-show'); // Untuk metisMenu
+    //         $(this).parents('li').children('a').attr('aria-expanded', true);
+    //     }
+    // });
 });

@@ -19,6 +19,19 @@ class Penjualan extends BaseModel
     protected $guarded = ['id'];
 
 
+    public function tarif_sopir()
+    {
+        return $this->belongsTo(M_tarif::class);
+    }
+
+    public function tarif_tkbm()
+    {
+        return $this->belongsTo(M_tarif::class);
+    }
+
+
+
+
     public function tkbms()
     {
         return $this->hasMany(Tkbm::class, 'penjualan_id');
