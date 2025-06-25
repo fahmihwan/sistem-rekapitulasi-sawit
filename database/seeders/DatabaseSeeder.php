@@ -147,32 +147,34 @@ class DatabaseSeeder extends Seeder
 
         // $penjualans = Penjualan::factory(50)->create();
 
-        // $total = 5; // jumlah data yang akan dibuat
-        // $penjualans = []; // Array untuk menyimpan entri Penjualan
-        // // Membuat entri Penjualan
-        // for ($i = 0; $i < $total; $i++) {
-        //     $penjualan = Penjualan::factory()
-        //         ->createdWithinLastWeek($i, $total)
-        //         ->create();
-        //     $penjualans[] = $penjualan;
-        // }
+        $total = 10; // jumlah data yang akan dibuat
+        $penjualans = []; // Array untuk menyimpan entri Penjualan
+        // Membuat entri Penjualan
+        for ($i = 0; $i < $total; $i++) {
+            $penjualan = Penjualan::factory()
+                ->createdWithinLastWeek($i, $total)
+                ->create([
+                    'periode_id' => $periode
+                ]);
+            $penjualans[] = $penjualan;
+        }
 
-        // $allKaryawanIds = M_karyawan::where('type_karyawan', 'TKBM')->pluck('id')->toArray();
-        // foreach ($penjualans as $penjualan) {
-        //     $jumlahTkbm = rand(2, 5);
-        //     // Ambil karyawan_id random unik sebanyak $jumlahTkbm
-        //     // Jika jumlah karyawan kurang dari jumlah Tkbm, batasi jumlahnya
-        //     $karyawanIdsForPenjualan = collect($allKaryawanIds)
-        //         ->shuffle()
-        //         ->take(min($jumlahTkbm, count($allKaryawanIds)))
-        //         ->toArray();
-        //     foreach ($karyawanIdsForPenjualan as $karyawanId) {
-        //         Tkbm::factory()->create([
-        //             'penjualan_id' => $penjualan->id,
-        //             'karyawan_id' => $karyawanId,
-        //         ]);
-        //     }
-        // }
+        $allKaryawanIds = M_karyawan::where('type_karyawan', 'TKBM')->pluck('id')->toArray();
+        foreach ($penjualans as $penjualan) {
+            $jumlahTkbm = rand(2, 5);
+            // Ambil karyawan_id random unik sebanyak $jumlahTkbm
+            // Jika jumlah karyawan kurang dari jumlah Tkbm, batasi jumlahnya
+            $karyawanIdsForPenjualan = collect($allKaryawanIds)
+                ->shuffle()
+                ->take(min($jumlahTkbm, count($allKaryawanIds)))
+                ->toArray();
+            foreach ($karyawanIdsForPenjualan as $karyawanId) {
+                Tkbm::factory()->create([
+                    'penjualan_id' => $penjualan->id,
+                    'karyawan_id' => $karyawanId,
+                ]);
+            }
+        }
 
 
         // $jumlahTkbm = rand(2, 5);
@@ -181,7 +183,7 @@ class DatabaseSeeder extends Seeder
         // for ($j = 0; $j < $jumlahTkbm; $j++) {
         //     do {
         //         $tkbm = Tkbm::factory()->make(); // generate instance tapi belum simpan
-        //         $nama = $tkbm->nama;
+        //         $nama = $tkbm->id;
         //     } while (in_array($nama, $existingNamaTkbm));
         //     $existingNamaTkbm[] = $nama;
         //     Tkbm::factory()->create([

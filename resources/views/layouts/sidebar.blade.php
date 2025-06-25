@@ -84,6 +84,9 @@
             <li>
                 <a href="/slipgaji/karyawan"><i class="fa fa-table fa-fw"></i> Slip Gaji</a>
             </li>
+            <li>
+                <a href="/penggajian"><i class="fa fa-table fa-fw"></i>Penggajian</a>
+            </li>
 
 
 

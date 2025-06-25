@@ -52,6 +52,7 @@ class PenjualanFactory extends Factory
             $secondsToAdd = intval(($diffInSeconds / max($total - 1, 1)) * $index);
             $createdAt = $startDate->copy()->addSeconds($secondsToAdd);
             return [
+                'tanggal_penjualan' => $createdAt,
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,
             ];

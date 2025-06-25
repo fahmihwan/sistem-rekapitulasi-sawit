@@ -39,6 +39,8 @@ class PenjualanController extends Controller
         ])->where('do_type_id', $DO_TYPE['id']);
 
 
+
+
         if ($request->filled('tanggal')) {
             $query->whereDate('created_at', $tanggal);
         }
@@ -46,13 +48,20 @@ class PenjualanController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('netto', 'ILIKE', "%$search%")
                     ->orWhere('harga', 'ILIKE', "%$search%")
+                    // ->orWhere('nama', 'ILIKE', "%$search%")
                     ->orWhere('uang', 'ILIKE', "%$search%")
                     ->orWhere('timbangan_first', 'ILIKE', "%$search%")
                     ->orWhere('timbangan_second', 'ILIKE', "%$search%")
                     ->orWhere('bruto', 'ILIKE', "%$search%")
-                    ->orWhere('sortasi', 'ILIKE', "%$search%");
+                    ->orWhere('sortasi', 'ILIKE', "%$search%")
+                    ->orWhereHas('tkbms.karyawan', function ($q) use ($search) {
+                        $q->where('nama', 'ILIKE', "%$search%");
+                    });;
             });
         }
+
+        // return $query->get();
+
         $query->orderBy('created_at', 'desc');
 
         $data = $query->paginate($perPage)->appends($request->query());

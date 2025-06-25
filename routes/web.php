@@ -7,6 +7,7 @@ use App\Http\Controllers\LabaController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\OpsController;
 use App\Http\Controllers\PabrikController;
+use App\Http\Controllers\PenggajianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\SlipGajiController;
@@ -65,6 +66,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/slipgaji/karyawan', [SlipGajiController::class, 'index']);
     Route::get('/slipgaji/karyawan/{id}', [SlipGajiController::class, 'detail']);
+
+
+    Route::get('/penggajian', [PenggajianController::class, 'index']);
+    Route::post('/penggajian', [PenggajianController::class, 'store']);
+    Route::delete('/penggajian/{id}', [PenggajianController::class, 'destroy']);
+    Route::get('/penggajian/{penggajianid}/{karyawanid}/detail-gaji', [PenggajianController::class, 'detail_gaji']);
+    Route::get('/penggajian/{penggajianid}/{karyawanid}/ambil-gaji-perhari', [PenggajianController::class, 'ambil_gaji_perhari']);
     // Route::post('/master/karyawan', [SlipGajiController::class, 'store']);
     // Route::put('/master/karyawan/{id}', [SlipGajiController::class, 'update']);
     // Route::delete('/master/karyawan/{id}', [SlipGajiController::class, 'destroy']);
