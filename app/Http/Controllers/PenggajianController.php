@@ -167,7 +167,9 @@ class PenggajianController extends Controller
                     pt.tarif_perkg as tarif_perkg_rp,
                     pt.tkbm_agg,
                     pt.total,
-                    pt.jumlah_uang as jumlah_uang_rp
+                    pt.jumlah_uang as jumlah_uang_rp,
+                    pt.is_gaji_perhari_dibayarkan,
+	                pt.is_gaji_dibayarkan
                 from penggajian_tkbms pt 
                 inner join m_karyawans mk on mk.id = pt.karyawan_id
                 inner join penjualans p on p.id = pt.penjualan_id
@@ -183,6 +185,8 @@ class PenggajianController extends Controller
 
                 return $item;
             });
+
+
 
         $totalNetto = $items->sum('netto');
         $totalUang   = 'Rp ' . number_format($items->sum('jumlah_uang'), 0, ',', '.');

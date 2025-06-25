@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('m_tarifs', function (Blueprint $table) {
+        Schema::create('m_jobs', function (Blueprint $table) {
             $table->id();
-            $table->integer('tarif_perkg');
-            // $table->enum('type_karyawan', ['SOPIR', 'TKBM']);
+
+            $table->unsignedBigInteger('karyawan_id');
+            $table->foreign('karyawan_id')->references('id')->on('m_karyawans')->onDelete('cascade');
 
             $table->unsignedBigInteger('type_karyawan_id');
             $table->foreign('type_karyawan_id')->references('id')->on('m_type_karyawans')->onDelete('cascade');
 
-            $table->softDeletes();
+
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_tarifs');
+        Schema::dropIfExists('m_jobs');
     }
 };

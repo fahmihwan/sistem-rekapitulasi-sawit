@@ -25,6 +25,10 @@ return new class extends Migration
             $table->uuid('penjualan_id')->nullable();
             $table->foreign('penjualan_id')->references('id')->on('penjualans')->onDelete('cascade');
 
+
+            $table->unsignedBigInteger('type_karyawan_id');
+            $table->foreign('type_karyawan_id')->references('id')->on('m_type_karyawans')->onDelete('cascade');
+
             // $table->date('tanggal_penjualan')->nullable();
 
             // $table->integer('netto')->nullable();

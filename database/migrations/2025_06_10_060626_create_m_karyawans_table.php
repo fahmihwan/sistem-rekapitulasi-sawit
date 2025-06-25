@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('m_karyawans', function (Blueprint $table) {
             $table->id();
             $table->string("nama", 50)->nullable();
-            $table->enum('type_karyawan', ['SOPIR', 'TKBM']);
+            // $table->enum('type_karyawan', ['SOPIR', 'TKBM']);
             $table->timestamps();
             $table->softDeletes();
         });

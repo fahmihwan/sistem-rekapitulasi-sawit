@@ -17,6 +17,10 @@ return new class extends Migration
             $table->foreign('karyawan_id')->references('id')->on('m_karyawans')->onDelete('cascade');
             $table->uuid('penjualan_id');
             $table->foreign('penjualan_id')->references('id')->on('penjualans')->onDelete('cascade');
+
+            $table->unsignedBigInteger('type_karyawan_id');
+            $table->foreign('type_karyawan_id')->references('id')->on('m_type_karyawans')->onDelete('cascade');
+
             $table->softDeletes();
             $table->timestamps();
         });

@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('m_type_tbs', function (Blueprint $table) {
             $table->id();
-            $table->enum('type_tbs', ['TBS RUMAH', 'TBS LAHAN', 'TBS RAM']);
+            // $table->enum('type_tbs', ['TBS RUMAH', 'TBS LAHAN', 'TBS RAM']);
+            $table->string('type_tbs', 20);
             $table->timestamps();
             // $table->softDeletes()
         });

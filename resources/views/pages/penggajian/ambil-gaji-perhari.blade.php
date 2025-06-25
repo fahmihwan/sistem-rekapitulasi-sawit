@@ -146,6 +146,9 @@
                                         <th style="text-align: center" colspan="{{ $colspanTKBM }}">TKBM </th>
                                         <th style="text-align: center">Total</th>
                                         <th style="text-align: center">Jumlah Uang</th>
+                                        <th style="text-align: center">Gaji Diambil</th>
+                                        <th style="text-align: center">Sudah Dibayarkan</th>
+                                        <th style="text-align: center">#</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -161,6 +164,32 @@
                                             @endfor
                                             <td>{{ $item['total'] }}</td>
                                             <td>{{ $item['jumlah_uang_rp'] }}</td>
+                                            <td style="text-align: center">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" value=""
+                                                            style="width: 25px;height: 25px;accent-color: #2196F3;cursor: pointer;">
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td style="text-align: center">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" value=""
+                                                            style="width: 25px;height: 25px;accent-color: #2196F3;cursor: pointer;">
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <form method="POST" action="/penggajian/{{ $item['id'] }}">
+                                                    @method('delete')
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-danger btn-circle "
+                                                        style="margin-right: 5px">
+                                                        <i class="fa fa-trash"></i></button>
+                                                </form>
+                                            </td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -172,7 +201,6 @@
                                         <th></th>
                                         <th colspan="{{ $colspanTKBM + 1 }}" style="text-align: center">Total Uang</th>
                                         <th>{{ $totalUang }}</th>
-
                                     </tr>
                                 </tfoot>
                             </table>
