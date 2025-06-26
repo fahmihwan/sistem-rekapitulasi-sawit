@@ -167,9 +167,12 @@
                                                     </div>
                                                     <div>
                                                         @foreach ($item->tkbms as $d)
-                                                            <p style="margin: 0; padding: 0;">-
-                                                                {{ $d->karyawan->nama ?? '-' }}
-                                                            </p>
+                                                            @if ($d->type_karyawan_id == 2)
+                                                                <p style="margin: 0; padding: 0;">-
+                                                                    {{ $d->karyawan->nama ?? '-' }}
+
+                                                                </p>
+                                                            @endif
                                                         @endforeach
                                                     </div>
 

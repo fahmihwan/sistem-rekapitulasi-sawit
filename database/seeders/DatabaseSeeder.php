@@ -84,11 +84,11 @@ class DatabaseSeeder extends Seeder
         M_tarif::create(['tarif_perkg' => 20, 'type_karyawan_id' => 1]);
         M_tarif::create(['tarif_perkg' => 30, 'type_karyawan_id' => 2]);
 
-        // M_ops::create(['ops' => 50]);
-        // M_ops::create(['ops' => 120]);
+        M_ops::create(['ops' => 50]);
+        M_ops::create(['ops' => 120]);
 
-        // M_delivery_order_type::create(['delivery_order_type' => 'PLASMA']);
-        // M_delivery_order_type::create(['delivery_order_type' => 'LU (Lahan Usaha)']);
+        M_delivery_order_type::create(['delivery_order_type' => 'PLASMA']);
+        M_delivery_order_type::create(['delivery_order_type' => 'LU (Lahan Usaha)']);
 
 
         // $periode = null;

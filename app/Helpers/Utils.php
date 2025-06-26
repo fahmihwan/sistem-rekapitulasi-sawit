@@ -2,23 +2,49 @@
 
 namespace App\Helpers;
 
+use App\Models\M_jobs;
 use Illuminate\Support\Facades\DB;
 
 class Utils
 {
 
+    public static function getKaryawanWithJobs()
+    {
+        $karyawans = M_jobs::join('m_karyawans', 'm_jobs.karyawan_id', '=', 'm_karyawans.id')
+            ->join('m_type_karyawans', 'm_jobs.type_karyawan_id', '=', 'm_type_karyawans.id')
+            ->select(
+                'm_karyawans.id as id',
+                'm_jobs.type_karyawan_id',
+                'm_type_karyawans.type_karyawan',
+                'm_karyawans.nama'
+            )
+            ->get();
+        return $karyawans;
+    }
+
     public static function getTarifActive()
     {
-        $data = DB::select("SELECT mt.id, mt.type_karyawan, mt.tarif_perkg
+        // $data = DB::select("SELECT mt.id, mt.type_karyawan, mt.tarif_perkg
+        //                     FROM m_tarifs mt
+        //                     JOIN (
+        //                         SELECT MAX(id) AS max_id, type_karyawan
+        //                         FROM m_tarifs
+        //                         WHERE deleted_at IS NULL
+        //                         GROUP BY type_karyawan
+        //                     ) sub ON mt.id = sub.max_id AND mt.type_karyawan = sub.type_karyawan
+        //                     WHERE mt.deleted_at IS NULL");
+
+
+        $data = DB::select("SELECT mt.id, mtk.type_karyawan, mt.tarif_perkg
                             FROM m_tarifs mt
                             JOIN (
-                                SELECT MAX(id) AS max_id, type_karyawan
+                                SELECT MAX(id) AS max_id, type_karyawan_id
                                 FROM m_tarifs
                                 WHERE deleted_at IS NULL
-                                GROUP BY type_karyawan
-                            ) sub ON mt.id = sub.max_id AND mt.type_karyawan = sub.type_karyawan
+                                GROUP BY type_karyawan_id
+                            ) sub ON mt.id = sub.max_id AND mt.type_karyawan_id = sub.type_karyawan_id
+                            inner join m_type_karyawans mtk ON mtk.id = mt.id
                             WHERE mt.deleted_at IS NULL");
-
 
         $result = [
             'tarif_sopir_id' => null,
@@ -42,15 +68,26 @@ class Utils
 
     public static function getListTarif()
     {
-        $data = DB::select("SELECT mt.id, mt.type_karyawan, mt.tarif_perkg
+        // $data = DB::select("SELECT mt.id, mt.type_karyawan, mt.tarif_perkg
+        //             FROM m_tarifs mt
+        //             JOIN (
+        //                 SELECT MAX(id) AS max_id, type_karyawan
+        //                 FROM m_tarifs
+        //                 WHERE deleted_at IS NULL
+        //                 GROUP BY type_karyawan
+        //             ) sub ON mt.id = sub.max_id AND mt.type_karyawan = sub.type_karyawan
+        //             WHERE mt.deleted_at IS NULL");
+
+        $data = DB::select("SELECT mt.id, mtk.type_karyawan, mt.tarif_perkg
                     FROM m_tarifs mt
-                    JOIN (
-                        SELECT MAX(id) AS max_id, type_karyawan
+                    inner JOIN (
+                        SELECT MAX(id) AS max_id, type_karyawan_id
                         FROM m_tarifs
                         WHERE deleted_at IS NULL
-                        GROUP BY type_karyawan
-                    ) sub ON mt.id = sub.max_id AND mt.type_karyawan = sub.type_karyawan
-                    WHERE mt.deleted_at IS NULL");
+                        GROUP BY type_karyawan_id 
+                    ) sub ON mt.id = sub.max_id AND mt.type_karyawan_id = sub.type_karyawan_id
+					inner join m_type_karyawans mtk ON mtk.id = mt.id
+                    WHERE mt.deleted_at IS null");
 
         return $data;
     }

@@ -21,6 +21,11 @@ return new class extends Migration
             $table->unsignedBigInteger('type_karyawan_id');
             $table->foreign('type_karyawan_id')->references('id')->on('m_type_karyawans')->onDelete('cascade');
 
+            $table->unsignedBigInteger('tarif_id');
+            $table->foreign('tarif_id')->references('id')->on('m_tarifs')->onDelete('cascade');
+
+
+
             $table->softDeletes();
             $table->timestamps();
         });

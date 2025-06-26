@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Utils;
+use App\Models\M_jobs;
 use App\Models\M_karyawan;
 use App\Models\M_pabrik;
 use App\Models\Pembelian_tbs;
@@ -34,7 +35,7 @@ class PenjualanController extends Controller
             'periode' => fn($q) => $q->withTrashed()->select('id', 'periode', 'periode_mulai', 'periode_berakhir', 'stok'),
             'pabrik:id,nama_pabrik',
             'sopir:id,nama',
-            'tkbms:id,karyawan_id,penjualan_id',
+            'tkbms:id,karyawan_id,penjualan_id,type_karyawan_id',
             'tkbms.karyawan:id,nama'
         ])->where('do_type_id', $DO_TYPE['id']);
 
@@ -60,19 +61,18 @@ class PenjualanController extends Controller
             });
         }
 
-        // return $query->get();
-
         $query->orderBy('created_at', 'desc');
 
         $data = $query->paginate($perPage)->appends($request->query());
 
-        $karyawans = M_karyawan::all();
+        // return $data;
+
 
         return view('pages.penjualan_TBS.index', [
             'items' =>  $data,
             'title' => $DO_TYPE['text'],
             'menu' => $menu,
-            'karyawans' => $karyawans,
+            'karyawans' => Utils::getKaryawanWithJobs(),
             'data_list_tarif' => Utils::getListTarif(),
             'data_tarif' => Utils::getTarifActive(),
             'data_pabrik' => M_pabrik::all(),
@@ -122,12 +122,19 @@ class PenjualanController extends Controller
             ];
 
 
+
+
+
+
             $validated = $request->validate($rules);
+            // return $validated;
 
             $DO_TYPE =  Utils::mappingDO_type($menu);
             if ($DO_TYPE == null) {
                 return "NOT FOUND";
             };
+
+
             $validated['do_type_id'] = $DO_TYPE['id'];
 
             $penjualan =  Penjualan::create($validated);
@@ -138,9 +145,22 @@ class PenjualanController extends Controller
                 $data[] = [
                     'id' => (string) Str::uuid(),
                     'karyawan_id' => $d,
-                    'penjualan_id' => $penjualan->id
+                    'penjualan_id' => $penjualan->id,
+                    'type_karyawan_id' => 2, //TKBM
+                    'tarif_id' => $validated['tarif_tkbm_id'],
                 ];
             }
+
+            $data[] = [
+                'id' => (string) Str::uuid(),
+                'karyawan_id' => $validated['sopir_id'],
+                'penjualan_id' => $penjualan->id,
+                'type_karyawan_id' => 1, //SOPIR
+                'tarif_id' => $validated['tarif_sopir_id'],
+            ];
+
+            // return $data;
+
 
             Tkbm::insert($data);
             DB::commit();
@@ -196,9 +216,20 @@ class PenjualanController extends Controller
                 $data[] = [
                     'id' => (string) Str::uuid(),
                     'karyawan_id' => $d,
-                    'penjualan_id' => $penjualan->id
+                    'penjualan_id' => $penjualan->id,
+                    'type_karyawan_id' => 2, //TKBM
+                    'tarif_id' => $validated['tarif_tkbm_id'],
                 ];
             }
+
+            $data[] = [
+                'id' => (string) Str::uuid(),
+                'karyawan_id' => $validated['sopir_id'],
+                'penjualan_id' => $penjualan->id,
+                'type_karyawan_id' => 1, //SOPIR
+                'tarif_id' => $validated['tarif_sopir_id'],
+            ];
+
             Tkbm::insert($data);
             DB::commit();
             return redirect('/penjualan/tbs/' . $menu . '/view')->with('success', 'Transaksi berhasil disimpan.');

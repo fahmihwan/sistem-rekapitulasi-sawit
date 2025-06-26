@@ -13,6 +13,12 @@ class M_jobs extends BaseModel
 
     protected $guarded = ['id'];
 
+
+    public function m_karyawan()
+    {
+        return $this->belongsTo(M_karyawan::class, 'karyawan_id', 'id');
+    }
+
     public function type_karyawan()
     {
         return $this->belongsTo(M_type_karyawan::class, 'type_karyawan_id', 'id');
