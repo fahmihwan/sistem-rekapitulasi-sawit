@@ -44,7 +44,8 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Nama</th>
-                                        <th>Kategori</th>
+                                        <th>Pekerjaan Utama</th>
+                                        <th>List Pekerjaan</th>
                                         <th>Created at</th>
                                         <th>#</th>
                                     </tr>
@@ -54,12 +55,13 @@
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $item->nama }}</td>
-                                            <td>{{ $item->type_karyawan }}</td>
+                                            <td>{{ $item->main_type_karyawan->type_karyawan }}</td>
+                                            <td>
+                                                @foreach ($item->jobs as $d)
+                                                    <p>{{ $d->type_karyawan->type_karyawan }}</p>
+                                                @endforeach
+                                            </td>
                                             <td class="center">{{ $item->formatted_created_at }}</td>
-
-                                            {{-- <button type="submit"
-                                                class="font-medium text-red-600  hover:underline ml-3">Hapus</button> --}}
-
                                             <td class="center" style="display: flex">
                                                 <form id="form-delete-{{ $item->id }}" method="POST"
                                                     action="/master/karyawan/{{ $item->id }}">
@@ -78,8 +80,8 @@
                                                 <button type="button" class="btn btn-warning btn-circle btn-edit"
                                                     data-toggle="modal" data-target="#modalEdit"
                                                     data-id="{{ $item->id }}" data-nama="{{ $item->nama }}"
-                                                    data-typekaryawan="{{ $item->type_karyawan }}" {{-- data-bs-toggle="modal" --}}
-                                                    {{-- data-bs-target="#editModal" --}}>
+                                                    data-typekaryawan="{{ $item->jobs }}"
+                                                    data-maintypekaryawan="{{ $item->main_type_karyawan_id }}">
                                                     <i class="fa fa-edit"></i>
                                                 </button>
                                             </td>
@@ -123,13 +125,34 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Kategori</label>
-                                {{-- <div class="radio">
-                                <label>
-                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>Radio 1
-                                </label>
-                            </div> --}}
+                                <label>Pekerjaan Utama</label>
                                 <div class="radio">
+                                    <label>
+                                        <input type="radio" name="main_type_karyawan" id="optionsRadios1" value="1"
+                                            checked>SOPIR
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="main_type_karyawan" id="optionsRadios2" value="2"
+                                            checked>TKBM
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>List Pekerjaan </label>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="type_karyawan[]" value="1">SOPIR
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="type_karyawan[]" value="2">TKBM
+                                    </label>
+                                </div>
+                                {{-- <div class="radio">
                                     <label>
                                         <input type="radio" name="type_karyawan" id="optionsRadios2" value="TKBM">TKBM
                                     </label>
@@ -138,7 +161,7 @@
                                     <label>
                                         <input type="radio" name="type_karyawan" id="optionsRadios3" value="SOPIR">Sopir
                                     </label>
-                                </div>
+                                </div> --}}
                                 {{-- <select id="status" name="status" required>
                                 <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                                 <option value="nonaktif" {{ old('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
@@ -167,7 +190,8 @@
                 <div class="modal-content">
                     <form role="form" method="POST" id="form-edit">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <button type="button" class="close" data-dismiss="modal"
+                                aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="myModalEdit">Ubah Karyawan</h4>
                         </div>
                         <div class="modal-body">
@@ -175,26 +199,40 @@
 
                             @method('PUT')
                             @csrf
-                            <div class="form-group "> {{-- has-success, has-warning, has-error --}}
+                            <div class="form-group ">
                                 <label>Nama</label>
                                 <input class="form-control" name="nama" id="modal-nama">
-                                {{-- <p class="help-block">Example block-level help text here.</p> --}}
                             </div>
 
                             <div class="form-group">
-                                <label>Kategori</label>
+                                <label>Pekerjaan Utama</label>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="type_karyawan" id="modal-type1" value="TKBM">TKBM
+                                        <input type="radio" name="main_type_karyawan" id="option-edit-1"
+                                            value="1">SOPIR
                                     </label>
                                 </div>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="type_karyawan" id="modal-type2" value="SOPIR">Sopir
+                                        <input type="radio" name="main_type_karyawan" id="option-edit-2"
+                                            value="2">TKBM
                                     </label>
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label>List Pekerjaan </label>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="type_karyawan[]" value="1">SOPIR
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="type_karyawan[]" value="2">TKBM
+                                    </label>
+                                </div>
+                            </div>
 
                         </div>
                         <div class="modal-footer">
@@ -219,15 +257,41 @@
     <script>
         $(document).ready(function() {
 
+
+
+            // <button type="button" class="btn btn-warning btn-circle btn-edit"
+            //                                         data-toggle="modal" data-target="#modalEdit"
+            //                                         data-id="{{ $item->id }}" data-nama="{{ $item->nama }}"
+            //                                         data-typekaryawan="{{ $item->jobs }}" {{-- data-bs-toggle="modal" --}}
+            //                                         data-maintypekaryawan="{{ $item->main_type_karyawan_id }}"
+            //                                         {{-- data-bs-target="#editModal" --}}>
+            //                                         <i class="fa fa-edit"></i>
+            //                                     </button>
+
             $('.btn-edit').on('click', function() {
                 var userId = $(this).data('id');
                 var nama = $(this).data('nama');
                 var type = $(this).data('typekaryawan');
+                var maintype = $(this).data('maintypekaryawan');
+
+                console.log(userId);
+                console.log(nama);
+                console.log(type);
+                console.log(maintype);
+
+
 
                 $('#form-edit').attr('action', '/master/karyawan/' + userId);
-                // Isi field
+
                 $('#modal-nama').val(nama);
-                $("input[name='type_karyawan'][value='" + type + "']").prop('checked', true);
+                $("input[name='main_type_karyawan'][value='" + maintype + "']").prop('checked', true);
+
+                type.forEach(e => {
+                    let val = e?.type_karyawan_id
+                    $("input[name='type_karyawan[]'][value='" + val + "']").prop('checked', true);
+                });
+
+
             });
         });
     </script>
