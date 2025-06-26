@@ -12,4 +12,9 @@ class M_type_karyawan extends BaseModel
     use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
+
+    public function jobs()
+    {
+        return $this->hasMany(M_jobs::class, 'type_karyawan_id', 'id');
+    }
 }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('m_type_karyawans', function (Blueprint $table) {
             $table->id();
             $table->string('type_karyawan', 20);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

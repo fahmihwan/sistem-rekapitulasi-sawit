@@ -18,7 +18,8 @@ class M_karyawanFactory extends Factory
     {
         return [
             'nama' => $this->faker->name(),
-            'type_karyawan' => 'TKBM'
+            'main_type_karyawan_id' => 2
+            // 'type_karyawan_id' => 2
             // $this->faker->randomElement(['TKBM', 'SOPIR']),
         ];
     }

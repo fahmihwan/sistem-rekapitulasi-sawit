@@ -18,4 +18,14 @@ class M_karyawan extends BaseModel
     {
         return $this->hasMany(Penjualan::class, 'sopir_id');
     }
+
+    public function jobs()
+    {
+        return $this->hasMany(M_jobs::class, 'karyawan_id', 'id');
+    }
+
+    public function main_type_karyawan()
+    {
+        return $this->belongsTo(M_type_karyawan::class, 'main_type_karyawan_id', 'id');
+    }
 }

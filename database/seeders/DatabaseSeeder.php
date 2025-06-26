@@ -3,10 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\M_delivery_order_type;
+use App\Models\M_jobs;
 use App\Models\M_karyawan;
 use App\Models\M_ops;
 use App\Models\M_pabrik;
 use App\Models\M_tarif;
+use App\Models\M_type_karyawan;
 use App\Models\M_type_tbs;
 use App\Models\Pembelian_tbs;
 use App\Models\Penjualan;
@@ -32,23 +34,46 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('qweqwe123')
         ]);
 
-        // M_karyawan::create([
-        //     'nama' => 'Ragil',
-        //     'type_karyawan' => 'SOPIR'
-        // ]);
-        // M_karyawan::create([
-        //     'nama' => 'Dimas',
-        //     'type_karyawan' => 'SOPIR'
-        // ]);
-        // M_karyawan::create([
-        //     'nama' => 'FAHMI',
-        //     'type_karyawan' => 'TKBM'
-        // ]);
+        M_type_karyawan::create([
+            'type_karyawan' => "SOPIR"
+        ]);
+
+        M_type_karyawan::create([
+            'type_karyawan' => "TKBM"
+        ]);
+
+        M_karyawan::create([
+            'nama' => 'Ragil',
+            'main_type_karyawan_id' => 1
+        ]);
+        M_karyawan::create([
+            'nama' => 'Dimas',
+            'main_type_karyawan_id' => 1
+        ]);
+        M_karyawan::create([
+            'nama' => 'FAHMI',
+            'main_type_karyawan_id' => 2
+        ]);
 
 
-        // M_karyawan::factory(5)->create();
+        M_karyawan::factory(5)->create();
 
-        // M_pabrik::factory(3)->create();
+        M_pabrik::factory(3)->create();
+
+        for ($i = 1; $i <= 8; $i++) {
+
+            $karyawan_id = $i;
+            $type_karyawan_id = 2;
+            if ($karyawan_id < 3) {
+                $type_karyawan_id = 1;
+            }
+
+            M_jobs::create([
+                'karyawan_id'  => $karyawan_id,
+                'type_karyawan_id' => $type_karyawan_id
+            ]);
+        }
+
 
 
         M_type_tbs::create(['type_tbs' => 'TBS RUMAH']);
@@ -56,8 +81,8 @@ class DatabaseSeeder extends Seeder
         M_type_tbs::create(['type_tbs' => 'TBS RAM']);
 
 
-        // M_tarif::create(['tarif_perkg' => 20, 'type_karyawan' => 'SOPIR']);
-        // M_tarif::create(['tarif_perkg' => 30, 'type_karyawan' => 'TKBM']);
+        M_tarif::create(['tarif_perkg' => 20, 'type_karyawan_id' => 1]);
+        M_tarif::create(['tarif_perkg' => 30, 'type_karyawan_id' => 2]);
 
         // M_ops::create(['ops' => 50]);
         // M_ops::create(['ops' => 120]);

@@ -157,12 +157,12 @@
                                 <label>Kategori</label>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="type_karyawan" id="modal-type1" value="TKBM">TKBM
+                                        <input type="radio" name="type_karyawan_id" id="modal-type1" value="2">TKBM
                                     </label>
                                 </div>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="type_karyawan" id="modal-type2" value="SOPIR">Sopir
+                                        <input type="radio" name="type_karyawan_id" id="modal-type2" value="1">Sopir
                                     </label>
                                 </div>
                             </div>
@@ -207,12 +207,14 @@
                                 <label>Kategori</label>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="type_karyawan" id="modal-type1" value="TKBM">TKBM
+                                        <input type="radio" name="type_karyawan_id" id="modal-type1"
+                                            value="1">TKBM
                                     </label>
                                 </div>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="type_karyawan" id="modal-type2" value="SOPIR">Sopir
+                                        <input type="radio" name="type_karyawan_id" id="modal-type2"
+                                            value="2">Sopir
                                     </label>
                                 </div>
                             </div>

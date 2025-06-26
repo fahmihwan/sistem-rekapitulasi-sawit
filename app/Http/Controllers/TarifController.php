@@ -14,15 +14,28 @@ class TarifController extends Controller
     public function index()
     {
 
-        $rows = DB::select("SELECT mt.id, mt.tarif_perkg, mt.type_karyawan, mt.created_at, is_active_tarif
-                            FROM m_tarifs mt
-                            left JOIN (
-                                SELECT mt2.type_karyawan, MAX(mt2.id) AS max_id, true as is_active_tarif
-                                FROM m_tarifs mt2 where mt2.deleted_at is null 
-                                GROUP BY type_karyawan
-                            ) sub ON mt.type_karyawan = sub.type_karyawan AND mt.id = sub.max_id
-                            WHERE mt.deleted_at IS NULL
-                            order by mt.created_at desc");
+        // $rows = DB::select("SELECT mt.id, mt.tarif_perkg, mt.type_karyawan, mt.created_at, is_active_tarif
+        //                     FROM m_tarifs mt
+        //                     left JOIN (
+        //                         SELECT mt2.type_karyawan, MAX(mt2.id) AS max_id, true as is_active_tarif
+        //                         FROM m_tarifs mt2 where mt2.deleted_at is null 
+        //                         GROUP BY type_karyawan
+        //                     ) sub ON mt.type_karyawan = sub.type_karyawan AND mt.id = sub.max_id
+        //                     WHERE mt.deleted_at IS NULL
+        //                     order by mt.created_at desc");
+
+        $rows = DB::select("SELECT mt.id, mt.tarif_perkg, mtk.type_karyawan, mt.type_karyawan_id, x.is_active_tarif, mt.created_at  
+							from m_tarifs mt 
+							left join (
+	                            SELECT mt2.type_karyawan_id, mtk2.type_karyawan, MAX(mt2.id) AS max_id, true as is_active_tarif
+	                                FROM m_tarifs mt2 
+	                                inner join m_type_karyawans mtk2 ON mtk2.id = mt2.type_karyawan_id
+	                            where mt2.deleted_at is null 
+	                            GROUP BY mtk2.type_karyawan, mt2.type_karyawan_id
+							) as x on mt.id  = x.max_id
+							inner join m_type_karyawans mtk ON mtk.id = mt.type_karyawan_id
+ 							where mt.deleted_at is null
+ 							order by mt.created_at desc");
 
         $data = collect($rows)->map(function ($item) {
             $item->formatted_created_at = Carbon::parse($item->created_at)
@@ -30,6 +43,7 @@ class TarifController extends Controller
                 ->translatedFormat('l, d-F-Y H:i') . " WIB";
             return $item;
         });
+        // return $data;
 
         return view('pages.master_tarif.index', [
             'items' =>  $data
@@ -43,7 +57,7 @@ class TarifController extends Controller
 
         $validated = $request->validate([
             'tarif_perkg' => 'required|integer',
-            'type_karyawan' => 'required|max:50',
+            'type_karyawan_id' => 'required|integer',
         ]);
 
         M_tarif::create($validated);
@@ -58,7 +72,7 @@ class TarifController extends Controller
     {
         $validated = $request->validate([
             'tarif_perkg' => 'required|integer',
-            'type_karyawan' => 'required|max:50',
+            'type_karyawan_id' => 'required|integer',
         ]);
 
         $karyawan =  M_tarif::findOrFail($id);
