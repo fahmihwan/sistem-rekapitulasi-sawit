@@ -58,7 +58,13 @@ class DatabaseSeeder extends Seeder
 
         M_karyawan::factory(5)->create();
 
-        M_pabrik::factory(3)->create();
+        // M_pabrik::factory(3)->create();
+        M_pabrik::create([
+            'nama_pabrik' => 'AGRO'
+        ]);
+        M_pabrik::create([
+            'nama_pabrik' => 'PAJ'
+        ]);
 
         for ($i = 1; $i <= 8; $i++) {
 
@@ -73,6 +79,11 @@ class DatabaseSeeder extends Seeder
                 'type_karyawan_id' => $type_karyawan_id
             ]);
         }
+
+        M_jobs::create([
+            'karyawan_id'  => 1,
+            'type_karyawan_id' => 2
+        ]);
 
 
 
@@ -89,6 +100,17 @@ class DatabaseSeeder extends Seeder
 
         M_delivery_order_type::create(['delivery_order_type' => 'PLASMA']);
         M_delivery_order_type::create(['delivery_order_type' => 'LU (Lahan Usaha)']);
+
+
+
+        $periode = Periode::create([
+            'id' => Str::uuid(),
+            'periode' =>  1,
+            'periode_mulai' => '2025-06-01',
+            'periode_berakhir' => null,
+            'stok' => 0,
+            'ops_id' => 2
+        ]);
 
 
         // $periode = null;

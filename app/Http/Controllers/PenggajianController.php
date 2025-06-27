@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Utils;
 use App\Models\M_karyawan;
+use App\Models\M_pabrik;
 use App\Models\Penggajian;
 use App\Models\Penggajian_tkbm;
 use App\Models\Penjualan;
@@ -85,55 +86,119 @@ class PenggajianController extends Controller
     public function detail_gaji($penggajianid, $karyawanid)
     {
 
-        $karyawan = M_karyawan::findOrFail($karyawanid);
+        $karyawan = M_karyawan::with(['main_type_karyawan'])->findOrFail($karyawanid);
 
-        $items =  DB::select("SELECT 
-                                p.id,
-                                p.tanggal_penjualan,
-                                p.netto,
-                                mt.tarif_perkg,
-                                STRING_AGG(mk.nama, '~') AS tkbms,
-                                count(pt.id) as total,
-                                CASE 
-                                    WHEN SUM(CASE WHEN mk.id = ? THEN 1 ELSE 0 END) = 0 THEN true
-                                ELSE false
-                                END AS alpha,
-                                CASE 
-                                    WHEN SUM(CASE WHEN mk.id = ? THEN 1 ELSE 0 END) != 0 THEN (p.netto * mt.tarif_perkg)/count(pt.id)
-                                ELSE 0
-                                    END AS jumlah_uang,
-                                CASE 
-                                    WHEN SUM(CASE WHEN mk.id = ? THEN 1 ELSE 0 END) != 0 
-                                    THEN CEIL((p.netto * mt.tarif_perkg) / COUNT(pt.id))
-                                    ELSE 0	
-                                END AS jumlah_uang_bulat
-                            from penjualans p 
-                            inner JOIN penggajian_tkbms pt ON pt.penjualan_id = p.id
-                            inner join penggajians ps on ps.id = pt.penggajian_id 
-                            INNER JOIN m_karyawans mk ON mk.id = pt.karyawan_id
-                            inner join m_tarifs mt on mt.id = p.tarif_tkbm_id 	
-                            where  
-                                ps.id =?
-                                AND p.deleted_at is null
-                                AND pt.deleted_at is null
-                            GROUP BY p.id, p.created_at,mt.tarif_perkg
-                            ", [$karyawanid, $karyawanid, $karyawanid, $penggajianid]);
+        // return $karyawan;
+
+        // $items =  DB::select("SELECT 
+        //                         p.id,
+        //                         p.tanggal_penjualan,
+        //                         p.netto,
+        //                         mt.tarif_perkg,
+        //                         STRING_AGG(mk.nama, '~') AS tkbms,
+        //                         count(pt.id) as total,
+        //                         CASE 
+        //                             WHEN SUM(CASE WHEN mk.id = ? THEN 1 ELSE 0 END) = 0 THEN true
+        //                         ELSE false
+        //                         END AS alpha,
+        //                         CASE 
+        //                             WHEN SUM(CASE WHEN mk.id = ? THEN 1 ELSE 0 END) != 0 THEN (p.netto * mt.tarif_perkg)/count(pt.id)
+        //                         ELSE 0
+        //                             END AS jumlah_uang,
+        //                         CASE 
+        //                             WHEN SUM(CASE WHEN mk.id = ? THEN 1 ELSE 0 END) != 0 
+        //                             THEN CEIL((p.netto * mt.tarif_perkg) / COUNT(pt.id))
+        //                             ELSE 0	
+        //                         END AS jumlah_uang_bulat
+        //                     from penjualans p 
+        //                     inner JOIN penggajian_tkbms pt ON pt.penjualan_id = p.id
+        //                     inner join penggajians ps on ps.id = pt.penggajian_id 
+        //                     INNER JOIN m_karyawans mk ON mk.id = pt.karyawan_id
+        //                     inner join m_tarifs mt on mt.id = p.tarif_tkbm_id 	
+        //                     where  
+        //                         ps.id =?
+        //                         AND p.deleted_at is null
+        //                         AND pt.deleted_at is null
+        //                     GROUP BY p.id, p.created_at,mt.tarif_perkg
+        //                     ", [$karyawanid, $karyawanid, $karyawanid, $penggajianid]);
+
+
+        // V2 - BUG jumlah uang tidak 0 wloupun dia ga masuk
+        // $items = DB::select("SELECT pt.penjualan_id,p.tanggal_penjualan, p.netto, pt.tarif_perkg, pt.tkbm_agg as tkbms, pt.total, pt.jumlah_uang,pt.main_type_karyawan_id,
+        //                         CASE
+        //                             WHEN pt.main_type_karyawan_id = 2 THEN 
+        //                                 SUM(CASE WHEN pt.karyawan_id = ? THEN 1 ELSE 0 END) = 0
+        //                             ELSE null
+        //                         END AS is_tkbm_alpha
+        //                         from penggajian_tkbms pt
+        //                             inner join penjualans p on p.id = pt.penjualan_id 
+        //                             inner join m_karyawans mk on pt.karyawan_id = mk.id
+        //                             where pt.penggajian_id = ? 
+        //                         AND p.deleted_at is null AND pt.deleted_at is null 
+        //                         group by pt.penjualan_id,p.tanggal_penjualan, p.netto, pt.tarif_perkg, pt.tkbm_agg, pt.total, pt.jumlah_uang, pt.main_type_karyawan_id", [$karyawanid, $penggajianid]);
+
+        $items = DB::select("SELECT 
+			x.penjualan_id,x.tanggal_penjualan, x.netto, x.tarif_perkg, x.tkbms, x.total, mp.nama_pabrik,
+            x.is_tkbm_alpha,
+			case 
+				when x.is_tkbm_alpha is null then x.jumlah_uang
+				when x.is_tkbm_alpha = true then 0
+				when x.is_tkbm_alpha = false then x.jumlah_uang
+			end as jumlah_uang,			
+			x.main_type_karyawan_id, x.is_tkbm_alpha
+		from (
+			select pt.penjualan_id,p.tanggal_penjualan, p.netto, pt.tarif_perkg, pt.tkbm_agg as tkbms, pt.total, pt.jumlah_uang,pt.main_type_karyawan_id, pt.pabrik_id,
+			CASE
+			    WHEN pt.main_type_karyawan_id = 2 THEN 
+			        SUM(CASE WHEN pt.karyawan_id = :karyawanid THEN 1 ELSE 0 END) = 0
+			    ELSE null
+			END AS is_tkbm_alpha
+			from penggajian_tkbms pt
+				inner join penjualans p on p.id = pt.penjualan_id 
+				inner join m_karyawans mk on pt.karyawan_id = mk.id
+				where pt.penggajian_id = :penggajianid
+			AND p.deleted_at is null AND pt.deleted_at is null 
+            and (pt.main_type_karyawan_id = 1 AND pt.karyawan_id = :karyawanid)OR pt.main_type_karyawan_id = 2
+			group by pt.penjualan_id,p.tanggal_penjualan, p.netto, pt.tarif_perkg, pt.tkbm_agg, pt.total, pt.jumlah_uang, pt.main_type_karyawan_id,pt.pabrik_id
+		) as x
+        inner join m_pabriks mp on x.pabrik_id = mp.id
+        where x.main_type_karyawan_id = :main_type_karyawan_id", [
+            'karyawanid' => $karyawanid,
+            'penggajianid' => $penggajianid,
+            'main_type_karyawan_id' => $karyawan->main_type_karyawan_id
+        ]);
 
 
 
+        // return $items;
 
+
+        // $mapItems = collect($items)->filter(function ($f) use ($karyawan) {
+        //     return $f->main_type_karyawan_id == $karyawan->main_type_karyawan_id;
+        // })->map(function ($item) {
+        //     $item = (array) $item;
+        //     $item['tkbms'] = explode('~', $item['tkbms']);
+        //     $tanggal = Carbon::parse($item['tanggal_penjualan']);
+        //     $item['created_at_formatted'] = $tanggal->translatedFormat('l, d-F-Y H:i') . ' WIB';
+
+        //     $item['tarif_perkg_rp'] = 'Rp ' . number_format($item['tarif_perkg'], 0, ',', '.');
+        //     $item['jumlah_uang_rp'] = 'Rp ' . number_format($item['jumlah_uang'], 0, ',', '.');
+        //     return $item;
+        // });
 
         $mapItems = collect($items)->map(function ($item) {
             $item = (array) $item;
             $item['tkbms'] = explode('~', $item['tkbms']);
             $tanggal = Carbon::parse($item['tanggal_penjualan']);
-            $item['created_at_formatted'] = $tanggal->translatedFormat('l, d-F-Y H:i') . ' WIB';
+            $item['created_at_formatted'] = $tanggal->translatedFormat('l, d-F-Y');
 
             $item['tarif_perkg_rp'] = 'Rp ' . number_format($item['tarif_perkg'], 0, ',', '.');
             $item['jumlah_uang_rp'] = 'Rp ' . number_format($item['jumlah_uang'], 0, ',', '.');
-            $item['jumlah_uang_bulat_rp'] = 'Rp ' . number_format($item['jumlah_uang_bulat'], 0, ',', '.');
             return $item;
         });
+
+
+        // return $mapItems;
 
 
 
@@ -143,13 +208,19 @@ class PenggajianController extends Controller
 
 
         $colspanTkbm = $mapItems->max('total');
+        $pabrik = M_pabrik::all();
+
+
 
         return view('pages.penggajian.detail', [
             'items' => $mapItems,
             'colspanTKBM' => $colspanTkbm,
+            'colspanPABRIK' => count($pabrik),
+            'pabriks' => $pabrik,
             'karyawan' => $karyawan,
             'totalNetto' => $totalNetto,
-            'totalUang' => $totalUang
+            'totalUang' => $totalUang,
+
         ]);
     }
 
@@ -162,7 +233,7 @@ class PenggajianController extends Controller
                     pt.id,
                     p.tanggal_penjualan,
                     mk.nama,
-                    mk.type_karyawan,
+                    -- mk.type_karyawan,
                     p.netto,
                     pt.tarif_perkg as tarif_perkg_rp,
                     pt.tkbm_agg,
@@ -212,44 +283,64 @@ class PenggajianController extends Controller
             'periode_akhir' => 'required|date',
         ]);
 
-
-
-
         try {
             DB::beginTransaction();
 
 
-            $copy_tkbm = DB::select("SELECT t.id as tkbm_id, 
-                                    t.karyawan_id,
-                                    mk2.nama, mk2.type_karyawan, 
-                                    x.id as penjualan_id,
-                                    x.tanggal_penjualan, x.netto, 
-                                    x.tarif_perkg, 
-                                    x.tkbm_agg, 
-                                    x.total, 
-                                    x.jumlah_uang
-                                from tkbms t
-                                inner join  (
-                                        select 
-                                        p.id,
-                                        p.tanggal_penjualan,
-                                        p.netto,
-                                        mt.tarif_perkg,
-                                        string_agg(mk.nama,'~') as tkbm_agg,
-                                        count(t.id) as total,
-                                        p.netto * mt.tarif_perkg / count(t.id) as jumlah_uang
-                                    from penjualans p 
-                                        inner join tkbms t on p.id = t.penjualan_id 
-                                        inner join m_karyawans mk on mk.id = t.karyawan_id 
-                                        inner join m_tarifs mt on mt.id = p.tarif_tkbm_id 
-                                        where p.tanggal_penjualan between ? and ?
-                                            and t.deleted_at is null
-                                            and p.deleted_at is null
-                                    group by p.id, p.tanggal_penjualan, mt.tarif_perkg
-                                    order by p.tanggal_penjualan desc
-                                ) as x on x.id = t.penjualan_id 
-                                inner join m_karyawans mk2 on mk2.id = t.karyawan_id 
-                                where t.deleted_at is null", [$validated['periode_awal'], $validated['periode_akhir']]);
+            // $copy_tkbm = DB::select("SELECT t.id as tkbm_id, 
+            //                         t.karyawan_id,
+            //                         mk2.nama, mk2.type_karyawan, 
+            //                         x.id as penjualan_id,
+            //                         x.tanggal_penjualan, x.netto, 
+            //                         x.tarif_perkg, 
+            //                         x.tkbm_agg, 
+            //                         x.total, 
+            //                         x.jumlah_uang
+            //                     from tkbms t
+            //                     inner join  (
+            //                             select 
+            //                             p.id,
+            //                             p.tanggal_penjualan,
+            //                             p.netto,
+            //                             mt.tarif_perkg,
+            //                             string_agg(mk.nama,'~') as tkbm_agg,
+            //                             count(t.id) as total,
+            //                             p.netto * mt.tarif_perkg / count(t.id) as jumlah_uang
+            //                         from penjualans p 
+            //                             inner join tkbms t on p.id = t.penjualan_id 
+            //                             inner join m_karyawans mk on mk.id = t.karyawan_id 
+            //                             inner join m_tarifs mt on mt.id = p.tarif_tkbm_id 
+            //                             where p.tanggal_penjualan between ? and ?
+            //                                 and t.deleted_at is null
+            //                                 and p.deleted_at is null
+            //                         group by p.id, p.tanggal_penjualan, mt.tarif_perkg
+            //                         order by p.tanggal_penjualan desc
+            //                     ) as x on x.id = t.penjualan_id 
+            //                     inner join m_karyawans mk2 on mk2.id = t.karyawan_id 
+            //                     where t.deleted_at is null", [$validated['periode_awal'], $validated['periode_akhir']]);
+
+            $copy_tkbm = DB::select("SELECT t2.id as tkbm_id, t2.karyawan_id, mk.main_type_karyawan_id, y.* from tkbms t2
+			inner join m_karyawans mk on t2.karyawan_id = mk.id 
+		    inner join (
+			select 
+               		x.penjualan_id,x.tanggal_penjualan,x.tarif_perkg,x.type_karyawan_id,x.netto,
+               		case 
+               			when x.type_karyawan_id = 2 then x.netto * x.tarif_perkg / count(x.tkbm_id) 
+               			when x.type_karyawan_id = 1 then x.netto * x.tarif_perkg 
+               		end as jumlah_uang,
+               		case when x.type_karyawan_id = 2 then count(x.tkbm_id) else 0 end as total,
+               		case when x.type_karyawan_id = 2 then string_agg(x.nama, '~') else null end as tkbm_agg,
+               		x.pabrik_id
+               from (
+	               select p.id as penjualan_id, p.tanggal_penjualan,p.netto,mt.tarif_perkg,t.type_karyawan_id,mk.nama,t.id as tkbm_id,p.pabrik_id
+					from penjualans p 
+						inner join tkbms t on p.id = t.penjualan_id 
+						inner join m_karyawans mk on mk.id = t.karyawan_id 
+						inner join m_tarifs mt on mt.id  = t.tarif_id 
+					where p.tanggal_penjualan between ? and ? and p.deleted_at is null
+               ) as x
+               group by x.penjualan_id, x.tanggal_penjualan, x.tarif_perkg, x.type_karyawan_id, x.netto,x.pabrik_id
+		    ) as y on y.type_karyawan_id = t2.type_karyawan_id and t2.penjualan_id = y.penjualan_id", [$validated['periode_awal'], $validated['periode_akhir']]);
 
             if (count($copy_tkbm) == 0) {
                 return redirect()->back()->withErrors("data pekerja tkbm tidak ditemukan pada periode tersebut ");
@@ -264,22 +355,27 @@ class PenggajianController extends Controller
                     'penggajian_id' => $penggajian->id,
                     'tkbm_id' => $value->tkbm_id,
                     'karyawan_id' => $value->karyawan_id,
+                    'main_type_karyawan_id' => $value->main_type_karyawan_id,
                     'penjualan_id' => $value->penjualan_id,
+                    'type_karyawan_id' => $value->type_karyawan_id,
                     'tarif_perkg' => $value->tarif_perkg,
                     'tkbm_agg' => $value->tkbm_agg,
                     'total' => $value->total,
                     'jumlah_uang' => $value->jumlah_uang,
                     'is_gaji_dibayarkan' => false,
                     'is_gaji_perhari_dibayarkan' => false,
+                    'pabrik_id' => $value->pabrik_id,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
             }
 
+            // return $arr;
             Penggajian_tkbm::insert($arr);
             DB::commit();
             return redirect()->back();
         } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect()->back()->withErrors($th->getMessage());
         }
     }

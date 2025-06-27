@@ -50,7 +50,7 @@
                             </tr>
                             <tr>
                                 <td>Posisi</td>
-                                <td style="padding-left: 30px"> : {{ $karyawan->type_karyawan }}</td>
+                                <td style="padding-left: 30px"> : {{ $karyawan->main_type_karyawan->type_karyawan }}</td>
                             </tr>
                         </table>
                     </div>
@@ -138,27 +138,76 @@
                             <table class="table table-striped table-bordered table-hover">
                                 <thead>
                                     <tr style="text-align: center">
-                                        <th style="text-align: center">No</th>
-                                        <th style="text-align: center">Tanggal</th>
-                                        <th style="text-align: center">Tonase</th>
-                                        <th style="text-align: center">Per Kg</th>
-                                        <th style="text-align: center" colspan="{{ $colspanTKBM }}">TKBM </th>
-                                        <th style="text-align: center">Total</th>
-                                        <th style="text-align: center">Jumlah Uang</th>
+                                        <th style="text-align: center" rowspan="2">No</th>
+                                        <th style="text-align: center" rowspan="2">Tanggal</th>
+                                        <th style="text-align: center" rowspan="2">Tonase</th>
+                                        <th style="text-align: center" rowspan="2">Per Kg</th>
+                                        @if ($karyawan->main_type_karyawan_id == 2)
+                                            <th style="text-align: center" colspan="{{ $colspanTKBM }}" rowspan="2">
+                                                TKBM </th>
+                                            <th style="text-align: center" rowspan="2">Total</th>
+                                        @endif
+
+                                        @if ($karyawan->main_type_karyawan_id == 1)
+                                            <th style="text-align: center" colspan={{ count($pabriks) }}>PKS</th>
+                                            @if ($colspanTKBM > 0)
+                                                <th style="text-align: center" rowspan="2">TKBM</th>
+                                            @endif
+                                        @endif
+
+
+                                        <th style="text-align: center" rowspan="2">Jumlah Uang</th>
+                                    </tr>
+                                    <tr>
+                                        @if ($karyawan->main_type_karyawan_id == 1)
+                                            @foreach ($pabriks as $p)
+                                                <th style="text-align: center">{{ $p->nama_pabrik }}</th>
+                                            @endforeach
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($items as $item)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td style="{{ $item['alpha'] ? 'background-color: red; color:white' : '' }}">
+                                            <td
+                                                style="{{ $item['is_tkbm_alpha'] ? 'background-color: red; color:white' : '' }}">
                                                 {{ $item['created_at_formatted'] }}</td>
                                             <td>{{ $item['netto'] }} kg</td>
                                             <td>{{ $item['tarif_perkg_rp'] }}</td>
-                                            @for ($i = 0; $i < $colspanTKBM; $i++)
-                                                <td>{{ isset($item['tkbms'][$i]) ? $item['tkbms'][$i] : '-' }}</td>
-                                            @endfor
-                                            <td>{{ $item['total'] }}</td>
+                                            @if ($karyawan->main_type_karyawan_id == 2)
+                                                @for ($i = 0; $i < count($item['tkbms']); $i++)
+                                                    <td>{{ isset($item['tkbms'][$i]) ? $item['tkbms'][$i] : '-' }}</td>
+                                                @endfor
+                                                <td>{{ $item['total'] }}</td>
+                                            @endif
+                                            @if ($karyawan->main_type_karyawan_id == 1)
+                                                @foreach ($pabriks as $p)
+                                                    @if ($item['nama_pabrik'] == $p['nama_pabrik'])
+                                                        <td style="text-align: center">
+                                                            <i class="fa fa-fw" aria-hidden="true" style="font-size: 25px"
+                                                                title="Copy to use check-square">&#xf14a</i>
+                                                        </td>
+                                                    @else
+                                                        <td style="text-align: center">
+                                                            <i class="fa fa-fw" aria-hidden="true" style="font-size: 25px"
+                                                                title="Copy to use square-o">&#xf096</i>
+                                                        </td>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+
+
+                                            @if ($karyawan->main_type_karyawan_id == 1)
+                                                @if ($colspanTKBM > 0)
+                                                    <td>
+                                                        @for ($i = 0; $i < count($item['tkbms']); $i++)
+                                                            <span>- {{ $item['tkbms'][$i] }}</span><br>
+                                                        @endfor
+                                                    </td>
+                                                @endif
+                                            @endif
+
                                             <td>{{ $item['jumlah_uang_rp'] }}</td>
                                         </tr>
                                     @endforeach
@@ -169,7 +218,17 @@
                                         <th></th>
                                         <th>{{ $totalNetto }} Kg</th>
                                         <th></th>
-                                        <th colspan="{{ $colspanTKBM + 1 }}" style="text-align: center">Total Uang</th>
+                                        @if ($karyawan->main_type_karyawan_id == 2)
+                                            <th colspan="{{ $colspanTKBM + 1 }}" style="text-align: center">Total Uang</th>
+                                        @endif
+                                        @if ($karyawan->main_type_karyawan_id == 1)
+                                            <th style="text-align: center" colspan={{ count($pabriks) }}></th>
+                                        @endif
+                                        @if ($karyawan->main_type_karyawan_id == 1)
+                                            @if ($colspanTKBM > 0)
+                                                <th></th>
+                                            @endif
+                                        @endif
                                         <th>{{ $totalUang }}</th>
 
                                     </tr>

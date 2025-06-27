@@ -22,6 +22,9 @@ return new class extends Migration
             $table->unsignedBigInteger('karyawan_id');
             $table->foreign('karyawan_id')->references('id')->on('m_karyawans')->onDelete('cascade');
 
+            $table->unsignedBigInteger('main_type_karyawan_id');
+            $table->foreign('main_type_karyawan_id')->references('id')->on('m_type_karyawans')->onDelete('cascade');
+
             $table->uuid('penjualan_id')->nullable();
             $table->foreign('penjualan_id')->references('id')->on('penjualans')->onDelete('cascade');
 
@@ -29,15 +32,16 @@ return new class extends Migration
             $table->unsignedBigInteger('type_karyawan_id');
             $table->foreign('type_karyawan_id')->references('id')->on('m_type_karyawans')->onDelete('cascade');
 
-            // $table->date('tanggal_penjualan')->nullable();
 
-            // $table->integer('netto')->nullable();
             $table->integer('tarif_perkg')->nullable();
             $table->string('tkbm_agg', 300)->nullable();
             $table->integer('total')->nullable();
             $table->integer('jumlah_uang')->nullable();
             $table->boolean('is_gaji_dibayarkan')->default(false);
             $table->boolean('is_gaji_perhari_dibayarkan')->default(false);
+
+            $table->unsignedBigInteger('pabrik_id');
+            $table->foreign('pabrik_id')->references('id')->on('m_pabriks')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });
