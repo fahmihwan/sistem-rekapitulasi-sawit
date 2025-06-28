@@ -18,7 +18,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">Detail Slip Gaji</h1>
+                <h1 class="page-header">Detail Slip Gaji </h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -176,7 +176,7 @@
                                             <td>{{ $item['netto'] }} kg</td>
                                             <td>{{ $item['tarif_perkg_rp'] }}</td>
                                             @if ($karyawan->main_type_karyawan_id == 2)
-                                                @for ($i = 0; $i < count($item['tkbms']); $i++)
+                                                @for ($i = 0; $i < $colspanTKBM; $i++)
                                                     <td>{{ isset($item['tkbms'][$i]) ? $item['tkbms'][$i] : '-' }}</td>
                                                 @endfor
                                                 <td>{{ $item['total'] }}</td>

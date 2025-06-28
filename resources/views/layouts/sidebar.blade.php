@@ -87,6 +87,9 @@
             <li>
                 <a href="/penggajian"><i class="fa fa-table fa-fw"></i>Penggajian</a>
             </li>
+            <li>
+                <a href="/pinjaman"><i class="fa fa-table fa-fw"></i>Peminjaman</a>
+            </li>
 
 
 

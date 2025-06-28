@@ -211,7 +211,7 @@ class PenggajianController extends Controller
         $pabrik = M_pabrik::all();
 
 
-
+        // return $mapItems;
         return view('pages.penggajian.detail', [
             'items' => $mapItems,
             'colspanTKBM' => $colspanTkbm,
@@ -220,7 +220,6 @@ class PenggajianController extends Controller
             'karyawan' => $karyawan,
             'totalNetto' => $totalNetto,
             'totalUang' => $totalUang,
-
         ]);
     }
 

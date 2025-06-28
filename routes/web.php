@@ -10,6 +10,7 @@ use App\Http\Controllers\PabrikController;
 use App\Http\Controllers\PenggajianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PeriodeController;
+use App\Http\Controllers\PinjamanController;
 use App\Http\Controllers\SlipGajiController;
 use App\Http\Controllers\TarifController;
 use App\Http\Controllers\TbsController;
@@ -76,6 +77,11 @@ Route::middleware(['auth'])->group(function () {
     // Route::post('/master/karyawan', [SlipGajiController::class, 'store']);
     // Route::put('/master/karyawan/{id}', [SlipGajiController::class, 'update']);
     // Route::delete('/master/karyawan/{id}', [SlipGajiController::class, 'destroy']);
+
+    Route::get('/pinjaman', [PinjamanController::class, 'index']);
+    Route::post('/pinjaman', [PinjamanController::class, 'store']);
+    Route::put('/pinjaman/{id}', [PinjamanController::class, 'update']);
+    Route::delete('/pinjaman/{id}', [PinjamanController::class, 'destroy']);
 
 
     Route::get('/laporan/laporan-stock', [LaporanController::class, 'laporan_semua_stok']);
