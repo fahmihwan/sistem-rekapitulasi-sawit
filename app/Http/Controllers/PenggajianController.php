@@ -6,6 +6,7 @@ use App\Helpers\Utils;
 use App\Models\M_karyawan;
 use App\Models\M_pabrik;
 use App\Models\Penggajian;
+use App\Models\Penggajian_karyawan;
 use App\Models\Penggajian_tkbm;
 use App\Models\Penjualan;
 use App\Models\Periode;
@@ -23,57 +24,52 @@ class PenggajianController extends Controller
         $tanggal = $request->input('tanggal');
         $perPage = $request->input('per_page', 10);
         $search = $request->input('search');
+        $sub = DB::table('penggajians as p')
+            ->join('penggajian_tkbms as pt', 'pt.penggajian_id', '=', 'p.id')
+            ->join('m_karyawans as mk', 'mk.id', '=', 'pt.karyawan_id')
+            ->select(
+                'p.id',
+                'p.periode_awal',
+                'p.periode_akhir',
+                'mk.id as karyawan_id',
+                'mk.nama'
+            )
+            ->groupBy('p.id', 'p.periode_awal', 'p.periode_akhir', 'mk.id', 'mk.nama');
 
-        // $query = Penggajian::query();
-        $query = Penggajian::with(['penggajian_tkbms.karyawan']);
+        $query = DB::query()
+            ->fromSub($sub, 'x')
+            ->select(
+                'x.id',
+                'x.periode_awal',
+                'x.periode_akhir',
+                DB::raw("jsonb_agg(jsonb_build_object(
+                'id', x.karyawan_id,
+                'nama', x.nama
+            )) AS karyawans")
+            )
+            ->groupBy('x.id', 'x.periode_awal', 'x.periode_akhir')
+            ->orderBy('x.id', 'desc');
 
-        // if ($request->filled('tanggal')) {
-        //     $query->whereDate('periode_mulai', $tanggal);
-        // }
-        // if ($search) {
-        // $query->where(function ($q) use ($search) {
-        // $q->where('periode', 'ILIKE', "%$search%");
-        // ->orWhere('harga', 'ILIKE', "%$search%")
-        // ->orWhere('uang', 'ILIKE', "%$search%");
-        // });
-        // }
-        // $query->orderBy('periode', 'desc');
+
+
 
         $penggajians = $query->paginate($perPage)->appends($request->query());
 
-
-        $response = $penggajians->getCollection()->map(function ($penggajian) {
-            return [
-                'id' => $penggajian->id,
-                'periode_awal' => $penggajian->periode_awal,
-                'periode_akhir' => $penggajian->periode_akhir,
-                'karyawans' => $penggajian->penggajian_tkbms
-                    ->groupBy('karyawan_id')
-                    ->map(function ($items) {
-                        $karyawan = $items->first()->karyawan;
-                        return [
-                            'id' => $karyawan->id,
-                            'nama' => $karyawan->nama,
-                        ];
-                    })
-                    ->values(),
-            ];
+        $data = $penggajians->map(function ($item) {
+            $item->karyawans = json_decode($item->karyawans);
+            return $item;
         });
 
 
-
-        // Bungkus ulang koleksi hasil map ke pagination
         $paginatedResponse = new \Illuminate\Pagination\LengthAwarePaginator(
-            $response,
+            $data,
             $penggajians->total(),
             $penggajians->perPage(),
             $penggajians->currentPage(),
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        // return $paginatedResponse;
-        // return $paginatedResponse;
-        // return Utils::getOpsActive();
+
         return view('pages.penggajian.index', [
             'items' =>  $paginatedResponse,
             'data_tarif_ops' => Utils::getOpsActive(),
@@ -203,7 +199,7 @@ class PenggajianController extends Controller
 
 
         $totalNetto = $mapItems->sum('netto');
-        $totalUang   = 'Rp ' . number_format($mapItems->sum('jumlah_uang'), 0, ',', '.');
+
 
 
 
@@ -219,31 +215,39 @@ class PenggajianController extends Controller
             'pabriks' => $pabrik,
             'karyawan' => $karyawan,
             'totalNetto' => $totalNetto,
-            'totalUang' => $totalUang,
+            'totalUang' => $mapItems->sum('jumlah_uang'),
         ]);
     }
+
+
+
 
     public function ambil_gaji_perhari($penggajianid, $karyawanid)
     {
 
-        $karyawan = M_karyawan::findOrFail($karyawanid);
+        $karyawan = M_karyawan::with(['main_type_karyawan'])->findOrFail($karyawanid);
+        // return $karyawan;
 
         $items = collect(DB::select("SELECT
                     pt.id,
                     p.tanggal_penjualan,
                     mk.nama,
-                    -- mk.type_karyawan,
+                    mtk.type_karyawan,
                     p.netto,
                     pt.tarif_perkg as tarif_perkg_rp,
                     pt.tkbm_agg,
+					mp.nama_pabrik,
                     pt.total,
-                    pt.jumlah_uang as jumlah_uang_rp,
+                    pt.jumlah_uang as jumlah_uang_rp,	
                     pt.is_gaji_perhari_dibayarkan,
 	                pt.is_gaji_dibayarkan
                 from penggajian_tkbms pt 
                 inner join m_karyawans mk on mk.id = pt.karyawan_id
                 inner join penjualans p on p.id = pt.penjualan_id
-                where pt.penggajian_id = ? and pt.karyawan_id = ?", [$penggajianid, $karyawanid]))
+                inner join m_type_karyawans mtk on mtk.id = pt.type_karyawan_id 
+                inner join m_pabriks mp on mp.id = pt.pabrik_id
+                where pt.penggajian_id = ? and pt.karyawan_id = ?
+                and pt.deleted_at is null", [$penggajianid, $karyawanid]))
             ->map(function ($item) {
                 $item = (array) $item;
                 $item['tkbms'] = explode('~', $item['tkbm_agg']);
@@ -257,21 +261,92 @@ class PenggajianController extends Controller
             });
 
 
+        // return $items;
 
         $totalNetto = $items->sum('netto');
-        $totalUang   = 'Rp ' . number_format($items->sum('jumlah_uang'), 0, ',', '.');
+        $totalUang   = $items->sum('jumlah_uang');
 
+
+        $pinjaman_saat_ini = DB::select("SELECT
+                            pu.karyawan_id,
+                            mk.nama,
+                            mtk.type_karyawan,
+                            (SUM(pu.nominal_peminjaman) - SUM(pu.nominal_pengembalian)) AS sisa_pinjaman
+                        FROM pinjaman_uangs pu
+                        INNER JOIN m_karyawans mk ON mk.id = pu.karyawan_id
+                        INNER JOIN m_type_karyawans mtk ON mtk.id = mk.main_type_karyawan_id
+                        WHERE pu.deleted_at IS null
+                        and pu.karyawan_id = ?
+                        GROUP BY pu.karyawan_id, mk.nama, mtk.type_karyawan", [$karyawanid]);
+        if (count($pinjaman_saat_ini) == 1) {
+            $pinjaman_saat_ini = $pinjaman_saat_ini[0]->sisa_pinjaman;
+        } else {
+            $pinjaman_saat_ini = 0;
+        }
+
+
+
+        $penggajian_karyawan =  Penggajian_karyawan::where([
+            ['penggajian_id', '=', $penggajianid],
+            ['karyawan_id', '=', $karyawanid],
+        ])->first();
 
 
         return view('pages.penggajian.ambil-gaji-perhari', [
             'items' => $items,
+            'penggajian_karyawan' => $penggajian_karyawan,
             'colspanTKBM' =>  $items->max('total'),
             'karyawan' => $karyawan,
             'totalNetto' => $totalNetto,
-            'totalUang' => $totalUang
+            'totalUang' => $totalUang,
+            'pinjaman_saat_ini' => $pinjaman_saat_ini
         ]);
     }
 
+
+    public function update_ambil_gaji(Request $request, $penggajianid, $karyawanid)
+    {
+
+
+
+        try {
+            DB::beginTransaction();
+
+
+
+            $request->merge([
+                'karyawan_id' => $karyawanid,
+                'penanggung_jawab_id' => auth()->user()->id
+            ]);
+
+            // return $request->all();
+
+            $validated = $request->validate([
+                'karyawan_id' => 'required|exists:m_karyawans,id',
+                'total_gaji' => 'nullable|integer',
+                'pinjaman_saat_ini' => 'nullable|integer',
+                'potongan_pinjaman' => 'nullable|integer',
+                'sisa_pinjaman' => 'nullable|integer',
+                'gaji_yang_diterima' => 'nullable|integer',
+                'penanggung_jawab_id' => 'required|exists:users,id',
+                'is_gaji_dibayarkan' => 'boolean',
+            ]);
+
+
+            Penggajian_karyawan::where([
+                ['penggajian_id', '=', $penggajianid],
+                ['karyawan_id', '=', $karyawanid],
+            ])->update($validated);
+
+
+            DB::commit();
+            return redirect()->back();
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+            return redirect()->back()->withErrors($th->getMessage());
+        }
+    }
 
 
     public function store(Request $request)
@@ -284,40 +359,6 @@ class PenggajianController extends Controller
 
         try {
             DB::beginTransaction();
-
-
-            // $copy_tkbm = DB::select("SELECT t.id as tkbm_id, 
-            //                         t.karyawan_id,
-            //                         mk2.nama, mk2.type_karyawan, 
-            //                         x.id as penjualan_id,
-            //                         x.tanggal_penjualan, x.netto, 
-            //                         x.tarif_perkg, 
-            //                         x.tkbm_agg, 
-            //                         x.total, 
-            //                         x.jumlah_uang
-            //                     from tkbms t
-            //                     inner join  (
-            //                             select 
-            //                             p.id,
-            //                             p.tanggal_penjualan,
-            //                             p.netto,
-            //                             mt.tarif_perkg,
-            //                             string_agg(mk.nama,'~') as tkbm_agg,
-            //                             count(t.id) as total,
-            //                             p.netto * mt.tarif_perkg / count(t.id) as jumlah_uang
-            //                         from penjualans p 
-            //                             inner join tkbms t on p.id = t.penjualan_id 
-            //                             inner join m_karyawans mk on mk.id = t.karyawan_id 
-            //                             inner join m_tarifs mt on mt.id = p.tarif_tkbm_id 
-            //                             where p.tanggal_penjualan between ? and ?
-            //                                 and t.deleted_at is null
-            //                                 and p.deleted_at is null
-            //                         group by p.id, p.tanggal_penjualan, mt.tarif_perkg
-            //                         order by p.tanggal_penjualan desc
-            //                     ) as x on x.id = t.penjualan_id 
-            //                     inner join m_karyawans mk2 on mk2.id = t.karyawan_id 
-            //                     where t.deleted_at is null", [$validated['periode_awal'], $validated['periode_akhir']]);
-
             $copy_tkbm = DB::select("SELECT t2.id as tkbm_id, t2.karyawan_id, mk.main_type_karyawan_id, y.* from tkbms t2
 			inner join m_karyawans mk on t2.karyawan_id = mk.id 
 		    inner join (
@@ -368,9 +409,42 @@ class PenggajianController extends Controller
                     'updated_at' => now(),
                 ];
             }
-
-            // return $arr;
             Penggajian_tkbm::insert($arr);
+
+            $pinjaman_uang = DB::select("SELECT pt.karyawan_id, sum(pt.jumlah_uang) as jumlah_uang, case
+                                    when x.sisa_pinjaman is not null then  x.sisa_pinjaman
+                                    else 0
+                                end as sisa_pinjaman
+                                from penggajian_tkbms pt 
+                                left join (
+                                    SELECT
+                                        pu.karyawan_id,(SUM(pu.nominal_peminjaman) - SUM(pu.nominal_pengembalian)) AS sisa_pinjaman	
+                                        FROM pinjaman_uangs pu
+                                        WHERE pu.deleted_at IS null
+                                    GROUP BY pu.karyawan_id
+                                ) as x on x.karyawan_id = pt.karyawan_id 
+                                inner join penjualans p on p.id = pt.penjualan_id 
+                                where p.tanggal_penjualan between ? and ? and p.deleted_at is null
+                                group by pt.karyawan_id, x.sisa_pinjaman,x.karyawan_id", [$validated['periode_awal'], $validated['periode_akhir']]);
+
+
+
+            $mapPinjaman = [];
+            foreach ($pinjaman_uang as $key => $value) {
+                $mapPinjaman[] = [
+                    'id' => Str::uuid(),
+                    'penggajian_id' => $penggajian->id,
+                    "karyawan_id" => $value->karyawan_id,
+                    "total_gaji" => $value->jumlah_uang,
+                    "pinjaman_saat_ini" => $value->sisa_pinjaman,
+                    "potongan_pinjaman" => 0,
+                    "sisa_pinjaman" => $value->sisa_pinjaman,
+                    "gaji_yang_diterima" => 0,
+                    'is_gaji_dibayarkan' => null,
+                    "penanggung_jawab_id" => null
+                ];
+            }
+            Penggajian_karyawan::insert($mapPinjaman);
             DB::commit();
             return redirect()->back();
         } catch (\Throwable $th) {
@@ -383,9 +457,18 @@ class PenggajianController extends Controller
     public function destroy($id)
     {
 
+        // return $id;
+        try {
+            DB::beginTransaction();
+            Penggajian::where('id', $id)->forceDelete();
+            Penggajian_tkbm::where('penggajian_id', $id)->forceDelete();
 
-        Penggajian::where('id', $id)->delete();
-        return redirect()->back();
+            DB::commit();
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->back()->withErrors($th->getMessage());
+        }
     }
 }
 

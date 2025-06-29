@@ -74,6 +74,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/penggajian/{id}', [PenggajianController::class, 'destroy']);
     Route::get('/penggajian/{penggajianid}/{karyawanid}/detail-gaji', [PenggajianController::class, 'detail_gaji']);
     Route::get('/penggajian/{penggajianid}/{karyawanid}/ambil-gaji-perhari', [PenggajianController::class, 'ambil_gaji_perhari']);
+
+
+    Route::put('/penggajian/{penggajianid}/{karyawanid}/ambil-gaji-perhari', [PenggajianController::class, 'update_ambil_gaji']);
+
     // Route::post('/master/karyawan', [SlipGajiController::class, 'store']);
     // Route::put('/master/karyawan/{id}', [SlipGajiController::class, 'update']);
     // Route::delete('/master/karyawan/{id}', [SlipGajiController::class, 'destroy']);

@@ -129,16 +129,16 @@
                                         @foreach ($items as $item)
                                             <tr class="">
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item['periode_awal'] }}</td>
-                                                <td>{{ $item['periode_akhir'] }}</td>
+                                                <td>{{ $item->periode_awal }}</td>
+                                                <td>{{ $item->periode_akhir }}</td>
                                                 <td>
-                                                    @foreach ($item['karyawans'] as $d)
+                                                    @foreach ($item->karyawans as $d)
                                                         <a
-                                                            href="/penggajian/{{ $item['id'] }}/{{ $d['id'] }}/detail-gaji">{{ $d['nama'] }}</a><br>
+                                                            href="/penggajian/{{ $item->id }}/{{ $d->id }}/detail-gaji">{{ $d->nama }}</a><br>
                                                     @endforeach
                                                 </td>
                                                 <td>
-                                                    <form method="POST" action="/penggajian/{{ $item['id'] }}">
+                                                    <form method="POST" action="/penggajian/{{ $item->id }}">
                                                         @method('delete')
                                                         @csrf
                                                         <button type="submit" class="btn btn-danger btn-circle "
@@ -147,7 +147,6 @@
                                                     </form>
                                                 </td>
                                                 {{-- <td>{{ $loop->iteration }}</td>
-
                                                 <td>{{ $item->label_periode }}</td>
                                                 <td>{{ $item->formatted_mulai }}</td>
                                                 <td>

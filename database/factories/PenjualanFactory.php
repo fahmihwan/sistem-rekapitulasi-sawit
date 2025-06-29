@@ -22,7 +22,7 @@ class PenjualanFactory extends Factory
     {
         return [
             // 'id' => (string) Str::uuid(),
-            'pabrik_id'      =>  $this->faker->numberBetween(1, 3),
+            'pabrik_id'      =>  $this->faker->numberBetween(1, 2),
             'sopir_id'        =>  $this->faker->numberBetween(1, 2),
             // 'do_type_id'      =>  $this->faker->numberBetween(1, 2),
             'do_type_id' => 1,

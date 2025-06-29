@@ -50,7 +50,7 @@
                             </tr>
                             <tr>
                                 <td>Posisi</td>
-                                <td style="padding-left: 30px"> : {{ $karyawan->type_karyawan }}</td>
+                                <td style="padding-left: 30px"> : {{ $karyawan->main_type_karyawan->type_karyawan }}</td>
                             </tr>
                         </table>
                     </div>
@@ -141,9 +141,11 @@
                                     <tr style="text-align: center">
                                         <th style="text-align: center">No</th>
                                         <th style="text-align: center">Tanggal</th>
+                                        <th style="text-align: center">Pekerjaan</th>
                                         <th style="text-align: center">Tonase</th>
                                         <th style="text-align: center">Per Kg</th>
-                                        <th style="text-align: center" colspan="{{ $colspanTKBM }}">TKBM </th>
+                                        <th style="text-align: center">PKS</th>
+                                        <th style="text-align: center">TKBM </th>
                                         <th style="text-align: center">Total</th>
                                         <th style="text-align: center">Jumlah Uang</th>
                                         <th style="text-align: center">Gaji Diambil</th>
@@ -157,11 +159,16 @@
                                             <td>{{ $loop->iteration }}</td>
                                             {{-- <td style="{{ $item['alpha'] ? 'background-color: red; color:white' : '' }}"> --}}
                                             <td> {{ $item['created_at_formatted'] }}</td>
+                                            <td>{{ $item['type_karyawan'] }}</td>
                                             <td>{{ $item['netto'] }} kg</td>
                                             <td>{{ $item['tarif_perkg_rp'] }}</td>
-                                            @for ($i = 0; $i < $colspanTKBM; $i++)
-                                                <td>{{ isset($item['tkbms'][$i]) ? $item['tkbms'][$i] : '-' }}</td>
-                                            @endfor
+                                            <td>{{ $item['nama_pabrik'] }}</td>
+
+                                            <td>
+                                                @for ($i = 0; $i < count($item['tkbms']); $i++)
+                                                    - {{ isset($item['tkbms'][$i]) ? $item['tkbms'][$i] : '-' }} </br>
+                                                @endfor
+                                            </td>
                                             <td>{{ $item['total'] }}</td>
                                             <td>{{ $item['jumlah_uang_rp'] }}</td>
                                             <td style="text-align: center">
@@ -196,11 +203,14 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
+                                        <th></th>s
                                         <th></th>
                                         <th>{{ $totalNetto }} Kg</th>
+                                        <th colspan="" style="text-align: center"></th>
                                         <th></th>
-                                        <th colspan="{{ $colspanTKBM + 1 }}" style="text-align: center">Total Uang</th>
-                                        <th>{{ $totalUang }}</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th>{{ 'Rp ' . number_format($totalUang, 0, ',', '.') }}</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -214,6 +224,88 @@
             <!-- /.col-lg-12 -->
         </div>
 
+        <div class="row">
+
+            <div class="col-lg-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Keteraangan
+                    </div>
+                    <div class="panel-body">
+                        <form
+                            action="/penggajian/{{ request()->route('penggajianid') }}/{{ request()->route('karyawanid') }}/ambil-gaji-perhari"
+                            method="POST">
+                            @method('PUT')
+                            @csrf
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Total Gaji</label>
+                                        <input class="form-control" type="number" name="total_gaji" id="total_gaji"
+                                            value="{{ $penggajian_karyawan->total_gaji }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Pinjaman saat ini</label>
+                                        <input class="form-control" type="number" name="pinjaman_saat_ini"
+                                            id="pinjaman_saat_ini" value="{{ $penggajian_karyawan->pinjaman_saat_ini }}"
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Potongan Pinjaman</label>
+                                        <input class="form-control" type="number" name="potongan_pinjaman"
+                                            value="{{ $penggajian_karyawan->potongan_pinjaman }}" id="potongan_pinjaman">
+                                    </div>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Sisa Pinjaman</label>
+                                        <input class="form-control" type="number" name="sisa_pinjaman"
+                                            value="{{ $penggajian_karyawan->sisa_pinjaman }}" id="sisa_pinjaman"
+                                            readonly>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label>Gaji yang diterima</label>
+                                <input class="form-control" type="number" name="gaji_yang_diterima"
+                                    value="{{ $penggajian_karyawan->gaji_yang_diterima }}" id="gaji_yang_diterima"
+                                    readonly>
+                            </div>
+
+                            <input type="hidden" name="is_gaji_dibayarkan" value="0">
+
+
+                            <label style="display:flex;align-items: center; margin-bottom: 20px">
+                                <input type="checkbox" name="is_gaji_dibayarkan" value="1"
+                                    style="width: 25px; height: 25px; margin-right: 10px"
+                                    {{ old('is_gaji_dibayarkan', $penggajian_karyawan->is_gaji_dibayarkan ?? false) ? 'checked' : '' }}>
+                                <span style="color: red">Konfirmasi bahwa gaji telah dibayarkan</span>
+                            </label>
+                            <button class="btn  btn-primary" type="submit">
+                                Bayar Gaji Karyawan
+                            </button>
+
+                        </form>
+
+
+
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
 
     </div>
 @endsection
@@ -221,25 +313,24 @@
 @section('script')
     <script>
         $(document).ready(function() {
+            function hitung() {
+                let totalGaji = parseFloat($('#total_gaji').val()) || 0;
+                let pinjamanSaatIni = parseFloat($('#pinjaman_saat_ini').val()) || 0;
+                let potonganPinjaman = parseFloat($('#potongan_pinjaman').val()) || 0;
 
+                let sisaPinjaman = pinjamanSaatIni - potonganPinjaman;
+                let gajiYangDiterima = totalGaji - potonganPinjaman;
 
-            // $("#datepicker").datepicker({
+                $('#sisa_pinjaman').val(sisaPinjaman >= 0 ? sisaPinjaman : 0);
+                $('#gaji_yang_diterima').val(gajiYangDiterima >= 0 ? gajiYangDiterima : 0);
+            }
 
-            //     changeMonth: true,
-            //     changeYear: true,
-            //     showButtonPanel: true,
-            //     dateFormat: 'yy-mm',
-            //     onClose: function(dateText, inst) {
-            //         var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
-            //         var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-            //         // Format bulan (tambah 1 dan tambahkan nol depan jika perlu)
-            //         month = ('0' + (parseInt(month) + 1)).slice(-2);
-            //         $(this).val(year + '-' + month);
-            //     },
-            //     beforeShow: function(input, inst) {
-            //         $(input).datepicker("widget").addClass('hide-calendar');
-            //     }
-            // });
+            $('#total_gaji, #pinjaman_saat_ini, #potongan_pinjaman').on('input', function() {
+                hitung();
+            });
+
+            // Optional: Jalankan saat load pertama kali (misalnya untuk edit data)
+            hitung();
         });
     </script>
     </script>

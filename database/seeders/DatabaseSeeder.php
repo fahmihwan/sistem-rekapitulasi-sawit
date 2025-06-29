@@ -110,7 +110,7 @@ class DatabaseSeeder extends Seeder
             'periode_berakhir' => null,
             'stok' => 0,
             'ops_id' => 2
-        ]);
+        ])->id;
 
 
         // $periode = null;
@@ -127,36 +127,36 @@ class DatabaseSeeder extends Seeder
 
 
 
-        // Pembelian_tbs::create([
-        //     'id' => Str::uuid(),
-        //     'nama_customer' => 'Pak Budi',
-        //     'periode_id' => $periode,
-        //     'tanggal_pembelian' => now()->toDateString(),
-        //     'tbs_type_id' => 3, // pastikan ID ini ada di tabel m_type_tbs
-        //     'netto' => 1000,
-        //     'harga' => 3000,
-        //     'uang' => 2999220,
-        //     'timbangan_first' => 2036,
-        //     'timbangan_second' => 1000,
-        //     'bruto' => 1036,
-        //     'sortasi' => 3.50,
-        // ]);
+        Pembelian_tbs::create([
+            'id' => Str::uuid(),
+            'nama_customer' => 'Pak Budi',
+            'periode_id' => $periode,
+            'tanggal_pembelian' => now()->toDateString(),
+            'tbs_type_id' => 3, // pastikan ID ini ada di tabel m_type_tbs
+            'netto' => 1000,
+            'harga' => 3000,
+            'uang' => 2999220,
+            'timbangan_first' => 2036,
+            'timbangan_second' => 1000,
+            'bruto' => 1036,
+            'sortasi' => 3.50,
+        ]);
 
 
-        // Pembelian_tbs::create([
-        //     'id' => Str::uuid(),
-        //     'periode_id' => $periode,
-        //     'tanggal_pembelian' => now()->toDateString(),
-        //     'nama_customer' => 'Pak angga',
-        //     'tbs_type_id' => 3, // pastikan ID ini ada di tabel m_type_tbs
-        //     'netto' => 2000,
-        //     'harga' => 3050,
-        //     'uang' =>  6098414,
-        //     'timbangan_first' => 3072,
-        //     'timbangan_second' => 1000,
-        //     'bruto' => 2072,
-        //     'sortasi' => 3.50,
-        // ]);
+        Pembelian_tbs::create([
+            'id' => Str::uuid(),
+            'periode_id' => $periode,
+            'tanggal_pembelian' => now()->toDateString(),
+            'nama_customer' => 'Pak angga',
+            'tbs_type_id' => 3, // pastikan ID ini ada di tabel m_type_tbs
+            'netto' => 2000,
+            'harga' => 3050,
+            'uang' =>  6098414,
+            'timbangan_first' => 3072,
+            'timbangan_second' => 1000,
+            'bruto' => 2072,
+            'sortasi' => 3.50,
+        ]);
 
 
 
@@ -192,35 +192,37 @@ class DatabaseSeeder extends Seeder
 
         // // Pembelian_tbs::factory(100)->create();
 
-        // // $penjualans = Penjualan::factory(50)->create();
+        // $penjualans = Penjualan::factory(50)->create();
 
-        // $total = 10; // jumlah data yang akan dibuat
-        // $penjualans = []; // Array untuk menyimpan entri Penjualan
-        // // Membuat entri Penjualan
-        // for ($i = 0; $i < $total; $i++) {
-        //     $penjualan = Penjualan::factory()
-        //         ->createdWithinLastWeek($i, $total)
-        //         ->create([
-        //             'periode_id' => $periode
-        //         ]);
-        //     $penjualans[] = $penjualan;
-        // }
+        $total = 10; // jumlah data yang akan dibuat
+        $penjualans = []; // Array untuk menyimpan entri Penjualan
+        // Membuat entri Penjualan
+        for ($i = 0; $i < $total; $i++) {
+            $penjualan = Penjualan::factory()
+                ->createdWithinLastWeek($i, $total)
+                ->create([
+                    'periode_id' => $periode
+                ]);
+            $penjualans[] = $penjualan;
+        }
 
-        // $allKaryawanIds = M_karyawan::where('type_karyawan', 'TKBM')->pluck('id')->toArray();
-        // foreach ($penjualans as $penjualan) {
-        //     $jumlahTkbm = rand(2, 5);
-        //     // Ambil karyawan_id random unik sebanyak $jumlahTkbm
-        //     // Jika jumlah karyawan kurang dari jumlah Tkbm, batasi jumlahnya
-        //     $karyawanIdsForPenjualan = collect($allKaryawanIds)
-        //         ->shuffle()
-        //         ->take(min($jumlahTkbm, count($allKaryawanIds)))
-        //         ->toArray();
-        //     foreach ($karyawanIdsForPenjualan as $karyawanId) {
-        //         Tkbm::factory()->create([
-        //             'penjualan_id' => $penjualan->id,
-        //             'karyawan_id' => $karyawanId,
-        //         ]);
-        //     }
-        // }
+        $allKaryawanIds = M_karyawan::where('main_type_karyawan_id', 2)->pluck('id')->toArray();
+        foreach ($penjualans as $penjualan) {
+            $jumlahTkbm = rand(2, 5);
+            // Ambil karyawan_id random unik sebanyak $jumlahTkbm
+            // Jika jumlah karyawan kurang dari jumlah Tkbm, batasi jumlahnya
+            $karyawanIdsForPenjualan = collect($allKaryawanIds)
+                ->shuffle()
+                ->take(min($jumlahTkbm, count($allKaryawanIds)))
+                ->toArray();
+            foreach ($karyawanIdsForPenjualan as $karyawanId) {
+                Tkbm::factory()->create([
+                    'penjualan_id' => $penjualan->id,
+                    'karyawan_id' => $karyawanId,
+                    'type_karyawan_id' => 2,
+                    'tarif_id' => 2,
+                ]);
+            }
+        }
     }
 }

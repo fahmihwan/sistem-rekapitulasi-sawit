@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('pinjaman_uangs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->unsignedBigInteger('karyawan_id');
             $table->date('tanggal');
+            $table->unsignedBigInteger('karyawan_id');
             $table->foreign('karyawan_id')->references('id')->on('m_karyawans')->onDelete('cascade');
             $table->integer('nominal_peminjaman')->default(0);
             $table->integer('nominal_pengembalian')->default(0);
