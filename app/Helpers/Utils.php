@@ -24,27 +24,33 @@ class Utils
 
     public static function getTarifActive()
     {
-        // $data = DB::select("SELECT mt.id, mt.type_karyawan, mt.tarif_perkg
+
+        // $data = DB::select("SELECT mt.id, mtk.type_karyawan, mt.tarif_perkg
         //                     FROM m_tarifs mt
         //                     JOIN (
-        //                         SELECT MAX(id) AS max_id, type_karyawan
+        //                         SELECT MAX(id) AS max_id, type_karyawan_id
         //                         FROM m_tarifs
         //                         WHERE deleted_at IS NULL
-        //                         GROUP BY type_karyawan
-        //                     ) sub ON mt.id = sub.max_id AND mt.type_karyawan = sub.type_karyawan
+        //                         GROUP BY type_karyawan_id
+        //                     ) sub ON mt.id = sub.max_id AND mt.type_karyawan_id = sub.type_karyawan_id
+        //                     inner join m_type_karyawans mtk ON mtk.id = mt.id
         //                     WHERE mt.deleted_at IS NULL");
 
-
-        $data = DB::select("SELECT mt.id, mtk.type_karyawan, mt.tarif_perkg
-                            FROM m_tarifs mt
-                            JOIN (
-                                SELECT MAX(id) AS max_id, type_karyawan_id
-                                FROM m_tarifs
-                                WHERE deleted_at IS NULL
-                                GROUP BY type_karyawan_id
-                            ) sub ON mt.id = sub.max_id AND mt.type_karyawan_id = sub.type_karyawan_id
-                            inner join m_type_karyawans mtk ON mtk.id = mt.id
-                            WHERE mt.deleted_at IS NULL");
+        $data = DB::select("SELECT id, type_karyawan, tarif_perkg from (
+						SELECT mt.id, mt.tarif_perkg, mtk.type_karyawan, mt.type_karyawan_id, x.is_active_tarif, mt.created_at  
+							from m_tarifs mt 
+							left join (
+	                            SELECT mt2.type_karyawan_id, mtk2.type_karyawan, MAX(mt2.id) AS max_id, true as is_active_tarif
+	                                FROM m_tarifs mt2 
+	                                inner join m_type_karyawans mtk2 ON mtk2.id = mt2.type_karyawan_id
+	                            where mt2.deleted_at is null 
+	                            GROUP BY mtk2.type_karyawan, mt2.type_karyawan_id
+							) as x on mt.id  = x.max_id
+							inner join m_type_karyawans mtk ON mtk.id = mt.type_karyawan_id
+ 							where mt.deleted_at is null
+ 							order by mt.created_at desc
+					) as x 
+					where x.is_active_tarif = true");
 
         $result = [
             'tarif_sopir_id' => null,

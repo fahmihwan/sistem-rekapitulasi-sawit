@@ -188,19 +188,11 @@
                                             <td>{{ $item->uang_formatted }}</td>
                                             {{-- <td class="center">{{ $item->formatted_created_at }}</td> --}}
                                             <td style="display: flex; border-bottom: 1px">
-                                                <form method="POST"
-                                                    action="/penjualan/tbs/{{ $menu }}/delete/{{ $item->id }}">
-                                                    @method('delete')
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-danger btn-circle"
-                                                        style="margin-right: 5px">
-                                                        <i class="fa fa-trash"></i></button>
-                                                </form>
 
                                                 @if ($item->periode->periode_berakhir != null)
                                                     <button data-bs-toggle="modal" type="button"
                                                         class="btn  btn-circle btn-edit"
-                                                        style="background-color: gray; color:white"
+                                                        style="background-color: gray; color:white margin-right: 5px"
                                                         onclick="alert('Periode sudah ditutup');">
                                                         <i class="fa fa-lock"></i>
                                                     </button>
@@ -223,9 +215,19 @@
                                                         data-uang="{{ $item->uang }}" data-bs-toggle="modal"
                                                         type="button" class="btn btn-warning btn-circle btn-edit"
                                                         data-toggle="modal" data-target="#modalCreateEdit"
-                                                        data-id="{{ $item->id }}"><i class="fa fa-edit"></i>
+                                                        style="margin-right: 5px" data-id="{{ $item->id }}"><i
+                                                            class="fa fa-edit"></i>
                                                     </button>
                                                 @endif
+
+                                                <form method="POST"
+                                                    action="/penjualan/tbs/{{ $menu }}/delete/{{ $item->id }}">
+                                                    @method('delete')
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="btn btn-danger btn-circle btn-confirm-delete">
+                                                        <i class="fa fa-trash"></i></button>
+                                                </form>
 
 
                                             </td>
@@ -646,9 +648,6 @@
                 }
                 $('#tarif_sopir_id_select').val(tarifSopirId).trigger('change');
 
-
-
-
                 if ($('#tarif_tkbm_id_select option[value="' + tarifTkbmId + '"]').length === 0) {
                     $('#tarif_tkbm_id_select').append(
                         $('<option>', {
@@ -657,14 +656,8 @@
                         })
                     );
                 }
+
                 $('#tarif_tkbm_id_select').val(tarifTkbmId).trigger('change');
-
-
-
-
-
-
-
 
                 $('#tanggal_penjualan').val($(this).data('tanggalpenjualan'));
                 $('#periode_id_text').val($(this).data('periode'));
@@ -676,6 +669,7 @@
                 const tkbms = $(this).data('tkbms');
                 const karyawanIds = tkbms.map(t => t.karyawan_id);
 
+                console.log($(this).data('pabrik'));
                 $('#pabrik_id').val($(this).data('pabrik')).trigger('change');;
                 $('#sopir_id').val($(this).data('nama')).trigger('change');;
                 $('#tkbm_id').val(karyawanIds).trigger('change');;

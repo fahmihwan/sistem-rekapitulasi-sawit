@@ -64,7 +64,8 @@
                                                 <form method="POST" action="/master/ops/{{ $item->id }}">
                                                     @method('delete')
                                                     @csrf
-                                                    <button type="submit" class="btn btn-danger btn-circle"
+                                                    <button type="submit"
+                                                        class="btn btn-danger btn-circle btn-confirm-delete"
                                                         style="margin-right: 5px">
                                                         <i class="fa fa-trash"></i></button>
                                                 </form>

@@ -415,7 +415,7 @@ class PenggajianController extends Controller
             }
             Penggajian_karyawan::insert($mapPinjaman);
             DB::commit();
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Transaksi berhasil disimpan!');;
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->withErrors($th->getMessage());
@@ -425,15 +425,13 @@ class PenggajianController extends Controller
 
     public function destroy($id)
     {
-
-        // return $id;
         try {
             DB::beginTransaction();
             Penggajian::where('id', $id)->forceDelete();
             Penggajian_tkbm::where('penggajian_id', $id)->forceDelete();
 
             DB::commit();
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Transaksi berhasil dihapus!');;
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->withErrors($th->getMessage());

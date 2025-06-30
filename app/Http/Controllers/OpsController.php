@@ -37,7 +37,7 @@ class OpsController extends Controller
         ]);
 
         M_Ops::create($validated);
-        return redirect('/master/ops');
+        return redirect()->back()->with('success', 'Data berhasil disimpan!');
     }
 
 
@@ -52,7 +52,7 @@ class OpsController extends Controller
 
         $karyawan =  M_ops::findOrFail($id);
         $karyawan->update($validated);
-        return redirect('/master/ops');
+        return redirect()->back()->with('success', 'Data berhasil diubah!');
     }
     /**
      * Remove the specified resource from storage.
@@ -62,6 +62,6 @@ class OpsController extends Controller
         $karyawan = M_ops::findOrFail($id);
 
         $karyawan->delete();
-        return redirect('/master/ops')->with('success', 'Tarif berhasil dihapus!');
+        return redirect()->back()->with('success', 'Data berhasil dihapus!');
     }
 }

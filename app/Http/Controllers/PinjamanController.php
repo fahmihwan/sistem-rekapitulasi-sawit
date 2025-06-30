@@ -86,14 +86,14 @@ class PinjamanController extends Controller
             'karyawan_id' => 'required|integer',
             'nominal_peminjaman' => 'nullable|integer',
             'nominal_pengembalian' => 'nullable|integer',
-            'keterangan' => 'required',
+            'keterangan' => 'nullable',
         ]);
 
 
 
 
         Pinjaman_uang::create($validated);
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Data berhasil disimpan!');
     }
 
 
@@ -112,7 +112,7 @@ class PinjamanController extends Controller
 
         $karyawan =  Pinjaman_uang::findOrFail($id);
         $karyawan->update($validated);
-        return redirect('/periode');
+        return redirect()->back()->with('success', 'Data berhasil diubah!');
     }
     /**
      * Remove the specified resource from storage.
@@ -122,6 +122,6 @@ class PinjamanController extends Controller
         $karyawan = Pinjaman_uang::findOrFail($id);
 
         $karyawan->delete();
-        return redirect('/periode')->with('success', 'Karyawan berhasil dihapus!');
+        return redirect()->back()->with('success', 'Data berhasil dihapus!');
     }
 }

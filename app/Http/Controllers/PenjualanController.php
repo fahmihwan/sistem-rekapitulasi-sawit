@@ -33,7 +33,7 @@ class PenjualanController extends Controller
             'tarif_sopir' => fn($q) => $q->withTrashed(),
             'tarif_tkbm' => fn($q) => $q->withTrashed(),
             'periode' => fn($q) => $q->withTrashed()->select('id', 'periode', 'periode_mulai', 'periode_berakhir', 'stok'),
-            'pabrik:id,nama_pabrik',
+            'pabrik' => fn($q) => $q->withTrashed()->select("id", "nama_pabrik"),
             'sopir:id,nama',
             'tkbms:id,karyawan_id,penjualan_id,type_karyawan_id',
             'tkbms.karyawan:id,nama'
@@ -66,6 +66,7 @@ class PenjualanController extends Controller
         $data = $query->paginate($perPage)->appends($request->query());
 
         // return $data;
+        // return Utils::getTarifActive();
 
 
         return view('pages.penjualan_TBS.index', [
@@ -164,7 +165,7 @@ class PenjualanController extends Controller
 
             Tkbm::insert($data);
             DB::commit();
-            return redirect('/penjualan/tbs/' . $menu . '/view')->with('success', 'Transaksi berhasil disimpan.');
+            return redirect('/penjualan/tbs/' . $menu . '/view')->with('success', 'Transaksi berhasil disimpan!');
         } catch (\Throwable $e) {
             DB::rollback();
             return redirect()->back()->withInput()->withErrors(['error' => 'Gagal menyimpan transaksi: ' . $e->getMessage()]);
@@ -232,7 +233,7 @@ class PenjualanController extends Controller
 
             Tkbm::insert($data);
             DB::commit();
-            return redirect('/penjualan/tbs/' . $menu . '/view')->with('success', 'Transaksi berhasil disimpan.');
+            return redirect('/penjualan/tbs/' . $menu . '/view')->with('success', 'Transaksi berhasil diubah!');
         } catch (\Throwable $e) {
             DB::rollback();
             return redirect()->back()->withInput()->withErrors(['error' => 'Gagal menyimpan transaksi: ' . $e->getMessage()]);
@@ -251,6 +252,6 @@ class PenjualanController extends Controller
         $karyawan = Penjualan::findOrFail($id);
 
         $karyawan->delete();
-        return redirect('/penjualan/tbs/' . $menu . '/view')->with('success', 'Karyawan berhasil dihapus!');
+        return redirect('/penjualan/tbs/' . $menu . '/view')->with('success', 'Transaksi berhasil dihapus!');
     }
 }

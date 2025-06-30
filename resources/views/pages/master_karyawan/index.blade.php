@@ -63,27 +63,27 @@
                                             </td>
                                             <td class="center">{{ $item->formatted_created_at }}</td>
                                             <td class="center" style="display: flex">
+                                                <button type="button" class="btn btn-warning btn-circle btn-edit"
+                                                    data-toggle="modal" data-target="#modalEdit" style="margin-right: 5px"
+                                                    data-id="{{ $item->id }}" data-nama="{{ $item->nama }}"
+                                                    data-typekaryawan="{{ $item->jobs }}"
+                                                    data-maintypekaryawan="{{ $item->main_type_karyawan_id }}">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+
                                                 <form id="form-delete-{{ $item->id }}" method="POST"
                                                     action="/master/karyawan/{{ $item->id }}">
                                                     @method('delete')
                                                     @csrf
-                                                    <button
-                                                        onclick="confirmDelete({{ $item->id }})
-                                                    type="submit"
-                                                        class="btn btn-danger btn-circle" style="margin-right: 5px">
+                                                    <button type="submit"
+                                                        class="btn btn-danger btn-circle  btn-confirm-delete">
                                                         <i class="fa fa-trash"></i></button>
                                                 </form>
 
 
 
 
-                                                <button type="button" class="btn btn-warning btn-circle btn-edit"
-                                                    data-toggle="modal" data-target="#modalEdit"
-                                                    data-id="{{ $item->id }}" data-nama="{{ $item->nama }}"
-                                                    data-typekaryawan="{{ $item->jobs }}"
-                                                    data-maintypekaryawan="{{ $item->main_type_karyawan_id }}">
-                                                    <i class="fa fa-edit"></i>
-                                                </button>
+
                                             </td>
                                         </tr>
                                     @endforeach
@@ -256,6 +256,7 @@
 @section('script')
     <script>
         $(document).ready(function() {
+
 
 
 

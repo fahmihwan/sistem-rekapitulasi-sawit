@@ -28,7 +28,7 @@ class PabrikController extends Controller
         ]);
 
         M_pabrik::create($validated);
-        return redirect('/master/pabrik');
+        return redirect()->back()->with('success', 'Data berhasil disimpan!');
     }
 
 
@@ -43,7 +43,7 @@ class PabrikController extends Controller
 
         $karyawan =  M_pabrik::findOrFail($id);
         $karyawan->update($validated);
-        return redirect('/master/pabrik');
+        return redirect()->back()->with('success', 'Data berhasil diubah!');
     }
     /**
      * Remove the specified resource from storage.
@@ -53,6 +53,6 @@ class PabrikController extends Controller
         $karyawan = M_pabrik::findOrFail($id);
 
         $karyawan->delete();
-        return redirect('/master/pabrik')->with('success', 'Karyawan berhasil dihapus!');
+        return redirect()->back()->with('success', 'Data berhasil dihapus!');
     }
 }

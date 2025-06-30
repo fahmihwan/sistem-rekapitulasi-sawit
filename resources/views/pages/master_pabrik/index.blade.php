@@ -59,21 +59,22 @@
                                                 class="font-medium text-red-600  hover:underline ml-3">Hapus</button> --}}
 
                                             <td class="center" style="display: flex">
-                                                <form method="POST" action="/master/pabrik/{{ $item->id }}">
-                                                    @method('delete')
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-danger btn-circle"
-                                                        style="margin-right: 5px">
-                                                        <i class="fa fa-trash"></i></button>
-                                                </form>
-
-
                                                 <button type="button" class="btn btn-warning btn-circle btn-edit"
-                                                    data-toggle="modal" data-target="#modalEdit"
+                                                    style="margin-right: 5px" data-toggle="modal" data-target="#modalEdit"
                                                     data-id="{{ $item->id }}"
                                                     data-namapabrik="{{ $item->nama_pabrik }}">
                                                     <i class="fa fa-edit"></i>
                                                 </button>
+
+                                                <form method="POST" action="/master/pabrik/{{ $item->id }}">
+                                                    @method('delete')
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="btn btn-danger btn-circle  btn-confirm-delete"
+                                                        style="margin-right: 5px">
+                                                        <i class="fa fa-trash"></i></button>
+                                                </form>
+
                                             </td>
                                         </tr>
                                     @endforeach

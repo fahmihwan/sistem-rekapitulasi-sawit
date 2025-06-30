@@ -128,24 +128,16 @@
                                             {{-- <td class="center">{{ $item->formatted_created_at }}</td> --}}
 
                                             <td class="center" style="display: flex">
-                                                <form method="POST"
-                                                    action="/pembelian/tbs/{{ $menu }}/delete/{{ $item->id }}">
-                                                    @method('delete')
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-danger btn-circle"
-                                                        style="margin-right: 5px">
-                                                        <i class="fa fa-trash"></i></button>
-                                                </form>
 
                                                 @if ($item->periode->periode_berakhir != null)
                                                     <button data-bs-toggle="modal" type="button"
                                                         class="btn  btn-circle btn-edit"
-                                                        style="background-color: gray; color:white"
+                                                        style="background-color: gray; color:white margin-right: 5px"
                                                         onclick="alert('Periode sudah ditutup');">
                                                         <i class="fa fa-lock"></i>
                                                     </button>
                                                 @else
-                                                    <button data-id="{{ $item->id }}"
+                                                    <button data-id="{{ $item->id }}" style="margin-right: 5px"
                                                         data-tanggalpembelian={{ $item->tanggal_pembelian }}
                                                         data-periode={{ $item->periode->periode }}
                                                         data-nama="{{ $item->nama_customer }}"
@@ -160,6 +152,15 @@
                                                         data-id="{{ $item->id }}"><i class="fa fa-edit"></i>
                                                     </button>
                                                 @endif
+
+                                                <form method="POST"
+                                                    action="/pembelian/tbs/{{ $menu }}/delete/{{ $item->id }}">
+                                                    @method('delete')
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="btn btn-danger btn-circle btn-confirm-delete">
+                                                        <i class="fa fa-trash"></i></button>
+                                                </form>
 
                                             </td>
                                         </tr>

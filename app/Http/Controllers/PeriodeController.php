@@ -67,7 +67,7 @@ class PeriodeController extends Controller
         $validated['stok'] = 0;
 
         Periode::create($validated);
-        return redirect('/periode');
+        return redirect()->back()->with('success', 'Data berhasil disimpan!');
     }
 
 
@@ -84,7 +84,7 @@ class PeriodeController extends Controller
 
         $karyawan =  Periode::findOrFail($id);
         $karyawan->update($validated);
-        return redirect('/periode');
+        return redirect()->back()->with('success', 'Data berhasil diubah!');
     }
     /**
      * Remove the specified resource from storage.
@@ -92,8 +92,7 @@ class PeriodeController extends Controller
     public function destroy(string $id)
     {
         $karyawan = Periode::findOrFail($id);
-
         $karyawan->delete();
-        return redirect('/periode')->with('success', 'Karyawan berhasil dihapus!');
+        return redirect()->back()->with('success', 'Data berhasil dihapus!');
     }
 }

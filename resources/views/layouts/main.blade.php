@@ -89,6 +89,27 @@
             $('#dataTables-example').DataTable({
                 responsive: true
             });
+
+            $('.btn-confirm-delete').click(function(e) {
+                e.preventDefault(); // hentikan form submit langsung
+
+                let form = $(this).closest('form'); // ambil form terdekat
+
+                Swal.fire({
+                    title: 'Yakin ingin menghapus?',
+                    text: 'Data yang dihapus tidak bisa dikembalikan!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // submit form jika dikonfirmasi
+                    }
+                });
+            });
+
         });
     </script>
 

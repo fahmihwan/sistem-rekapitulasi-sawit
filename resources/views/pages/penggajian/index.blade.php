@@ -119,8 +119,8 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Periode Mulai</th>
-                                            <th>Periode Berakhir</th>
+                                            <th>Periode mulai penggajian</th>
+                                            <th>Periode berakhir penggajian</th>
                                             <th>Karyawan</th>
                                             <th>#</th>
                                         </tr>
@@ -130,8 +130,13 @@
                                             <tr class="">
 
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->periode_awal }}</td>
-                                                <td>{{ $item->periode_akhir }}</td>
+                                                {{-- formatted_mulai --}}
+                                                <td>{{ $item->periode_awal_formatted }}</td>
+                                                {{-- <td>{{ $item->periode_awal }}</td> --}}
+                                                {{-- <td>{{ $item->periode_akhir }}</td> --}}
+                                                <td>{{ \Carbon\Carbon::parse($item->periode_berakhir)->translatedFormat('d F Y') }}
+                                                </td>
+
                                                 <td>
                                                     {{-- @foreach ($item->penggajian_karyawans as $d)
                                                         <a
@@ -156,7 +161,8 @@
                                                     <form method="POST" action="/penggajian/{{ $item->id }}">
                                                         @method('delete')
                                                         @csrf
-                                                        <button type="submit" class="btn btn-danger btn-circle "
+                                                        <button type="submit"
+                                                            class="btn btn-danger btn-circle btn-confirm-delete"
                                                             style="margin-right: 5px">
                                                             <i class="fa fa-trash"></i></button>
                                                     </form>
@@ -203,7 +209,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Periode Awal</label>
+                                            <label>Periode mulai penggajian</label>
                                             <input class="form-control" name="periode_awal" type="date" value=""
                                                 {{-- value="{{ now()->toDateString() }}" --}} id="periode_awal">
 
@@ -211,7 +217,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Periode Akhir</label>
+                                            <label>Periode berakhir penggajian</label>
                                             <input class="form-control" name="periode_akhir" type="date"
                                                 value="" id="periode_akhir">
                                         </div>
@@ -247,7 +253,7 @@
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"
                                 aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalLabel">Modal title
+                            <h4 class="modal-title" id="myModalLabel">Data karyawan
                             </h4>
                         </div>
                         <div class="modal-body">
@@ -289,7 +295,7 @@
 
                 $('#btn-create').on('click', function() {
                     $('#mainForm')[0].reset();
-                    $('#mymodalCreateEdit').text('Buat periode baru ');
+                    $('#mymodalCreateEdit').text('Tambah periode penggajian ');
                     $('#mainForm').attr('action', '/penggajian');
                     $('#formMethod').val('POST')
 
@@ -345,8 +351,8 @@
                                         <td>${e.karyawan.main_type_karyawan?.type_karyawan}</td>
                                         <td>
                                             ${e.is_gaji_dibayarkan == true ? `<i class="fa fa-fw" aria-hidden="true"
-                                                                                                style="font-size: 25px; color: rgb(35, 187, 35)"
-                                                                                                title="Copy to use check-square">&#xf14a</i>` : 'belum'}
+                                                                                                                                                                                                                                                                                                                                                                                                                style="font-size: 25px; color: rgb(35, 187, 35)"
+                                                                                                                                                                                                                                                                                                                                                                                                                title="Copy to use check-square">&#xf14a</i>` : 'belum'}
                                             
                                             </td>
                                         

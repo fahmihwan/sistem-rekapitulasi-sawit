@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('karyawan_id')->references('id')->on('m_karyawans')->onDelete('cascade');
             $table->integer('nominal_peminjaman')->default(0);
             $table->integer('nominal_pengembalian')->default(0);
-            $table->text('keterangan');
+            $table->text('keterangan')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

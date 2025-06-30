@@ -15,7 +15,6 @@ class TbsController extends Controller
     public function index(Request $request, string $menu)
     {
 
-        // return Periode::all();
 
         $tanggal = $request->input('tanggal');
         $perPage = $request->input('per_page', 10);
@@ -168,7 +167,7 @@ class TbsController extends Controller
             $pembelianTBs->update($validated);
 
             DB::commit();
-            return redirect()->back()->with('success', 'Data berhasil disimpan!');
+            return redirect()->back()->with('success', 'Data berhasil diubah!');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
@@ -187,6 +186,6 @@ class TbsController extends Controller
         $karyawan = Pembelian_tbs::findOrFail($id);
 
         $karyawan->delete();
-        return redirect('/pembelian/tbs/' . $menu . '/view')->with('success', 'Karyawan berhasil dihapus!');
+        return redirect()->back()->with('success', 'Data berhasil dihapus!');
     }
 }

@@ -55,7 +55,7 @@ class KaryawanController extends Controller
             M_jobs::insert($arr);
             DB::commit();
 
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Data berhasil disimpan!');
         } catch (\Throwable $e) {
             DB::rollBack();
             return redirect()->back()->withErrors($e->getMessage());
@@ -97,7 +97,7 @@ class KaryawanController extends Controller
             M_jobs::insert($arr);
             DB::commit();
 
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Data berhasil disimpan!');
         } catch (\Throwable $e) {
             DB::rollBack();
             return redirect()->back()->withErrors($e->getMessage());
@@ -111,6 +111,6 @@ class KaryawanController extends Controller
         $karyawan = M_karyawan::findOrFail($id);
 
         $karyawan->delete();
-        return redirect('/master/karyawan')->with('success', 'Karyawan berhasil dihapus!');
+        return redirect('/master/karyawan')->with('success', 'Data berhasil dihapus!');
     }
 }
