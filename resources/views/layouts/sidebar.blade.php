@@ -17,8 +17,11 @@
                 <a href="/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
             </li>
             <li>
-                <a href="/master/karyawan"><i class="fa fa-bar-chart-o fa-fw"></i> Master Data<span
-                        class="fa arrow"></span></a>
+                <a href="/master/karyawan">
+                    {{-- <i class="fa fa-bar-chart-o fa-fw"></i>  --}}
+                    <i class="fa fa-fw" aria-hidden="true" title="Copy to use tag">&#xf02b</i>
+
+                    Master Data<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="/master/karyawan">Master Karyawan</a>
@@ -36,11 +39,16 @@
                 <!-- /.nav-second-level -->
             </li>
             <li>
-                <a href="/periode"><i class="fa fa-table fa-fw"></i>Periode & Stok</a>
+                <a href="/periode">
+                    {{-- <i class="fa fa-fw" aria-hidden="true" title="Copy to use calendar-plus-o">&#xf271</i> --}}
+                    <i class="fa fa-fw" aria-hidden="true" title="Copy to use hourglass-half">&#xf252</i>
+                    Periode</a>
             </li>
             <li>
-                <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Pembelian TBS<span
-                        class="fa arrow"></span></a>
+                <a href="#">
+                    {{-- <i class="fa fa-fw" aria-hidden="true" title="Copy to use truck">&#xf0d1</i> --}}
+                    <i class="fa fa-fw" aria-hidden="true" title="Copy to use cart-arrow-down">&#xf218</i>
+                    Pembelian TBS<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     {{-- /pembelian/tbs/{menu}/view --}}
                     <li>
@@ -56,8 +64,9 @@
                 <!-- /.nav-second-level -->
             </li>
             <li>
-                <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Penjualan TBS<span
-                        class="fa arrow"></span></a>
+                <a href="#">
+                    <i class="fa fa-fw" aria-hidden="true" title="Copy to use truck">&#xf0d1</i>
+                    Penjualan TBS<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="/penjualan/tbs/PLASMA/view">Plasma</a>
@@ -78,23 +87,33 @@
                     </li>
                 </ul>
             </li> --}}
-            <li>
-                <a href="/laba"><i class="fa fa-table fa-fw"></i> Perhitungan Laba</a>
-            </li>
             {{-- <li>
                 <a href="/slipgaji/karyawan"><i class="fa fa-table fa-fw"></i> Slip Gaji</a>
             </li> --}}
             <li>
-                <a href="/penggajian"><i class="fa fa-table fa-fw"></i>Penggajian</a>
+                <a href="/penggajian">
+                    {{-- <i class="fa fa-table fa-fw"></i> --}}
+                    <i class="fa fa-fw" aria-hidden="true" title="Copy to use file-text-o">&#xf0f6</i>
+                    Penggajian</a>
             </li>
             <li>
-                <a href="/pinjaman"><i class="fa fa-table fa-fw"></i>Pinjaman (Kasbon)</a>
+                <a href="/pinjaman">
+                    {{-- <i class="fa fa-fw" aria-hidden="true" title="Copy to use exchange">&#xf0ec</i> --}}
+                    <i class="fa fa-fw" aria-hidden="true" title="Copy to use money">&#xf0d6</i>
+                    Pinjaman (Kasbon)</a>
             </li>
 
 
-
             <li>
-                <a href="/laporan/laporan-stock"><i class="fa fa-table fa-fw"></i> Laporan Stok</a>
+                <a href="/laba">
+                    <i class="fa fa-fw" aria-hidden="true" title="Copy to use line-chart">&#xf201</i>
+                    Perhitungan Laba</a>
+            </li>
+            <li>
+                <a href="/laporan/laporan-stock">
+                    {{-- <i class="fa fa-table fa-fw"></i> --}}
+                    <i class="fa fa-fw" aria-hidden="true" title="Copy to use cubes">&#xf1b3</i>
+                    Laporan Stok</a>
             </li>
             <li>
                 <a href=""><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
