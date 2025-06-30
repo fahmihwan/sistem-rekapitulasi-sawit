@@ -18,4 +18,10 @@ class Penggajian extends BaseModel
     {
         return $this->hasMany(Penggajian_tkbm::class, 'penggajian_id');
     }
+
+    public function penggajian_karyawans()
+    {
+
+        return $this->hasMany(Penggajian_karyawan::class);
+    }
 }

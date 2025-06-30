@@ -24,54 +24,71 @@ class PenggajianController extends Controller
         $tanggal = $request->input('tanggal');
         $perPage = $request->input('per_page', 10);
         $search = $request->input('search');
-        $sub = DB::table('penggajians as p')
-            ->join('penggajian_tkbms as pt', 'pt.penggajian_id', '=', 'p.id')
-            ->join('m_karyawans as mk', 'mk.id', '=', 'pt.karyawan_id')
-            ->select(
-                'p.id',
-                'p.periode_awal',
-                'p.periode_akhir',
-                'mk.id as karyawan_id',
-                'mk.nama'
-            )
-            ->groupBy('p.id', 'p.periode_awal', 'p.periode_akhir', 'mk.id', 'mk.nama');
 
-        $query = DB::query()
-            ->fromSub($sub, 'x')
-            ->select(
-                'x.id',
-                'x.periode_awal',
-                'x.periode_akhir',
-                DB::raw("jsonb_agg(jsonb_build_object(
-                'id', x.karyawan_id,
-                'nama', x.nama
-            )) AS karyawans")
-            )
-            ->groupBy('x.id', 'x.periode_awal', 'x.periode_akhir')
-            ->orderBy('x.id', 'desc');
+
+        // return Penggajian::with([
+        //     'penggajian_karyawans:id,penggajian_id,karyawan_id,total_gaji,is_gaji_dibayarkan'
+        // ])->get();
 
 
 
+
+
+        // $sub = DB::table('penggajians as p')
+        //     ->join('penggajian_tkbms as pt', 'pt.penggajian_id', '=', 'p.id')
+        //     ->join('m_karyawans as mk', 'mk.id', '=', 'pt.karyawan_id')
+        //     ->select(
+        //         'p.id',
+        //         'p.periode_awal',
+        //         'p.periode_akhir',
+        //         'mk.id as karyawan_id',
+        //         'mk.nama'
+        //     )
+        //     ->groupBy('p.id', 'p.periode_awal', 'p.periode_akhir', 'mk.id', 'mk.nama');
+
+        // $query = DB::query()
+        //     ->fromSub($sub, 'x')
+        //     ->select(
+        //         'x.id',
+        //         'x.periode_awal',
+        //         'x.periode_akhir',
+        //         DB::raw("jsonb_agg(jsonb_build_object(
+        //         'id', x.karyawan_id,
+        //         'nama', x.nama
+        //     )) AS karyawans")
+        //     )
+        //     ->groupBy('x.id', 'x.periode_awal', 'x.periode_akhir')
+        //     ->orderBy('x.id', 'desc');
+
+
+
+        $query = Penggajian::with([
+            'penggajian_karyawans:id,penggajian_id,karyawan_id,total_gaji,is_gaji_dibayarkan',
+            'penggajian_karyawans.karyawan:id,nama,main_type_karyawan_id',
+            'penggajian_karyawans.karyawan.main_type_karyawan:id,type_karyawan',
+        ]);
 
         $penggajians = $query->paginate($perPage)->appends($request->query());
 
-        $data = $penggajians->map(function ($item) {
-            $item->karyawans = json_decode($item->karyawans);
-            return $item;
-        });
+
+        // return $penggajians;
+        // $data = $penggajians->map(function ($item) {
+        //     $item->karyawans = json_decode($item->karyawans);
+        //     return $item;
+        // });
 
 
-        $paginatedResponse = new \Illuminate\Pagination\LengthAwarePaginator(
-            $data,
-            $penggajians->total(),
-            $penggajians->perPage(),
-            $penggajians->currentPage(),
-            ['path' => request()->url(), 'query' => request()->query()]
-        );
+        // $paginatedResponse = new \Illuminate\Pagination\LengthAwarePaginator(
+        //     $data,
+        //     $penggajians->total(),
+        //     $penggajians->perPage(),
+        //     $penggajians->currentPage(),
+        //     ['path' => request()->url(), 'query' => request()->query()]
+        // );
 
 
         return view('pages.penggajian.index', [
-            'items' =>  $paginatedResponse,
+            'items' =>  $penggajians,
             'data_tarif_ops' => Utils::getOpsActive(),
             'get_first_periode' => Periode::orderBy('periode', 'desc')->first()
         ]);
@@ -84,54 +101,6 @@ class PenggajianController extends Controller
 
         $karyawan = M_karyawan::with(['main_type_karyawan'])->findOrFail($karyawanid);
 
-        // return $karyawan;
-
-        // $items =  DB::select("SELECT 
-        //                         p.id,
-        //                         p.tanggal_penjualan,
-        //                         p.netto,
-        //                         mt.tarif_perkg,
-        //                         STRING_AGG(mk.nama, '~') AS tkbms,
-        //                         count(pt.id) as total,
-        //                         CASE 
-        //                             WHEN SUM(CASE WHEN mk.id = ? THEN 1 ELSE 0 END) = 0 THEN true
-        //                         ELSE false
-        //                         END AS alpha,
-        //                         CASE 
-        //                             WHEN SUM(CASE WHEN mk.id = ? THEN 1 ELSE 0 END) != 0 THEN (p.netto * mt.tarif_perkg)/count(pt.id)
-        //                         ELSE 0
-        //                             END AS jumlah_uang,
-        //                         CASE 
-        //                             WHEN SUM(CASE WHEN mk.id = ? THEN 1 ELSE 0 END) != 0 
-        //                             THEN CEIL((p.netto * mt.tarif_perkg) / COUNT(pt.id))
-        //                             ELSE 0	
-        //                         END AS jumlah_uang_bulat
-        //                     from penjualans p 
-        //                     inner JOIN penggajian_tkbms pt ON pt.penjualan_id = p.id
-        //                     inner join penggajians ps on ps.id = pt.penggajian_id 
-        //                     INNER JOIN m_karyawans mk ON mk.id = pt.karyawan_id
-        //                     inner join m_tarifs mt on mt.id = p.tarif_tkbm_id 	
-        //                     where  
-        //                         ps.id =?
-        //                         AND p.deleted_at is null
-        //                         AND pt.deleted_at is null
-        //                     GROUP BY p.id, p.created_at,mt.tarif_perkg
-        //                     ", [$karyawanid, $karyawanid, $karyawanid, $penggajianid]);
-
-
-        // V2 - BUG jumlah uang tidak 0 wloupun dia ga masuk
-        // $items = DB::select("SELECT pt.penjualan_id,p.tanggal_penjualan, p.netto, pt.tarif_perkg, pt.tkbm_agg as tkbms, pt.total, pt.jumlah_uang,pt.main_type_karyawan_id,
-        //                         CASE
-        //                             WHEN pt.main_type_karyawan_id = 2 THEN 
-        //                                 SUM(CASE WHEN pt.karyawan_id = ? THEN 1 ELSE 0 END) = 0
-        //                             ELSE null
-        //                         END AS is_tkbm_alpha
-        //                         from penggajian_tkbms pt
-        //                             inner join penjualans p on p.id = pt.penjualan_id 
-        //                             inner join m_karyawans mk on pt.karyawan_id = mk.id
-        //                             where pt.penggajian_id = ? 
-        //                         AND p.deleted_at is null AND pt.deleted_at is null 
-        //                         group by pt.penjualan_id,p.tanggal_penjualan, p.netto, pt.tarif_perkg, pt.tkbm_agg, pt.total, pt.jumlah_uang, pt.main_type_karyawan_id", [$karyawanid, $penggajianid]);
 
         $items = DB::select("SELECT 
 			x.penjualan_id,x.tanggal_penjualan, x.netto, x.tarif_perkg, x.tkbms, x.total, mp.nama_pabrik,

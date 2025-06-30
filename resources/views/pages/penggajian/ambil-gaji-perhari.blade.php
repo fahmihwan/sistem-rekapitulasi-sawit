@@ -157,13 +157,11 @@
                                     @foreach ($items as $item)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            {{-- <td style="{{ $item['alpha'] ? 'background-color: red; color:white' : '' }}"> --}}
                                             <td> {{ $item['created_at_formatted'] }}</td>
                                             <td>{{ $item['type_karyawan'] }}</td>
                                             <td>{{ $item['netto'] }} kg</td>
                                             <td>{{ $item['tarif_perkg_rp'] }}</td>
                                             <td>{{ $item['nama_pabrik'] }}</td>
-
                                             <td>
                                                 @for ($i = 0; $i < count($item['tkbms']); $i++)
                                                     - {{ isset($item['tkbms'][$i]) ? $item['tkbms'][$i] : '-' }} </br>
@@ -196,14 +194,13 @@
                                                         <i class="fa fa-trash"></i></button>
                                                 </form>
                                             </td>
-
                                         </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <th></th>
-                                        <th></th>s
+                                        <th></th>
                                         <th></th>
                                         <th>{{ $totalNetto }} Kg</th>
                                         <th colspan="" style="text-align: center"></th>

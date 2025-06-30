@@ -81,14 +81,14 @@
             <li>
                 <a href="/laba"><i class="fa fa-table fa-fw"></i> Perhitungan Laba</a>
             </li>
-            <li>
+            {{-- <li>
                 <a href="/slipgaji/karyawan"><i class="fa fa-table fa-fw"></i> Slip Gaji</a>
-            </li>
+            </li> --}}
             <li>
                 <a href="/penggajian"><i class="fa fa-table fa-fw"></i>Penggajian</a>
             </li>
             <li>
-                <a href="/pinjaman"><i class="fa fa-table fa-fw"></i>Peminjaman</a>
+                <a href="/pinjaman"><i class="fa fa-table fa-fw"></i>Pinjaman (Kasbon)</a>
             </li>
 
 

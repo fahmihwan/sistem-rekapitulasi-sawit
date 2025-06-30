@@ -128,14 +128,29 @@
                                     <tbody>
                                         @foreach ($items as $item)
                                             <tr class="">
+
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->periode_awal }}</td>
                                                 <td>{{ $item->periode_akhir }}</td>
                                                 <td>
-                                                    @foreach ($item->karyawans as $d)
+                                                    {{-- @foreach ($item->penggajian_karyawans as $d)
                                                         <a
                                                             href="/penggajian/{{ $item->id }}/{{ $d->id }}/detail-gaji">{{ $d->nama }}</a><br>
-                                                    @endforeach
+                                                    @endforeach --}}
+                                                    {{-- <button type="button" class="btn btn-sm btn-primary btn-edit-gaji"
+                                                        data-jsonkaryawan="{{ $item->penggajian_karyawans }}"
+                                                        data-target="#modalKaryawan" data-bs-toggle="modal">
+                                                        Bayar
+                                                    </button> --}}
+
+
+                                                    <button type="button" class="btn btn-primary btn-edit-gaji "
+                                                        data-toggle="modal"
+                                                        data-jsonkaryawan="{{ $item->penggajian_karyawans }}"
+                                                        data-target="#modalKaryawan">
+                                                        Bayar
+                                                    </button>
+
                                                 </td>
                                                 <td>
                                                     <form method="POST" action="/penggajian/{{ $item->id }}">
@@ -146,50 +161,6 @@
                                                             <i class="fa fa-trash"></i></button>
                                                     </form>
                                                 </td>
-                                                {{-- <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->label_periode }}</td>
-                                                <td>{{ $item->formatted_mulai }}</td>
-                                                <td>
-                                                    @if ($item->formatted_berakhir == null)
-                                                        <span class="label label-success" style="font-size: 12px">Periode
-                                                            masih berjalan</span>
-                                                    @else
-                                                        {{ $item->formatted_berakhir }}
-                                                    @endif
-                                                </td>
-
-                                                <td class="center">{{ $item->formatted_created_at }}</td>
-                                                <td style="display: flex; border-bottom: 1px">
-
-                                                    <button type="button" class="btn btn-sm  btn-warning btn-edit"
-                                                        style="margin-right: 10px" data-id="{{ $item->id }}"
-                                                        data-mulai="{{ $item->periode_awal }}"
-                                                        data-berakhir="{{ $item->periode_akhir }}"
-                                                        data-periode="{{ $item->periode }}"
-                                                        data-idops="{{ $item->ops->id }}" data-ops="{{ $item->ops->ops }}"
-                                                        data-bs-toggle="modal" data-toggle="modal"
-                                                        data-target="#modalCreateEdit" type="button">TUTUP PERIODE
-                                                    </button>
-
-
-                                                    @if ($item->periode_akhir != null)
-                                                        <button data-bs-toggle="modal" type="button"
-                                                            class="btn  btn-circle btn-edit"
-                                                            style="background-color: gray; color:white"
-                                                            onclick="alert('Periode sudah ditutup');">
-                                                            <i class="fa fa-lock"></i>
-                                                        </button>
-                                                    @else
-                                                        <form method="POST" action="/periode/{{ $item->id }}">
-                                                            @method('delete')
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-danger btn-circle "
-                                                                style="margin-right: 5px">
-                                                                <i class="fa fa-trash"></i></button>
-                                                        </form>
-                                                    @endif
-
-                                                </td> --}}
                                             </tr>
                                         @endforeach
 
@@ -241,8 +212,8 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Periode Akhir</label>
-                                            <input class="form-control" name="periode_akhir" type="date" value=""
-                                                id="periode_akhir">
+                                            <input class="form-control" name="periode_akhir" type="date"
+                                                value="" id="periode_akhir">
                                         </div>
                                     </div>
                                 </div>
@@ -267,6 +238,47 @@
             <!-- /.row -->
 
 
+
+            <!-- Modal -->
+            <div class="modal fade " id="modalKaryawan" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                aria-hidden="true ">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"
+                                aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalLabel">Modal title
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Karyawan</th>
+                                        <th>Pekerjaan utama</th>
+                                        <th>sudah dibayar?</th>
+                                        {{-- <th>Total Gaji</th> --}}
+                                        <th>#</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modal-karyawan-json-data">
+
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+
             <!-- /.row -->
         </div>
     @endsection
@@ -286,6 +298,76 @@
                     // $('#periode_akhir').prop('readonly', true);
 
                     // $('#ops_id_select').val('').trigger('change');
+                });
+
+                $('.btn-edit-gaji').on('click', function() {
+                    var jsonkaryawan = $(this).data('jsonkaryawan');
+                    console.log(jsonkaryawan);
+                    // $("#modal-karyawan-json-data").html("")
+
+
+
+                    // id
+                    // : 
+                    // "487ee51d-fde5-4917-935a-8697fc2b370a"
+                    // is_gaji_dibayarkan
+                    // : 
+                    // null
+                    // karyawan
+                    // : 
+                    // {id: 3, nama: 'FAHMI', main_type_karyawan_id: 2, main_type_karyawan: {…}}
+                    // karyawan_id
+                    // : 
+                    // 3
+                    // penggajian_id
+                    // : 
+                    // "43405ed0-297e-4512-97f2-9a36792ff5f3"
+                    // total_gaji
+                    // : 
+                    // 171123
+                    function formatRupiah(angka, withPrefix = true) {
+                        let formatted = new Intl.NumberFormat('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            minimumFractionDigits: 0
+                        }).format(angka);
+
+                        return withPrefix ? formatted : formatted.replace('Rp', '').trim();
+                    }
+
+
+                    let htmlJson = ""
+                    jsonkaryawan.forEach((e, i) => {
+
+                        htmlJson += ` <tr>
+                                        <td>${i+1}</td>
+                                        <td>${e.karyawan.nama}</td>
+                                        <td>${e.karyawan.main_type_karyawan?.type_karyawan}</td>
+                                        <td>
+                                            ${e.is_gaji_dibayarkan == true ? `<i class="fa fa-fw" aria-hidden="true"
+                                                                                                style="font-size: 25px; color: rgb(35, 187, 35)"
+                                                                                                title="Copy to use check-square">&#xf14a</i>` : 'belum'}
+                                            
+                                            </td>
+                                        
+                                        <td>
+                                            <a href="/penggajian/${e?.penggajian_id}/${e?.karyawan_id}/detail-gaji" class="btn btn-primary">cek</a>
+                                        </td>
+                                    </tr>`
+                    });
+
+
+                    $("#modal-karyawan-json-data").html(htmlJson)
+
+
+                    // var nama = $(this).data('nama');
+                    // var total = $(this).data('total');
+                    // var isdibayar = $(this).data('isdibayar');
+
+                    // $('#input_id_gaji').val(id);
+                    // $('#modal_nama').text(nama);
+                    // $('#modal_total').text(Number(total).toLocaleString('id-ID'));
+                    // $('#modal_cek').prop('checked', isdibayar == 1);
                 });
 
 

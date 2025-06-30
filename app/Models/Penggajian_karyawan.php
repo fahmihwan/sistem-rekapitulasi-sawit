@@ -13,4 +13,10 @@ class Penggajian_karyawan extends BaseModel
     use HasFactory, SoftDeletes, UsesUuid;
 
     protected $guarded = ['id'];
+
+
+    public function karyawan()
+    {
+        return $this->belongsTo(M_karyawan::class);
+    }
 }
