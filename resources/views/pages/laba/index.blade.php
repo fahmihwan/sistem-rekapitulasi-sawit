@@ -34,10 +34,6 @@
                                     Stok periode
                                 </div>
 
-                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" id="btn-create"
-                                    data-target="#modalCreateEdit">
-                                    <i class="fa fa-plus"></i> Tambah Data
-                                </button>
                             </div>
                         </div>
 
@@ -167,64 +163,6 @@
 
 
 
-            <div class="modal fade" id="modalCreateEdit" tabindex="-1" role="dialog" aria-labelledby="mymodalCreateEdit"
-                aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <form id='mainForm' role="form" method=POST action={{ '/periode' }}>
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal"
-                                    aria-hidden="true">&times;</button>
-                                <h4 class="modal-title" id="mymodalCreateEdit">Periode</h4>
-                            </div>
-
-
-                            <div class="modal-body">
-                                <input type="hidden" id="formMethod" name="_method" value="POST">
-                                @csrf
-
-                                <div class="form-group">
-                                    <label>Periode ke</label>
-                                    <input class="form-control" name="periode"
-                                        value="{{ isset($get_first_periode->periode) ? $get_first_periode->periode + 1 : 1 }}"
-                                        readonly>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Periode mulai</label>
-                                            <input class="form-control" name="periode_mulai" type="date"
-                                                value="{{ now()->toDateString() }}" id="periode_mulai">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Periode berakhir</label>
-                                            <input class="form-control" name="periode_berakhir" type="date"
-                                                value="" readonly id="periode_berakhir">
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-                            </div>
-                            <div class="modal-footer">
-
-                                <div class="">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Save changes</button>
-                                </div>
-
-
-                            </div>
-                        </form>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- /.row -->
 
 
             <!-- /.row -->

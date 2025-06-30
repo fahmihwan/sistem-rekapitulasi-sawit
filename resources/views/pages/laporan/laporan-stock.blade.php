@@ -43,35 +43,34 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Bulan</th>
-                                        <th>Tahun</th>
+                                        <th>Periode ke</th>
+                                        <th>Periode mulai</th>
+                                        <th>Periode berakhir</th>
                                         <th>Total bruto masuk</th>
                                         <th>Total netto masuk</th>
                                         <th>Total bruto keluar</th>
                                         <th>Total netto keluar</th>
-                                        <th>Total bruto Bulan ini</th>
-                                        <th>Total netto bulan ini</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($items as $item)
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->bulan }}</td>
-                                            <td>{{ $item->tahun }}</td>
-                                            <td>{{ $item->total_bruto_masuk }}</td>
-                                            <td>{{ $item->total_netto_masuk }}</td>
-                                            <td>{{ $item->total_bruto_keluar }}</td>
-                                            <td>{{ $item->total_netto_keluar }}</td>
-                                            <td>{{ $item->saldo_bruto_bulan_ini }}</td>
-                                            <td>{{ $item->saldo_netto_bulan_ini }}</td>
+                                            <td>Ke - {{ $item->periode }}</td>
+                                            <td>{{ $item->periode_mulai ? \Carbon\Carbon::parse($item->periode_mulai)->translatedFormat('d F Y') : '' }}
+                                            </td>
+                                            <td> {{ $item->periode_berakhir ? \Carbon\Carbon::parse($item->periode_berakhir)->translatedFormat('d F Y') : '' }}
+                                            </td>
+                                            <td>{{ number_format($item->total_bruto_masuk, 0, ',', '.') }} Kg</td>
+                                            <td>{{ number_format($item->total_netto_masuk, 0, ',', '.') }} Kg</td>
+                                            <td>{{ number_format($item->total_bruto_keluar, 0, ',', '.') }} Kg</td>
+                                            <td>{{ number_format($item->total_netto_keluar, 0, ',', '.') }} Kg</td>
                                         </tr>
                                     @endforeach
 
                                 </tbody>
                             </table>
                         </div>
-                        <!-- /.table-responsive -->
 
                     </div>
                     <!-- /.panel-body -->
