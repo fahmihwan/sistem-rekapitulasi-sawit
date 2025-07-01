@@ -42,6 +42,14 @@ class DatabaseSeeder extends Seeder
             'type_karyawan' => "TKBM"
         ]);
 
+        // M_type_karyawan::create([
+        //     'type_karyawan' => "BORONGAN"
+        // ]);  
+
+        M_type_karyawan::create([
+            'type_karyawan' => "LAINNYA"
+        ]);
+
         M_karyawan::create([
             'nama' => 'Ragil',
             'main_type_karyawan_id' => 1

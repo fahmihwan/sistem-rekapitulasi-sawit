@@ -33,7 +33,7 @@ class KaryawanController extends Controller
             'nama' => 'required|max:50',
             'main_type_karyawan' => 'required',
             'type_karyawan' => 'required|array',
-            'type_karyawan.*' => 'in:1,2',
+            'type_karyawan.*' => 'in:1,2,3',
         ]);
 
 
@@ -45,14 +45,17 @@ class KaryawanController extends Controller
                 'main_type_karyawan_id' => $validated['main_type_karyawan']
             ]);
 
-            $arr = [];
-            for ($i = 0; $i < count($validated['type_karyawan']); $i++) {
-                $arr[] =  [
-                    'karyawan_id' => $karyawan->id,
-                    'type_karyawan_id' => $validated['type_karyawan'][$i]
-                ];
+            if ($validated['main_type_karyawan'] != 3) {
+                $arr = [];
+                for ($i = 0; $i < count($validated['type_karyawan']); $i++) {
+                    $arr[] =  [
+                        'karyawan_id' => $karyawan->id,
+                        'type_karyawan_id' => $validated['type_karyawan'][$i]
+                    ];
+                }
+                M_jobs::insert($arr);
             }
-            M_jobs::insert($arr);
+
             DB::commit();
 
             return redirect()->back()->with('success', 'Data berhasil disimpan!');
@@ -72,7 +75,7 @@ class KaryawanController extends Controller
             'nama' => 'required|max:50',
             'main_type_karyawan' => 'required',
             'type_karyawan' => 'required|array',
-            'type_karyawan.*' => 'in:1,2',
+            'type_karyawan.*' => 'in:1,2,3',
         ]);
 
         try {
@@ -84,19 +87,20 @@ class KaryawanController extends Controller
                 'main_type_karyawan_id' => $validated['main_type_karyawan']
             ]);
 
-            M_jobs::where('karyawan_id', $id)->delete();
 
-            $arr = [];
-            for ($i = 0; $i < count($validated['type_karyawan']); $i++) {
-                $arr[] =  [
-                    'karyawan_id' => $karyawan->id,
-                    'type_karyawan_id' => $validated['type_karyawan'][$i]
-                ];
+            if ($validated['main_type_karyawan'] != 3) {
+                M_jobs::where('karyawan_id', $id)->delete();
+                $arr = [];
+                for ($i = 0; $i < count($validated['type_karyawan']); $i++) {
+                    $arr[] =  [
+                        'karyawan_id' => $karyawan->id,
+                        'type_karyawan_id' => $validated['type_karyawan'][$i]
+                    ];
+                }
+
+                M_jobs::insert($arr);
             }
-
-            M_jobs::insert($arr);
             DB::commit();
-
             return redirect()->back()->with('success', 'Data berhasil disimpan!');
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -111,6 +115,6 @@ class KaryawanController extends Controller
         $karyawan = M_karyawan::findOrFail($id);
 
         $karyawan->delete();
-        return redirect('/master/karyawan')->with('success', 'Data berhasil dihapus!');
+        return redirect()->back()->with('success', 'Data berhasil dihapus!');
     }
 }

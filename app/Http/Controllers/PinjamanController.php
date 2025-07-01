@@ -51,21 +51,24 @@ class PinjamanController extends Controller
                             pu.karyawan_id,
                             mk.nama,
                             mtk.type_karyawan,
+                            mk.main_type_karyawan_id,
                             (SUM(pu.nominal_peminjaman) - SUM(pu.nominal_pengembalian)) AS sisa_pinjaman
                         FROM pinjaman_uangs pu
                         INNER JOIN m_karyawans mk ON mk.id = pu.karyawan_id
                         INNER JOIN m_type_karyawans mtk ON mtk.id = mk.main_type_karyawan_id
                         WHERE pu.deleted_at IS NULL
-                        GROUP BY pu.karyawan_id, mk.nama, mtk.type_karyawan
+                        GROUP BY pu.karyawan_id, mk.nama, mtk.type_karyawan,mk.main_type_karyawan_id
                         "))->map(function ($item) {
             $item->sisa_pinjaman_formatted = 'Rp ' . number_format($item->sisa_pinjaman, 0, ',', '.');
             return $item;
         });
+
+        // return $list_sisa_pinjaman;
+        // return M_karyawan::all();
         return view('pages.pinjaman.index', [
             'items' =>  $data,
             'karyawans' => M_karyawan::all(),
-            'list_sisa_pinjaman' => $list_sisa_pinjaman
-            // 'get_first_periode' => Pinjaman_uang::orderBy('periode', 'desc')->first()
+            'list_sisa_pinjaman' => $list_sisa_pinjaman,
         ]);
     }
 
@@ -76,21 +79,27 @@ class PinjamanController extends Controller
     public function store(Request $request)
     {
 
+        if (!empty($request->selain_karyawan_id)) {
+            $request->merge([
+                'karyawan_id' => $request->selain_karyawan_id
+            ]);
+        }
+
         $request->merge([
             'nominal_peminjaman' => $request->nominal_peminjaman ?? 0,
             'nominal_pengembalian' => $request->nominal_pengembalian ?? 0,
-
         ]);
+
+
         $validated = $request->validate([
             'tanggal' => 'required|date',
             'karyawan_id' => 'required|integer',
             'nominal_peminjaman' => 'nullable|integer',
             'nominal_pengembalian' => 'nullable|integer',
             'keterangan' => 'nullable',
+            'pihak' => 'required',
+            'transaksi' => 'required'
         ]);
-
-
-
 
         Pinjaman_uang::create($validated);
         return redirect()->back()->with('success', 'Data berhasil disimpan!');
@@ -102,12 +111,21 @@ class PinjamanController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
+        if (!empty($request->selain_karyawan_id)) {
+            $request->merge([
+                'karyawan_id' => $request->selain_karyawan_id
+            ]);
+        }
+
         $validated = $request->validate([
             'tanggal' => 'required|date',
             'karyawan_id' => 'required|integer',
             'nominal_peminjaman' => 'nullable|integer',
             'nominal_pengembalian' => 'nullable|integer',
-            'keterangan' => 'required',
+            'keterangan' => 'nullable',
+            // 'pihak' => 'required',
+            // 'transaksi' => 'required'
         ]);
 
         $karyawan =  Pinjaman_uang::findOrFail($id);
