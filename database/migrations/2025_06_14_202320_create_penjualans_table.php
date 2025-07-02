@@ -26,11 +26,18 @@ return new class extends Migration
             $table->unsignedBigInteger('do_type_id');
             $table->foreign('do_type_id')->references('id')->on('m_delivery_order_types')->onDelete('cascade');
 
-            $table->unsignedBigInteger('tarif_tkbm_id');
+            $table->unsignedBigInteger('tarif_tkbm_id')->nullable();
             $table->foreign('tarif_tkbm_id')->references('id')->on('m_tarifs')->onDelete('cascade');
 
-            $table->unsignedBigInteger('tarif_sopir_id');
+            $table->unsignedBigInteger('tarif_sopir_id')->nullable();
             $table->foreign('tarif_sopir_id')->references('id')->on('m_tarifs')->onDelete('cascade');
+
+            $table->unsignedBigInteger('model_kerja_id')->nullable();
+            $table->foreign('model_kerja_id')->references('id')->on('m_modelkerjas')->onDelete('cascade');
+
+            $table->integer('tarif_sopir_borongan')->nullable();
+            $table->integer('tarif_tkbm_borongan')->nullable();
+
 
             $table->date('tanggal_penjualan')->nullable();
 

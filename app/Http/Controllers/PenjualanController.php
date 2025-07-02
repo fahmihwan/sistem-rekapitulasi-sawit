@@ -28,8 +28,8 @@ class PenjualanController extends Controller
             return "NOT FOUND";
         }
 
-        // return Tkbm::all();
         $query = Penjualan::with([
+            'model_kerja:id,model_kerja',
             'tarif_sopir' => fn($q) => $q->withTrashed(),
             'tarif_tkbm' => fn($q) => $q->withTrashed(),
             'periode' => fn($q) => $q->withTrashed()->select('id', 'periode', 'periode_mulai', 'periode_berakhir', 'stok'),
@@ -38,7 +38,6 @@ class PenjualanController extends Controller
             'tkbms:id,karyawan_id,penjualan_id,type_karyawan_id',
             'tkbms.karyawan:id,nama'
         ])->where('do_type_id', $DO_TYPE['id']);
-
 
 
 
@@ -65,9 +64,7 @@ class PenjualanController extends Controller
 
         $data = $query->paginate($perPage)->appends($request->query());
 
-        // return $data;
-        // return Utils::getTarifActive();
-
+        // return Utils::getKaryawanWithJobs();
 
         return view('pages.penjualan_TBS.index', [
             'items' =>  $data,
@@ -85,56 +82,64 @@ class PenjualanController extends Controller
 
     public function store(Request $request, $menu)
     {
+        if ($request->input('model_kerja_id') == 2) { //BORONGAN
+            $request->merge([
+                'tarif_sopir_id' => null,
+                'tarif_tkbm_id' => null,
+                'sopir_id' => $request->input('sopir_borongan_id'),
+                'tkbm_id' => $request->input('tkbm_borongan_id'),
+                'tarif_sopir_borongan' => $request->input('tarif_sopir_borongan'),
+                'tarif_tkbm_borongan' => $request->input('tarif_tkbm_borongan'),
+                'model_kerja_id' => 2,
+            ]);
+        } else if ($request->input('model_kerja_id') == 1) { //TONASE
+            $request->merge([
+                'tarif_sopir_id' => $request->input('tarif_sopir_id'),
+                'tarif_tkbm_id' => $request->input('tarif_tkbm_id'),
+                'sopir_id' => $request->input('sopir_id'),
+                'tkbm_id' => $request->input('tkbm_id'),
+                'tarif_sopir_borongan' => null,
+                'tarif_tkbm_borongan' => null,
+                'model_kerja_id' => 1,
+            ]);
+        }
+
+
+        $request->merge([
+            'uang' => str_replace('.', '', $request->input('uang')),
+        ]);
+
+
+        $rules = [
+            'tanggal_penjualan' => 'required|date',
+            'periode_id' => 'required',
+            'pabrik_id' => 'required|integer',
+            'sopir_id' => 'required|integer',
+            'tkbm_id' => 'required|array',
+            'timbangan_first' => 'required|numeric',
+            'timbangan_second' => 'required|numeric',
+            'model_kerja_id' => 'required',
+            'tarif_sopir_id' => 'nullable|numeric',
+            'tarif_tkbm_id' => 'nullable|numeric',
+            'tarif_sopir_borongan' => 'nullable|numeric',
+            'tarif_tkbm_borongan' => 'nullable|numeric',
+            'sortasi' => 'required|numeric',
+            'bruto' => 'required|numeric',
+            'netto' => 'required|numeric',
+            'harga' => 'required|numeric',
+            'uang' => 'required|numeric'
+        ];
+
+        $validated = $request->validate($rules);
 
         try {
             DB::beginTransaction();
 
-            // $tarifActive  = Utils::getTarifActive();
-            // if (empty($tarifActive['tarif_sopir_id'])) {
-            //     return 'Tarif SOPIR belum di tentukan';
-            // }
-
-            // if (empty($tarifActive['tarif_tkbm_id'])) {
-            //     return 'Tarif TKBM belum di tentukan';
-            // }
-
-
-            $request->merge([
-                'uang' => str_replace('.', '', $request->input('uang')),
-                // 'tarif_sopir_id' => $tarifActive['tarif_sopir_id'],
-                // 'tarif_tkbm_id' => $tarifActive['tarif_tkbm_id']
-            ]);
-
-            $rules = [
-                'tanggal_penjualan' => 'required|date',
-                'periode_id' => 'required',
-                'pabrik_id' => 'required|integer',
-                'sopir_id' => 'required|integer',
-                'tkbm_id' => 'required|array',
-                'timbangan_first' => 'required|numeric',
-                'timbangan_second' => 'required|numeric',
-                'tarif_sopir_id' => 'required|numeric',
-                'tarif_tkbm_id' => 'required|numeric',
-                'sortasi' => 'required|numeric',
-                'bruto' => 'required|numeric',
-                'netto' => 'required|numeric',
-                'harga' => 'required|numeric',
-                'uang' => 'required|numeric'
-            ];
-
-
-
-
-
-
-            $validated = $request->validate($rules);
-            // return $validated;
 
             $DO_TYPE =  Utils::mappingDO_type($menu);
             if ($DO_TYPE == null) {
                 return "NOT FOUND";
             };
-
 
             $validated['do_type_id'] = $DO_TYPE['id'];
 
@@ -142,13 +147,17 @@ class PenjualanController extends Controller
 
             $data = [];
 
+
             foreach ($validated['tkbm_id'] as $d) {
                 $data[] = [
                     'id' => (string) Str::uuid(),
                     'karyawan_id' => $d,
                     'penjualan_id' => $penjualan->id,
                     'type_karyawan_id' => 2, //TKBM
-                    'tarif_id' => $validated['tarif_tkbm_id'],
+                    'model_kerja_id' => $validated['model_kerja_id'],
+                    'tarif_id' => $validated['tarif_tkbm_id'] ? $validated['tarif_tkbm_id'] : null,
+                    'tarif_tkbm_borongan' => $validated['tarif_tkbm_borongan'] ? $validated['tarif_tkbm_borongan'] : null,
+                    'tarif_sopir_borongan' => null,
                 ];
             }
 
@@ -157,17 +166,18 @@ class PenjualanController extends Controller
                 'karyawan_id' => $validated['sopir_id'],
                 'penjualan_id' => $penjualan->id,
                 'type_karyawan_id' => 1, //SOPIR
-                'tarif_id' => $validated['tarif_sopir_id'],
+                'model_kerja_id' => $validated['model_kerja_id'],
+                'tarif_id' => $validated['tarif_sopir_id'] ? $validated['tarif_sopir_id'] : null,
+                'tarif_tkbm_borongan' => null,
+                'tarif_sopir_borongan' => $validated['tarif_sopir_borongan'] ? $validated['tarif_sopir_borongan'] : null
             ];
-
-            // return $data;
-
 
             Tkbm::insert($data);
             DB::commit();
             return redirect('/penjualan/tbs/' . $menu . '/view')->with('success', 'Transaksi berhasil disimpan!');
         } catch (\Throwable $e) {
             DB::rollback();
+
             return redirect()->back()->withInput()->withErrors(['error' => 'Gagal menyimpan transaksi: ' . $e->getMessage()]);
         }
     }
@@ -175,7 +185,28 @@ class PenjualanController extends Controller
 
     public function update(Request $request, $menu, $id)
     {
-        // return $request->all();
+
+        if ($request->input('model_kerja_id') == 2) { //BORONGAN
+            $request->merge([
+                'tarif_sopir_id' => null,
+                'tarif_tkbm_id' => null,
+                'sopir_id' => $request->input('sopir_borongan_id'),
+                'tkbm_id' => $request->input('tkbm_borongan_id'),
+                'tarif_sopir_borongan' => $request->input('tarif_sopir_borongan'),
+                'tarif_tkbm_borongan' => $request->input('tarif_tkbm_borongan'),
+                'model_kerja_id' => 2,
+            ]);
+        } else if ($request->input('model_kerja_id') == 1) { //TONASE
+            $request->merge([
+                'tarif_sopir_id' => $request->input('tarif_sopir_id'),
+                'tarif_tkbm_id' => $request->input('tarif_tkbm_id'),
+                'sopir_id' => $request->input('sopir_id'),
+                'tkbm_id' => $request->input('tkbm_id'),
+                'tarif_sopir_borongan' => null,
+                'tarif_tkbm_borongan' => null,
+                'model_kerja_id' => 1,
+            ]);
+        }
 
 
         try {
@@ -185,13 +216,16 @@ class PenjualanController extends Controller
             ]);
 
             $rules = [
+                'model_kerja_id' => 'required',
                 'pabrik_id' => 'required|integer',
                 'sopir_id' => 'required|integer',
                 'tkbm_id' => 'required|array',
                 'timbangan_first' => 'required|numeric',
                 'timbangan_second' => 'required|numeric',
-                'tarif_sopir_id' => 'required|numeric',
-                'tarif_tkbm_id' => 'required|numeric',
+                'tarif_sopir_id' => 'nullable|numeric',
+                'tarif_tkbm_id' => 'nullable|numeric',
+                'tarif_sopir_borongan' => 'nullable|numeric',
+                'tarif_tkbm_borongan' => 'nullable|numeric',
                 'sortasi' => 'required|numeric',
                 'bruto' => 'required|numeric',
                 'netto' => 'required|numeric',
@@ -219,7 +253,10 @@ class PenjualanController extends Controller
                     'karyawan_id' => $d,
                     'penjualan_id' => $penjualan->id,
                     'type_karyawan_id' => 2, //TKBM
-                    'tarif_id' => $validated['tarif_tkbm_id'],
+                    'model_kerja_id' => $validated['model_kerja_id'],
+                    'tarif_id' => $validated['tarif_tkbm_id'] ? $validated['tarif_tkbm_id'] : null,
+                    'tarif_tkbm_borongan' => $validated['tarif_tkbm_borongan'] ? $validated['tarif_tkbm_borongan'] : null,
+                    'tarif_sopir_borongan' => null,
                 ];
             }
 
@@ -227,8 +264,11 @@ class PenjualanController extends Controller
                 'id' => (string) Str::uuid(),
                 'karyawan_id' => $validated['sopir_id'],
                 'penjualan_id' => $penjualan->id,
+                'model_kerja_id' => $validated['model_kerja_id'],
                 'type_karyawan_id' => 1, //SOPIR
-                'tarif_id' => $validated['tarif_sopir_id'],
+                'tarif_id' => $validated['tarif_sopir_id'] ? $validated['tarif_sopir_id'] : null,
+                'tarif_tkbm_borongan' => null,
+                'tarif_sopir_borongan' => $validated['tarif_sopir_borongan'] ? $validated['tarif_sopir_borongan'] : null,
             ];
 
             Tkbm::insert($data);

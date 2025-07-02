@@ -25,6 +25,7 @@ class PenjualanFactory extends Factory
             'pabrik_id'      =>  $this->faker->numberBetween(1, 2),
             'sopir_id'        =>  $this->faker->numberBetween(1, 2),
             // 'do_type_id'      =>  $this->faker->numberBetween(1, 2),
+            'model_kerja_id' => 1,
             'do_type_id' => 1,
             'tarif_sopir_id' => 1,
             'tarif_tkbm_id'  => 2,

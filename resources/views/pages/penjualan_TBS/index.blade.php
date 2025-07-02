@@ -147,23 +147,37 @@
                                         <tr class="">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $item->formatted_tgl_penjualan }} /
-
-                                                <span class="label label-success">{{ $item->periode->periode }}</span>
+                                                <span class="label label-success">{{ $item->periode->periode }}</span> <br>
+                                                <span class="text-info"
+                                                    style="font-weight: bold">{{ isset($item->model_kerja->model_kerja) ? $item->model_kerja->model_kerja : '' }}</span>
                                                 {{-- <span class=""
                                                     style="color: red">{{ $item->periode->periode }}</span>  --}}
-
                                             </td>
                                             <td>{{ $item->pabrik->nama_pabrik ?? '-' }}</td>
                                             <td>
-                                                <span
-                                                    class="label label-primary">{{ $item->tarif_sopir->tarif_perkg }}</span>
-                                                {{ $item->sopir->nama ?? '-' }}
+                                                @if ($item->model_kerja_id == 1)
+                                                    <span
+                                                        class="label label-primary">{{ $item->tarif_sopir->tarif_perkg ?? '' }}</span>
+                                                    {{ $item->sopir->nama ?? '-' }}
+                                                @endif
+                                                @if ($item->model_kerja_id == 2)
+                                                    <span
+                                                        class="label label-warning">{{ $item->tarif_sopir_borongan ?? '' }}</span>
+                                                    {{ $item->sopir->nama ?? '-' }}
+                                                @endif
                                             </td>
                                             <td>
                                                 <div style="display: flex">
                                                     <div style="margin-right: 5px">
-                                                        <span
-                                                            class="label label-primary">{{ $item->tarif_tkbm->tarif_perkg }}</span>
+                                                        @if ($item->model_kerja_id == 1)
+                                                            <span
+                                                                class="label label-primary">{{ $item->tarif_tkbm->tarif_perkg ?? '' }}</span>
+                                                        @endif
+                                                        @if ($item->model_kerja_id == 2)
+                                                            <span
+                                                                class="label label-warning">{{ $item->tarif_tkbm_borongan ?? '' }}</span>
+                                                            {{-- {{ $item->sopir->nama ?? '-' }} --}}
+                                                        @endif
                                                     </div>
                                                     <div>
                                                         @foreach ($item->tkbms as $d)
@@ -200,8 +214,11 @@
                                                     <button data-id="{{ $item->id }}"
                                                         data-tarifsopirid="{{ $item->tarif_sopir_id }}"
                                                         data-tariftkbmid="{{ $item->tarif_tkbm_id }}"
-                                                        data-tarifsopirtext="{{ $item->tarif_sopir->tarif_perkg }}"
-                                                        data-tariftkbmtext="{{ $item->tarif_tkbm->tarif_perkg }}"
+                                                        data-tarifsopirborongan="{{ $item->tarif_sopir_borongan ?? '' }}"
+                                                        data-tariftkbmborongan="{{ $item->tarif_tkbm_borongan ?? '' }}"
+                                                        data-tarifsopirtext="{{ $item->tarif_sopir->tarif_perkg ?? '' }}"
+                                                        data-tariftkbmtext="{{ $item->tarif_tkbm->tarif_perkg ?? '' }}"
+                                                        data-modelkerja="{{ $item->model_kerja_id }}"
                                                         data-tanggalpenjualan={{ $item->tanggal_penjualan }}
                                                         data-periode={{ $item->periode->periode }}
                                                         data-nama="{{ $item->sopir->id ?? '' }}"
@@ -218,16 +235,17 @@
                                                         style="margin-right: 5px" data-id="{{ $item->id }}"><i
                                                             class="fa fa-edit"></i>
                                                     </button>
-                                                @endif
 
-                                                <form method="POST"
-                                                    action="/penjualan/tbs/{{ $menu }}/delete/{{ $item->id }}">
-                                                    @method('delete')
-                                                    @csrf
-                                                    <button type="submit"
-                                                        class="btn btn-danger btn-circle btn-confirm-delete">
-                                                        <i class="fa fa-trash"></i></button>
-                                                </form>
+
+                                                    <form method="POST"
+                                                        action="/penjualan/tbs/{{ $menu }}/delete/{{ $item->id }}">
+                                                        @method('delete')
+                                                        @csrf
+                                                        <button type="submit"
+                                                            class="btn btn-danger btn-circle btn-confirm-delete">
+                                                            <i class="fa fa-trash"></i></button>
+                                                    </form>
+                                                @endif
 
 
                                             </td>
@@ -320,84 +338,197 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-
-                                    <div class="form-group">
-                                        <label for="sopir_id">Pilih Sopir</label><br>
-                                        <select name="sopir_id" id="sopir_id" class="form-control"
-                                            style="width: 100%; height: 200px !important;">
-                                            <option value="">-- Pilih Sopir --</option>
-                                            @foreach ($karyawans as $karyawan)
-                                                @if ($karyawan->type_karyawan == 'SOPIR')
-                                                    <option value="{{ $karyawan->id }}">{{ $karyawan->nama }}</option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class="row">
-
-
-
-                                <div class="col-md-3">
-                                    <div class="form-group" id="form-periode-select">
-                                        <label>Tarif Sopir</label>
-                                        <select name="tarif_sopir_id" id="tarif_sopir_id_select" class="form-control"
-                                            style="width: 100%; ">
-                                            <option value="">-- Pilih --</option>
-                                            @foreach ($data_list_tarif as $p)
-                                                @if ($p->type_karyawan == 'SOPIR')
-                                                    <option value="{{ $p->id }}"
-                                                        {{ old('tarif_sopir_id') == $p->id ? 'selected' : '' }}>
-                                                        {{ $p->tarif_perkg }}</option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group" id="form-periode-select">
-                                        <label>Tarif TKBM</label>
-                                        <select name="tarif_tkbm_id" id="tarif_tkbm_id_select" class="form-control"
-                                            style="width: 100%; ">
-                                            <option value="">-- Pilih --</option>
-                                            @foreach ($data_list_tarif as $p)
-                                                @if ($p->type_karyawan == 'TKBM')
-                                                    <option value="{{ $p->id }}"
-                                                        {{ old('tarif_tkbm_id') == $p->id ? 'selected' : '' }}>
-                                                        {{ $p->tarif_perkg }}</option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
                                     <div class="form-group ">
                                         <label>Harga Pabrik</label>
                                         <div class="form-group input-group">
                                             <span class="input-group-addon">Rp</span>
                                             <input type="number" class="form-control" name="harga"
-                                                value="{{ old('harga') }}" id="harga">
+                                                value="{{ old('harga', 0) }}" id="harga">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group"
+                                style="border:1px solid rgb(70, 137, 230); padding: 5px; border-radius: 5px;">
+                                <label>Model Kerja</label>
+                                <div>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="model_kerja_id" id="tonase" value="1"
+                                            checked style="">Tonase
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="model_kerja_id" id="borongan"
+                                            value="2">Borongan
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+
+
+
+                            </div>
+                            {{-- TARIF TONASE --}}
+                            <div id="tarif-tonase">
+                                <div class="row">
+                                    <div>
+                                        <div class="col-md-3">
+                                            <div class="form-group" id="form-periode-select">
+                                                <label>Tarif Sopir</label>
+                                                <select name="tarif_sopir_id" id="tarif_sopir_id_select"
+                                                    class="form-control" style="width: 100%; ">
+                                                    <option value="">-- Pilih --</option>
+                                                    @foreach ($data_list_tarif as $p)
+                                                        @if ($p->type_karyawan == 'SOPIR')
+                                                            <option value="{{ $p->id }}"
+                                                                {{ old('tarif_sopir_id') == $p->id ? 'selected' : '' }}>
+                                                                {{ $p->tarif_perkg }}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group" id="form-periode-select">
+                                                <label>Tarif TKBM</label>
+                                                <select name="tarif_tkbm_id" id="tarif_tkbm_id_select"
+                                                    class="form-control" style="width: 100%; ">
+                                                    <option value="">-- Pilih --</option>
+                                                    @foreach ($data_list_tarif as $p)
+                                                        @if ($p->type_karyawan == 'TKBM')
+                                                            <option value="{{ $p->id }}"
+                                                                {{ old('tarif_tkbm_id') == $p->id ? 'selected' : '' }}>
+                                                                {{ $p->tarif_perkg }}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="sopir_id">Pilih Sopir</label><br>
+                                            <select name="sopir_id" id="sopir_id" class="form-control"
+                                                style="width: 100%; height: 200px !important;">
+                                                {{-- <option value="">-- Pilih Sopir --</option> --}}
+                                                {{-- @foreach ($karyawans as $karyawan)
+                                                    @if ($karyawan->type_karyawan == 'SOPIR')
+                                                        <option value="{{ $karyawan->id }}">{{ $karyawan->nama }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach --}}
+                                                <option value="">-- Pilih Sopir --</option>
+                                                @foreach ($karyawans as $karyawan)
+                                                    @if ($karyawan->type_karyawan == 'SOPIR')
+                                                        <option value="{{ $karyawan->id }}"
+                                                            {{ old('sopir_id') == $karyawan->id ? 'selected' : '' }}>
+                                                            {{ $karyawan->nama }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @php
+                                    // Pastikan nilai selalu array
+                                    $selectedTkbm = old('tkbm_id');
+
+                                    // Jika tidak ada old(), dan misalnya ini form edit, fallback ke $model->tkbm_ids
+                                    if (!is_array($selectedTkbm)) {
+                                        $selectedTkbm =
+                                            isset($model) && is_array($model->tkbm_ids ?? null) ? $model->tkbm_ids : [];
+                                    }
+                                @endphp
+
+                                <div class="form-group">
+                                    <select name="tkbm_id[]" multiple="multiple" id="tkbm_id" class="form-control"
+                                        style="width: 100%; height: 200px !important;">
+                                        @foreach ($karyawans as $karyawan)
+                                            @if ($karyawan->type_karyawan == 'TKBM')
+                                                <option value="{{ $karyawan->id }}"
+                                                    {{ in_array($karyawan->id, $selectedTkbm) ? 'selected' : '' }}>
+                                                    {{ $karyawan->nama }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+                            {{-- TARIF BORONGAN --}}
+                            <div id="tarif-borongan">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group ">
+                                            <label>Tarif Sopir</label>
+                                            <div class="form-group ">
+                                                <input type="number" class="form-control" name="tarif_sopir_borongan"
+                                                    {{-- value="{{ old('tarif_sopir_borongan') }}"  --}} value="0" id="tarif_sopir_borongan">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group ">
+                                            <label>Tarif TKBM</label>
+                                            <div class="form-group ">
+                                                <input type="number" class="form-control" name="tarif_tkbm_borongan"
+                                                    {{-- value="{{ old('tarif_tkbm_borongan') }}" --}} value="0" id="tarif_tkbm_borongan">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
 
-                            </div>
-                            <div class="form-group">
-                                <label for="tkbm_id">Pilih TKBM</label><br>
-                                <select name="tkbm_id[]" multiple="multiple" id="tkbm_id" class="form-control"
-                                    style="width: 100%; height: 200px !important;">
-                                    <option value="">-- Pilih TKBM --</option>
-                                    @foreach ($karyawans as $karyawan)
-                                        @if ($karyawan->type_karyawan == 'TKBM')
-                                            <option value="{{ $karyawan->id }}">{{ $karyawan->nama }}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
 
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="sopir_id">Pilih Sopir</label><br>
+                                            <select name="sopir_borongan_id" id="sopir_borongan_id" class="form-control"
+                                                style="width: 100%; height: 200px !important;">
+                                                <option value="">-- Pilih Sopir --</option>
+                                                @foreach ($karyawans as $karyawan)
+                                                    @if ($karyawan->type_karyawan_id == 1 || $karyawan->type_karyawan_id == 4)
+                                                        <option value="{{ $karyawan->id }}">{{ $karyawan->nama }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="form-group">
+                                    <label for="tkbm_id">Pilih TKBM</label><br>
+                                    <select name="tkbm_borongan_id[]" multiple="multiple" id="tkbm_borongan_id"
+                                        class="form-control" style="width: 100%; height: 200px !important;">
+                                        {{-- <option value="">-- Pilih TKBM --</option> --}}
+                                        @foreach ($karyawans as $karyawan)
+                                            @if ($karyawan->type_karyawan_id == 2 || $karyawan->type_karyawan_id == 4)
+                                                <option value="{{ $karyawan->id }}">{{ $karyawan->nama }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
 
 
                             <div class="row">
@@ -406,7 +537,7 @@
                                         <label>Timbangan 1 (kg)</label>
                                         <div class="form-group ">
                                             <input type="number" class="form-control" name="timbangan_first"
-                                                value="{{ old('timbangan_first') }}" id="timbangan_first">
+                                                value="{{ old('timbangan_first', 0) }}" id="timbangan_first">
                                             {{-- <span class="input-group-addon">Kg</span> --}}
                                         </div>
                                     </div>
@@ -416,7 +547,7 @@
                                         <label>Timbangan 2 (kg)</label>
                                         <div class="form-group ">
                                             <input type="number" class="form-control" name="timbangan_second"
-                                                value="{{ old('timbangan_second') }}" id="timbangan_second">
+                                                value="{{ old('timbangan_second', 0) }}" id="timbangan_second">
                                             {{-- <span class="input-group-addon">Kg</span> --}}
                                         </div>
                                     </div>
@@ -425,7 +556,7 @@
                                     <div class="form-group ">
                                         <label>Sortasi (%)</label>
                                         <div class="form-group input-group">
-                                            <input class="form-control" name="sortasi" value="{{ old('sortasi') }}"
+                                            <input class="form-control" name="sortasi" value="{{ old('sortasi', 0) }}"
                                                 id="sortasi">
                                             <span class="input-group-addon">%</span>
                                         </div>
@@ -529,6 +660,27 @@
 
             const dataTarif = @json($data_tarif)
 
+            var value = $('input[name="model_kerja_id"]').val();
+            if (value === '1') {
+                $('#tarif-tonase').show();
+                $('#tarif-borongan').hide();
+            } else if (value === '2') {
+                $('#tarif-tonase').hide();
+                $('#tarif-borongan').show();
+            }
+
+            $('input[name="model_kerja_id"]').on('change', function() {
+                var value = $(this).val();
+                if (value === '1') {
+                    $('#tarif-tonase').show();
+                    $('#tarif-borongan').hide();
+                    // clearModelKerjaGroup()
+                } else if (value === '2') {
+                    $('#tarif-tonase').hide();
+                    $('#tarif-borongan').show();
+                    // clearModelKerjaGroup()
+                }
+            });
 
 
             if (dataTarif.tarif_sopir_id == null || dataTarif?.tarif_tkbm_id == null) {
@@ -558,6 +710,22 @@
                     allowClear: true,
                     dropdownParent: $('#modalCreateEdit')
                 });
+
+
+                $('#sopir_borongan_id').select2({
+                    placeholder: "Pilih User",
+                    allowClear: true,
+                    dropdownParent: $('#modalCreateEdit')
+                });
+
+                $('#tkbm_borongan_id').select2({
+                    placeholder: "Pilih User",
+                    allowClear: true,
+                    dropdownParent: $('#modalCreateEdit')
+                });
+
+
+
             });
 
 
@@ -605,8 +773,22 @@
             $('#netto, #harga').on('input', hitungRUMAH_LAHAN);
             // }
 
+            function clearModelKerjaGroup() {
+                $('#tarif_sopir_id_select').val('').trigger('change');
+                $('#tarif_tkbm_id_select').val('').trigger('change');
+                $('#sopir_id').val('').trigger('change');
+                $('#tkbm_id').val('').trigger('change');
+                $('#sopir_borongan_id').val('').trigger('change');
+                $('#tkbm_borongan_id').val('').trigger('change');
+                $('#tarif_sopir_borongan').val('')
+                $('#tarif_tkbm_borongan').val('')
+            }
+
+
+
             $('#btn-create').on('click', function() {
                 $('#mainForm')[0].reset(); // Kosongkan form
+                clearModelKerjaGroup()
                 $('#mymodalCreateEdit').text('Tambah TBS ' + menu);
                 $('#mainForm').attr('action', '/penjualan/tbs/' + menu + '/view');
                 $('#tanggal_penjualan').prop('disabled', false);
@@ -629,55 +811,97 @@
 
 
 
+
                 const tarifSopirId = $(this).data('tarifsopirid');
                 const tarifTkbmId = $(this).data('tariftkbmid');
                 const tarifSopirText = $(this).data('tarifsopirtext');
                 const tarifTkbmText = $(this).data('tariftkbmtext');
+                const tarifTkbmBorongan = $(this).data('tariftkbmborongan')
+                const tarifSopirBorongan = $(this).data('tarifsopirborongan')
 
-                console.log(tarifSopirId, tarifSopirText);
-                console.log(tarifTkbmId, tarifTkbmText);
 
 
-                if ($('#tarif_sopir_id_select option[value="' + tarifSopirId + '"]').length === 0) {
-                    $('#tarif_sopir_id_select').append(
-                        $('<option>', {
-                            value: tarifSopirId,
-                            text: tarifSopirText
-                        })
-                    );
-                }
-                $('#tarif_sopir_id_select').val(tarifSopirId).trigger('change');
+                const modelkerja = $(this).data('modelkerja')
+                $(`input[name="model_kerja_id"][value="${modelkerja}"]`).prop('checked', true);
 
-                if ($('#tarif_tkbm_id_select option[value="' + tarifTkbmId + '"]').length === 0) {
-                    $('#tarif_tkbm_id_select').append(
-                        $('<option>', {
-                            value: tarifTkbmId,
-                            text: tarifTkbmText
-                        })
-                    );
+                console.log(modelkerja);
+                if (modelkerja === 1) {
+                    $('#tarif-tonase').show();
+                    $('#tarif-borongan').hide();
+                } else if (modelkerja === 2) {
+                    $('#tarif-tonase').hide();
+                    $('#tarif-borongan').show();
                 }
 
-                $('#tarif_tkbm_id_select').val(tarifTkbmId).trigger('change');
+                if (modelkerja === 1) {
+                    if ($('#tarif_sopir_id_select option[value="' + tarifSopirId + '"]').length === 0) {
+                        $('#tarif_sopir_id_select').append(
+                            $('<option>', {
+                                value: tarifSopirId,
+                                text: tarifSopirText
+                            })
+                        );
+                    }
+                    $('#tarif_sopir_id_select').val(tarifSopirId).trigger('change');
+
+                    if ($('#tarif_tkbm_id_select option[value="' + tarifTkbmId + '"]').length === 0) {
+                        $('#tarif_tkbm_id_select').append(
+                            $('<option>', {
+                                value: tarifTkbmId,
+                                text: tarifTkbmText
+                            })
+                        );
+                    }
+                    $('#tarif_tkbm_id_select').val(tarifTkbmId).trigger('change');
+
+                    $('#sopir_id').val($(this).data('nama')).trigger('change');;
+
+                    const tkbms = $(this).data('tkbms');
+                    const karyawanIds = tkbms.map(t => t.karyawan_id);
+                    $('#tkbm_id').val(karyawanIds).trigger('change');;
+                } else if (modelkerja == 2) {
+                    // if ($('#tarif_sopir_id_select option[value="' + tarifSopirId + '"]').length === 0) {
+                    //     $('#tarif_sopir_id_select').append(
+                    //         $('<option>', {
+                    //             value: tarifSopirId,
+                    //             text: tarifSopirText
+                    //         })
+                    //     );
+                    // }
+                    // $('#tarif_sopir_id_select').val(tarifSopirId).trigger('change');
+
+                    // if ($('#tarif_tkbm_id_select option[value="' + tarifTkbmId + '"]').length === 0) {
+                    //     $('#tarif_tkbm_id_select').append(
+                    //         $('<option>', {
+                    //             value: tarifTkbmId,
+                    //             text: tarifTkbmText
+                    //         })
+                    //     );
+                    // }
+                    // $('#tarif_tkbm_id_select').val(tarifTkbmId).trigger('change');
+
+                    $('#sopir_borongan_id').val($(this).data('nama')).trigger('change');;
+
+                    const tkbms = $(this).data('tkbms');
+                    const karyawanIds = tkbms.map(t => t.karyawan_id);
+                    $('#tkbm_borongan_id').val(karyawanIds).trigger('change');;
+
+                    $('#tarif_sopir_borongan').val(tarifSopirBorongan)
+                    $('#tarif_tkbm_borongan').val(tarifTkbmBorongan)
+                }
+
+
+
+
 
                 $('#tanggal_penjualan').val($(this).data('tanggalpenjualan'));
                 $('#periode_id_text').val($(this).data('periode'));
-
                 $('#tanggal_penjualan').prop('disabled', true);
                 $('#periode_id_text').prop('disabled', true);
-
-
-                const tkbms = $(this).data('tkbms');
-                const karyawanIds = tkbms.map(t => t.karyawan_id);
-
-                console.log($(this).data('pabrik'));
                 $('#pabrik_id').val($(this).data('pabrik')).trigger('change');;
-                $('#sopir_id').val($(this).data('nama')).trigger('change');;
-                $('#tkbm_id').val(karyawanIds).trigger('change');;
-
 
                 $('#netto').val($(this).data('netto'));
                 $('#harga').val($(this).data('harga'));
-                // $('#uang').val($(this).data('uang'));
                 $('#uang').val(formatRupiah($(this).data('uang')));
 
                 $('#timbangan_first').val($(this).data('timbangan1'));

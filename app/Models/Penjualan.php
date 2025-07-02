@@ -30,6 +30,11 @@ class Penjualan extends BaseModel
     }
 
 
+    public function model_kerja()
+    {
+        return $this->belongsTo(M_modelkerja::class);
+    }
+
 
 
     public function tkbms()

@@ -151,16 +151,18 @@
                                                         data-toggle="modal" data-target="#modalCreateEdit"
                                                         data-id="{{ $item->id }}"><i class="fa fa-edit"></i>
                                                     </button>
+
+                                                    <form method="POST"
+                                                        action="/pembelian/tbs/{{ $menu }}/delete/{{ $item->id }}">
+                                                        @method('delete')
+                                                        @csrf
+                                                        <button type="submit"
+                                                            class="btn btn-danger btn-circle btn-confirm-delete">
+                                                            <i class="fa fa-trash"></i></button>
+                                                    </form>
                                                 @endif
 
-                                                <form method="POST"
-                                                    action="/pembelian/tbs/{{ $menu }}/delete/{{ $item->id }}">
-                                                    @method('delete')
-                                                    @csrf
-                                                    <button type="submit"
-                                                        class="btn btn-danger btn-circle btn-confirm-delete">
-                                                        <i class="fa fa-trash"></i></button>
-                                                </form>
+
 
                                             </td>
                                         </tr>

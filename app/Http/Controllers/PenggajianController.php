@@ -355,6 +355,7 @@ class PenggajianController extends Controller
                 return redirect()->back()->withErrors("data pekerja tkbm tidak ditemukan pada periode tersebut ");
             }
 
+            // return $copy_tkbm;
             $penggajian = Penggajian::create($validated);
 
             $arr = [];

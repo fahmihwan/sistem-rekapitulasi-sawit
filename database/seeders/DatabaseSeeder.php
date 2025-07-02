@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\M_delivery_order_type;
 use App\Models\M_jobs;
 use App\Models\M_karyawan;
+use App\Models\M_modelkerja;
 use App\Models\M_ops;
 use App\Models\M_pabrik;
 use App\Models\M_tarif;
@@ -34,6 +35,16 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('qweqwe123')
         ]);
 
+        M_modelkerja::create([
+            'model_kerja' => "TONASE"
+        ]);
+
+        M_modelkerja::create([
+            'model_kerja' => "BORONGAN"
+        ]);
+
+
+
         M_type_karyawan::create([
             'type_karyawan' => "SOPIR"
         ]);
@@ -42,13 +53,15 @@ class DatabaseSeeder extends Seeder
             'type_karyawan' => "TKBM"
         ]);
 
-        // M_type_karyawan::create([
-        //     'type_karyawan' => "BORONGAN"
-        // ]);  
-
         M_type_karyawan::create([
             'type_karyawan' => "LAINNYA"
         ]);
+
+        M_type_karyawan::create([
+            'type_karyawan' => "BORONGAN"
+        ]);
+
+
 
         M_karyawan::create([
             'nama' => 'Ragil',
@@ -64,9 +77,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
+
         M_karyawan::factory(5)->create();
 
-        // M_pabrik::factory(3)->create();
+
+
         M_pabrik::create([
             'nama_pabrik' => 'AGRO'
         ]);
@@ -94,6 +109,17 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
+
+        for ($j = 7; $j >= 1; $j--) {
+            $mkId = M_karyawan::create([
+                'nama' => 'BORONGAN ' . $j,
+                'main_type_karyawan_id' => 4
+            ])->id;
+            M_jobs::create([
+                'karyawan_id'  => $mkId,
+                'type_karyawan_id' => 4
+            ]);
+        }
 
         M_type_tbs::create(['type_tbs' => 'TBS RUMAH']);
         M_type_tbs::create(['type_tbs' => 'TBS LAHAN']);
@@ -227,6 +253,7 @@ class DatabaseSeeder extends Seeder
                 Tkbm::factory()->create([
                     'penjualan_id' => $penjualan->id,
                     'karyawan_id' => $karyawanId,
+                    'model_kerja_id' => 1,
                     'type_karyawan_id' => 2,
                     'tarif_id' => 2,
                 ]);
