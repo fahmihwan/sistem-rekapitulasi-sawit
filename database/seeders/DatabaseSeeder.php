@@ -228,7 +228,7 @@ class DatabaseSeeder extends Seeder
 
         // $penjualans = Penjualan::factory(50)->create();
 
-        $total = 10; // jumlah data yang akan dibuat
+        $total = 0; // jumlah data yang akan dibuat
         $penjualans = []; // Array untuk menyimpan entri Penjualan
         // Membuat entri Penjualan
         for ($i = 0; $i < $total; $i++) {
