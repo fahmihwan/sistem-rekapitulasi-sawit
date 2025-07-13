@@ -71,11 +71,14 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/penggajian', [PenggajianController::class, 'index']);
+    Route::get("penggajian/{id}", [PenggajianController::class, 'show_karyawan_penggajian_ajax']);
     Route::post('/penggajian', [PenggajianController::class, 'store']);
     Route::delete('/penggajian/{id}', [PenggajianController::class, 'destroy']);
     Route::get('/penggajian/{penggajianid}/{karyawanid}/detail-gaji', [PenggajianController::class, 'detail_gaji']);
     Route::get('/penggajian/{penggajianid}/{karyawanid}/ambil-gaji-perhari', [PenggajianController::class, 'ambil_gaji_perhari']);
     Route::put('/penggajian/{penggajianid}/{karyawanid}/ambil-gaji-perhari', [PenggajianController::class, 'update_ambil_gaji']);
+
+
 
     Route::get('/penggajianv2', [PenggajianV2Controller::class, 'detail_gaji']);
 

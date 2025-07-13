@@ -324,7 +324,7 @@ class PenggajianV2Controller extends Controller
 
 
 
-    $karyawanid = 1;
+    $karyawanid = 3;
     $karyawan = M_karyawan::with(['main_type_karyawan'])->findOrFail($karyawanid);
     // return $karyawan;
 

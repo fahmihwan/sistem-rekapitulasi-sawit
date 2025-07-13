@@ -6,6 +6,7 @@ use App\Helpers\Utils;
 use App\Models\M_jobs;
 use App\Models\M_karyawan;
 use App\Models\M_pabrik;
+use App\Models\M_tarif;
 use App\Models\Pembelian_tbs;
 use App\Models\Penjualan;
 use App\Models\Periode;
@@ -132,6 +133,7 @@ class PenjualanController extends Controller
 
         $validated = $request->validate($rules);
 
+
         try {
             DB::beginTransaction();
 
@@ -147,6 +149,18 @@ class PenjualanController extends Controller
 
             $data = [];
 
+
+            // rumus tkbm: total * netto / per_kg
+            // sum($validated['tkbm_id']) * 
+
+
+            // if ($validated['model_kerja_id'] == 1) { //tkbm
+            //     $tarifTKBM = M_tarif::where('id', $validated['tarif_tkbm_id'])->first();
+            //     $pendapatan = $validated['netto'] * $tarif->tarif_perkg / count($validated['tkbm_id']);
+
+            //     $tarif = M_tarif::where('id', $validated['tarif_sopir_id'])->first();
+            // } elseif ($validated['model_kerja_id'] == 2) {
+            // }
 
             foreach ($validated['tkbm_id'] as $d) {
                 $data[] = [
@@ -245,7 +259,8 @@ class PenjualanController extends Controller
             $penjualan = Penjualan::findOrFail($id);
             $penjualan->update($validated);
 
-            Tkbm::where('penjualan_id', $id)->delete();
+            Tkbm::where('penjualan_id', $id)->forceDelete();
+
             $data = [];
             foreach ($validated['tkbm_id'] as $d) {
                 $data[] = [
@@ -289,9 +304,11 @@ class PenjualanController extends Controller
         if ($DO_TYPE == null) {
             return "NOT FOUND";
         }
-        $karyawan = Penjualan::findOrFail($id);
+        $penjualan = Penjualan::findOrFail($id);
+        $penjualan->delete();
 
-        $karyawan->delete();
+        Tkbm::where('penjualan_id', $penjualan->id)->forceDelete();
+
         return redirect('/penjualan/tbs/' . $menu . '/view')->with('success', 'Transaksi berhasil dihapus!');
     }
 }

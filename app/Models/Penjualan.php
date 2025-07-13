@@ -19,6 +19,7 @@ class Penjualan extends BaseModel
     protected $guarded = ['id'];
 
 
+
     public function tarif_sopir()
     {
         return $this->belongsTo(M_tarif::class);

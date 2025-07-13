@@ -138,20 +138,10 @@
                                                 </td>
 
                                                 <td>
-                                                    {{-- @foreach ($item->penggajian_karyawans as $d)
-                                                        <a
-                                                            href="/penggajian/{{ $item->id }}/{{ $d->id }}/detail-gaji">{{ $d->nama }}</a><br>
-                                                    @endforeach --}}
-                                                    {{-- <button type="button" class="btn btn-sm btn-primary btn-edit-gaji"
-                                                        data-jsonkaryawan="{{ $item->penggajian_karyawans }}"
-                                                        data-target="#modalKaryawan" data-bs-toggle="modal">
-                                                        Bayar
-                                                    </button> --}}
 
 
-                                                    <button type="button" class="btn btn-primary btn-edit-gaji "
-                                                        data-toggle="modal"
-                                                        data-jsonkaryawan="{{ $item->penggajian_karyawans }}"
+                                                    <button type="button" class="btn btn-primary btn-bayar "
+                                                        data-toggle="modal" data-penggajianid="{{ $item->id }}"
                                                         data-target="#modalKaryawan">
                                                         Bayar
                                                     </button>
@@ -306,64 +296,70 @@
                     // $('#ops_id_select').val('').trigger('change');
                 });
 
-                $('.btn-edit-gaji').on('click', function() {
-                    var jsonkaryawan = $(this).data('jsonkaryawan');
-                    console.log(jsonkaryawan);
-                    // $("#modal-karyawan-json-data").html("")
+                $('.btn-bayar').on('click', function() {
+                    var penggajianid = $(this).data('penggajianid');
+                    console.log(penggajianid);
+                    $.ajax({
+                        url: '/penggajian/' + penggajianid,
+                        method: 'GET',
+                        success: function(response) {
 
+                            let htmlJson = ""
+                            response.forEach((e, i) => {
+                                htmlJson += ` <tr>
+                                <td>${i+1}</td>
+                                <td>${e.nama}</td>
+                                <td>${e.type_karyawan}</td>
+                                <td>
+                                    <a href="/penggajian/${e?.penggajian_id}/${e?.karyawan_id}/detail-gaji" class="btn btn-primary">cek</a>
+                                </td>
+                            </tr>`
+                            });
 
+                            $("#modal-karyawan-json-data").html(htmlJson)
 
-                    // id
-                    // : 
-                    // "487ee51d-fde5-4917-935a-8697fc2b370a"
-                    // is_gaji_dibayarkan
-                    // : 
-                    // null
-                    // karyawan
-                    // : 
-                    // {id: 3, nama: 'FAHMI', main_type_karyawan_id: 2, main_type_karyawan: {…}}
-                    // karyawan_id
-                    // : 
-                    // 3
-                    // penggajian_id
-                    // : 
-                    // "43405ed0-297e-4512-97f2-9a36792ff5f3"
-                    // total_gaji
-                    // : 
-                    // 171123
-                    function formatRupiah(angka, withPrefix = true) {
-                        let formatted = new Intl.NumberFormat('id-ID', {
-                            style: 'currency',
-                            currency: 'IDR',
-                            minimumFractionDigits: 0
-                        }).format(angka);
-
-                        return withPrefix ? formatted : formatted.replace('Rp', '').trim();
-                    }
-
-
-                    let htmlJson = ""
-                    jsonkaryawan.forEach((e, i) => {
-
-                        htmlJson += ` <tr>
-                                        <td>${i+1}</td>
-                                        <td>${e.karyawan.nama}</td>
-                                        <td>${e.karyawan.main_type_karyawan?.type_karyawan}</td>
-                                        <td>
-                                            ${e.is_gaji_dibayarkan == true ? `<i class="fa fa-fw" aria-hidden="true"
-                                                                                                                                                                                                                                                                                                                                                                                                                style="font-size: 25px; color: rgb(35, 187, 35)"
-                                                                                                                                                                                                                                                                                                                                                                                                                title="Copy to use check-square">&#xf14a</i>` : 'belum'}
-                                            
-                                            </td>
-                                        
-                                        <td>
-                                            <a href="/penggajian/${e?.penggajian_id}/${e?.karyawan_id}/detail-gaji" class="btn btn-primary">cek</a>
-                                        </td>
-                                    </tr>`
+                        },
+                        error: function(xhr) {
+                            alert('Gagal ambil data: ' + xhr.status);
+                        }
                     });
 
 
-                    $("#modal-karyawan-json-data").html(htmlJson)
+
+
+                    // function formatRupiah(angka, withPrefix = true) {
+                    //     let formatted = new Intl.NumberFormat('id-ID', {
+                    //         style: 'currency',
+                    //         currency: 'IDR',
+                    //         minimumFractionDigits: 0
+                    //     }).format(angka);
+
+                    //     return withPrefix ? formatted : formatted.replace('Rp', '').trim();
+                    // }
+
+
+                    // let htmlJson = ""
+                    // jsonkaryawan.forEach((e, i) => {
+
+                    //     htmlJson += ` <tr>
+            //                     <td>${i+1}</td>
+            //                     <td>${e.karyawan.nama}</td>
+            //                     <td>${e.karyawan.main_type_karyawan?.type_karyawan}</td>
+            //                     <td>
+            //                         ${e.is_gaji_dibayarkan == true ? `<i class="fa fa-fw" aria-hidden="true"
+                    //                                                                                                                                                                                                                                                                                                                                                                                                                                                             style="font-size: 25px; color: rgb(35, 187, 35)"
+                    //                                                                                                                                                                                                                                                                                                                                                                                                                                                             title="Copy to use check-square">&#xf14a</i>` : 'belum'}
+
+            //                         </td>
+
+            //                     <td>
+            //                         <a href="/penggajian/${e?.penggajian_id}/${e?.karyawan_id}/detail-gaji" class="btn btn-primary">cek</a>
+            //                     </td>
+            //                 </tr>`
+                    // });
+
+
+                    // $("#modal-karyawan-json-data").html(htmlJson)
 
 
                     // var nama = $(this).data('nama');
@@ -384,28 +380,6 @@
                     $('#mainForm').attr('action', '/penggajian/' + id);
                     $('#formMethod').val('PUT')
 
-
-                    // $('#periodeke').prop('readonly', true)
-                    // $('#periode_akhir').prop('readonly', false);
-
-                    // const ops = $(this).data('ops')
-                    // const idops = $(this).data('idops')
-
-                    // if ($('#ops_id_select option[value="' + idops + '"]').length === 0) {
-                    //     $('#ops_id_select').append(
-                    //         $('<option>', {
-                    //             value: idops,
-                    //             text: ops
-                    //         })
-                    //     );
-                    // }
-
-
-                    // $('#ops_id_select').val(idops).trigger('change');
-
-                    // $('#periodeke').val($(this).data('periode'))
-                    // $('#periode_awal').val($(this).data('mulai'))
-                    // $('#periode_akhir').val($(this).data('berakhir'))
 
                 });
 

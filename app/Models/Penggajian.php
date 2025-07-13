@@ -15,9 +15,15 @@ class Penggajian extends BaseModel
 
     protected $guarded = ['id'];
 
-    public function penggajian_tkbms()
+    // public function penggajian_tkbms()
+    // {
+    //     return $this->hasMany(Penggajian_tkbm::class, 'penggajian_id');
+    // }
+
+
+    public function penggajian_penjualans()
     {
-        return $this->hasMany(Penggajian_tkbm::class, 'penggajian_id');
+        return $this->hasMany(Penggajian_penjualan::class, 'penggajian_id');
     }
 
     public function penggajian_karyawans()

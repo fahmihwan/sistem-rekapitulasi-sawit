@@ -33,6 +33,7 @@ return new class extends Migration
             $table->foreign('model_kerja_id')->references('id')->on('m_modelkerjas')->onDelete('cascade');
 
             // $table->integer('tarif_langsung_borongan')->nullable();
+            $table->boolean('is_gaji_dibayarkan')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });
