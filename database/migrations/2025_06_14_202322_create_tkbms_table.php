@@ -23,17 +23,23 @@ return new class extends Migration
             $table->unsignedBigInteger('type_karyawan_id');
             $table->foreign('type_karyawan_id')->references('id')->on('m_type_karyawans')->onDelete('cascade');
 
+
+            $table->string('tkbm_agg')->nullable();
+
+            $table->boolean('is_gaji_dibayarkan')->default(false);
+
+            $table->unsignedBigInteger('model_kerja_id')->nullable();
+            $table->foreign('model_kerja_id')->references('id')->on('m_modelkerjas')->onDelete('cascade');
+
             $table->unsignedBigInteger('tarif_id')->nullable();
             $table->foreign('tarif_id')->references('id')->on('m_tarifs')->onDelete('cascade');
 
             $table->integer('tarif_sopir_borongan')->nullable();
             $table->integer('tarif_tkbm_borongan')->nullable();
 
-            $table->unsignedBigInteger('model_kerja_id')->nullable();
-            $table->foreign('model_kerja_id')->references('id')->on('m_modelkerjas')->onDelete('cascade');
-
-            // $table->integer('tarif_langsung_borongan')->nullable();
-            $table->boolean('is_gaji_dibayarkan')->default(false);
+            // $table->integer('total');
+            $table->integer('jumlah_tkbm');
+            $table->integer('jumlah_uang');
             $table->softDeletes();
             $table->timestamps();
         });

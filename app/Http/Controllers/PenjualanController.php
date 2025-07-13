@@ -162,6 +162,24 @@ class PenjualanController extends Controller
             // } elseif ($validated['model_kerja_id'] == 2) {
             // }
 
+
+
+            $get_tkbm_agg =  M_karyawan::withTrashed()->whereIn('id', $validated['tkbm_id'])->select('nama')->pluck('nama')->toArray();
+            $tkbm_agg = implode('~', $get_tkbm_agg);
+
+
+            if ($validated['model_kerja_id'] == 1) { //tkbm
+                $tarif_tkbm = M_tarif::where('id', $validated['tarif_tkbm_id'])->first();
+
+                $jumlah_uang_tkbm =  $validated['netto'] * $tarif_tkbm->tarif_perkg / count($validated['tkbm_id']);
+
+                $tarif_sopir = M_tarif::where('id', $validated['tarif_sopir_id'])->first();
+                $jumlah_uang_sopir =  $validated['netto'] * $tarif_sopir->tarif_perkg;
+            } elseif ($validated['model_kerja_id'] == 2) {
+                $jumlah_uang_tkbm =  $validated['tarif_tkbm_borongan'];
+                $jumlah_uang_sopir =  $validated['tarif_sopir_borongan'];
+            }
+
             foreach ($validated['tkbm_id'] as $d) {
                 $data[] = [
                     'id' => (string) Str::uuid(),
@@ -172,6 +190,10 @@ class PenjualanController extends Controller
                     'tarif_id' => $validated['tarif_tkbm_id'] ? $validated['tarif_tkbm_id'] : null,
                     'tarif_tkbm_borongan' => $validated['tarif_tkbm_borongan'] ? $validated['tarif_tkbm_borongan'] : null,
                     'tarif_sopir_borongan' => null,
+                    'is_gaji_dibayarkan' => false,
+                    'tkbm_agg' => $tkbm_agg,
+                    'jumlah_tkbm' => count($validated['tkbm_id']),
+                    'jumlah_uang' => $jumlah_uang_tkbm
                 ];
             }
 
@@ -183,7 +205,11 @@ class PenjualanController extends Controller
                 'model_kerja_id' => $validated['model_kerja_id'],
                 'tarif_id' => $validated['tarif_sopir_id'] ? $validated['tarif_sopir_id'] : null,
                 'tarif_tkbm_borongan' => null,
-                'tarif_sopir_borongan' => $validated['tarif_sopir_borongan'] ? $validated['tarif_sopir_borongan'] : null
+                'tarif_sopir_borongan' => $validated['tarif_sopir_borongan'] ? $validated['tarif_sopir_borongan'] : null,
+                'is_gaji_dibayarkan' => false,
+                'tkbm_agg' => $tkbm_agg,
+                'jumlah_tkbm' => count($validated['tkbm_id']),
+                'jumlah_uang' => $jumlah_uang_sopir
             ];
 
             Tkbm::insert($data);
