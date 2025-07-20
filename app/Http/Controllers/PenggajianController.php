@@ -141,109 +141,140 @@ class PenggajianController extends Controller
 
         $karyawan = M_karyawan::with(['main_type_karyawan'])->findOrFail($karyawanid);
 
-        $items = DB::select(" WITH cte_tkbm_borongan_tarif as (
-            -- AMBIL TKBM + BORONGAN
-				 		select t.penjualan_id, p.tanggal_penjualan, count(t.id) as total, 
-	                            mt.tarif_perkg,p.netto,
-	                        case 
-	                          when p.model_kerja_id = 1 then p.netto * mt.tarif_perkg / count(t.id)
-	                          when p.model_kerja_id = 2 then p.tarif_tkbm_borongan 
-	                        end as jumlah_uang,
-	                        t.type_karyawan_id, p.model_kerja_id
-	                                from penjualans p 
-	                                inner join penggajian_penjualans pp on pp.penjualan_id = p.id and pp.penggajian_id = :penggajianid 
-	                                inner join tkbms t on p.id  = t.penjualan_id 
-	                                left join m_tarifs mt on mt.id = t.tarif_id 
-	                              where t.deleted_at is null 
-	                              and t.type_karyawan_id = 2 --TKBM
-	                              group by t.penjualan_id, p.netto,mt.tarif_perkg, p.tanggal_penjualan,t.type_karyawan_id, p.model_kerja_id,p.tarif_tkbm_borongan,p.tarif_sopir_borongan 
-            ),
-            cte_sopir_borongan_tarif as (
-                    -- AMBIL SOPIR + BORONGAN
-                      select t.penjualan_id, p.tanggal_penjualan, count(t.id) as total,
-		                            mt.tarif_perkg,p.netto, 
-			                        case 
-			                          when p.model_kerja_id = 1 then p.netto * mt.tarif_perkg 
-			                          when p.model_kerja_id = 2 then p.tarif_sopir_borongan 
-			                        end as jumlah_uang,
-			                        t.type_karyawan_id, p.model_kerja_id
-                                from penjualans p 
-                                inner join penggajian_penjualans pp on pp.penjualan_id = p.id and pp.penggajian_id = :penggajianid
-                                inner join tkbms t on p.id  = t.penjualan_id 
-                                left join m_tarifs mt on mt.id = t.tarif_id 
-                              where t.deleted_at is null 
-                              and t.type_karyawan_id = 1 --SOPIR
-                              group by t.penjualan_id, p.netto,mt.tarif_perkg, p.tanggal_penjualan,t.type_karyawan_id, p.model_kerja_id,p.tarif_sopir_borongan
-            ),
-            cte_penjualan AS (
-              SELECT p.id AS penjualan_id, p.tanggal_penjualan, p.netto, p.created_at, p.model_kerja_id,mp.nama_pabrik
-              FROM penjualans p
-              inner join penggajian_penjualans pp on pp.penjualan_id = p.id and pp.penggajian_id = :penggajianid
-              inner join m_pabriks mp on mp.id = p.pabrik_id
-            ),
-            cte_karyawan_ikut AS (
-              SELECT t.*, mk.nama, mk.main_type_karyawan_id
-              FROM tkbms t
-              inner join penggajian_penjualans pp on pp.penjualan_id = t.penjualan_id and pp.penggajian_id = :penggajianid
-              JOIN m_karyawans mk ON mk.id = t.karyawan_id
-              WHERE t.karyawan_id = :karyawanid
-            )
-            select * from (
-              SELECT 
-                p.penjualan_id,k.karyawan_id,k.nama,k.type_karyawan_id,
-                case 
-                  when k.type_karyawan_id = 1 then 'SOPIR'
-                  when k.type_karyawan_id = 2 then 'TKBM'
-                  when k.type_karyawan_id is null then 'TKBM'
-                end as keterangan,
-                k.main_type_karyawan_id, cte_t.total,
-                p.tanggal_penjualan,p.netto,p.model_kerja_id,p.nama_pabrik, 
-                CASE 
-                  WHEN k.type_karyawan_id = 1 THEN cte_s.tarif_perkg
-                  WHEN k.type_karyawan_id = 2 THEN cte_t.tarif_perkg
-                END AS tarif_perkg,
-                xx.tkbms,
-                xx_sopir.sopir,
-                CASE 
-                  WHEN k.type_karyawan_id = 1 THEN cte_s.jumlah_uang
-                  WHEN k.type_karyawan_id = 2 THEN cte_t.jumlah_uang
-                  WHEN k.type_karyawan_id is null THEN 0
-                END AS jumlah_uang,
-                CASE 
-                  WHEN k.karyawan_id IS NULL THEN true ELSE false
-                END AS is_tkbm_alpha
-              FROM cte_penjualan p
-              LEFT JOIN cte_karyawan_ikut k ON p.penjualan_id = k.penjualan_id
-              LEFT JOIN cte_tkbm_borongan_tarif cte_t ON cte_t.penjualan_id = p.penjualan_id
-              LEFT JOIN cte_sopir_borongan_tarif cte_s ON cte_s.penjualan_id = p.penjualan_id
-              left join (
-              		select t3.penjualan_id, p3.tanggal_penjualan,string_agg(mk3.nama,'~') as tkbms
-						from penjualans p3
-						inner join penggajian_penjualans pp3 on pp3.penjualan_id = p3.id and pp3.penggajian_id = :penggajianid
-						inner join tkbms t3 on p3.id  = t3.penjualan_id
-						inner join m_karyawans mk3 on mk3.id  = t3.karyawan_id  
-						where t3.deleted_at is null 
-						and t3.type_karyawan_id = 2 --TKBM
-						group by t3.penjualan_id, p3.netto, p3.tanggal_penjualan, p3.model_kerja_id,p3.tarif_tkbm_borongan,p3.tarif_sopir_borongan 
-             
-              ) as xx on xx.penjualan_id = p.penjualan_id
-               left join (
-              			select t3.penjualan_id, p3.tanggal_penjualan,mk3.nama as sopir
-							from penjualans p3 
-							inner join penggajian_penjualans pp3 on pp3.penjualan_id = p3.id and pp3.penggajian_id = :penggajianid
-							inner join tkbms t3 on p3.id  = t3.penjualan_id 
-							inner join m_karyawans mk3 on mk3.id  = t3.karyawan_id  
-							where t3.deleted_at is null 
-						and t3.type_karyawan_id = 1 --SOPIR 
-              ) as xx_sopir on xx_sopir.penjualan_id = p.penjualan_id
-              ORDER BY p.created_at DESC
-            ) as x
-			 WHERE NOT (x.model_kerja_id = 2 AND x.is_tkbm_alpha = true)
-			 AND NOT (x.main_type_karyawan_id = 1 AND x.is_tkbm_alpha = true)", [
+        // $items = DB::select(" WITH cte_tkbm_borongan_tarif as (
+        //     -- AMBIL TKBM + BORONGAN
+        // 		 		select t.penjualan_id, p.tanggal_penjualan, count(t.id) as total, 
+        //                         mt.tarif_perkg,p.netto,
+        //                     case 
+        //                       when p.model_kerja_id = 1 then p.netto * mt.tarif_perkg / count(t.id)
+        //                       when p.model_kerja_id = 2 then p.tarif_tkbm_borongan 
+        //                     end as jumlah_uang,
+        //                     t.type_karyawan_id, p.model_kerja_id
+        //                             from penjualans p 
+        //                             inner join penggajian_penjualans pp on pp.penjualan_id = p.id and pp.penggajian_id = :penggajianid 
+        //                             inner join tkbms t on p.id  = t.penjualan_id 
+        //                             left join m_tarifs mt on mt.id = t.tarif_id 
+        //                           where t.deleted_at is null 
+        //                           and t.type_karyawan_id = 2 --TKBM
+        //                           group by t.penjualan_id, p.netto,mt.tarif_perkg, p.tanggal_penjualan,t.type_karyawan_id, p.model_kerja_id,p.tarif_tkbm_borongan,p.tarif_sopir_borongan 
+        //     ),
+        //     cte_sopir_borongan_tarif as (
+        //             -- AMBIL SOPIR + BORONGAN
+        //               select t.penjualan_id, p.tanggal_penjualan, count(t.id) as total,
+        //                             mt.tarif_perkg,p.netto, 
+        // 	                        case 
+        // 	                          when p.model_kerja_id = 1 then p.netto * mt.tarif_perkg 
+        // 	                          when p.model_kerja_id = 2 then p.tarif_sopir_borongan 
+        // 	                        end as jumlah_uang,
+        // 	                        t.type_karyawan_id, p.model_kerja_id
+        //                         from penjualans p 
+        //                         inner join penggajian_penjualans pp on pp.penjualan_id = p.id and pp.penggajian_id = :penggajianid
+        //                         inner join tkbms t on p.id  = t.penjualan_id 
+        //                         left join m_tarifs mt on mt.id = t.tarif_id 
+        //                       where t.deleted_at is null 
+        //                       and t.type_karyawan_id = 1 --SOPIR
+        //                       group by t.penjualan_id, p.netto,mt.tarif_perkg, p.tanggal_penjualan,t.type_karyawan_id, p.model_kerja_id,p.tarif_sopir_borongan
+        //     ),
+        //     cte_penjualan AS (
+        //       SELECT p.id AS penjualan_id, p.tanggal_penjualan, p.netto, p.created_at, p.model_kerja_id,mp.nama_pabrik
+        //       FROM penjualans p
+        //       inner join penggajian_penjualans pp on pp.penjualan_id = p.id and pp.penggajian_id = :penggajianid
+        //       inner join m_pabriks mp on mp.id = p.pabrik_id
+        //     ),
+        //     cte_karyawan_ikut AS (
+        //       SELECT t.*, mk.nama, mk.main_type_karyawan_id
+        //       FROM tkbms t
+        //       inner join penggajian_penjualans pp on pp.penjualan_id = t.penjualan_id and pp.penggajian_id = :penggajianid
+        //       JOIN m_karyawans mk ON mk.id = t.karyawan_id
+        //       WHERE t.karyawan_id = :karyawanid
+        //     )
+        //     select * from (
+        //       SELECT 
+        //         p.penjualan_id,k.karyawan_id,k.nama,k.type_karyawan_id,
+        //         case 
+        //           when k.type_karyawan_id = 1 then 'SOPIR'
+        //           when k.type_karyawan_id = 2 then 'TKBM'
+        //           when k.type_karyawan_id is null then 'TKBM'
+        //         end as keterangan,
+        //         k.main_type_karyawan_id, cte_t.total,
+        //         p.tanggal_penjualan,p.netto,p.model_kerja_id,p.nama_pabrik, 
+        //         CASE 
+        //           WHEN k.type_karyawan_id = 1 THEN cte_s.tarif_perkg
+        //           WHEN k.type_karyawan_id = 2 THEN cte_t.tarif_perkg
+        //         END AS tarif_perkg,
+        //         xx.tkbms,
+        //         xx_sopir.sopir,
+        //         CASE 
+        //           WHEN k.type_karyawan_id = 1 THEN cte_s.jumlah_uang
+        //           WHEN k.type_karyawan_id = 2 THEN cte_t.jumlah_uang
+        //           WHEN k.type_karyawan_id is null THEN 0
+        //         END AS jumlah_uang,
+        //         CASE 
+        //           WHEN k.karyawan_id IS NULL THEN true ELSE false
+        //         END AS is_tkbm_alpha
+        //       FROM cte_penjualan p
+        //       LEFT JOIN cte_karyawan_ikut k ON p.penjualan_id = k.penjualan_id
+        //       LEFT JOIN cte_tkbm_borongan_tarif cte_t ON cte_t.penjualan_id = p.penjualan_id
+        //       LEFT JOIN cte_sopir_borongan_tarif cte_s ON cte_s.penjualan_id = p.penjualan_id
+        //       left join (
+        //       		select t3.penjualan_id, p3.tanggal_penjualan,string_agg(mk3.nama,'~') as tkbms
+        // 				from penjualans p3
+        // 				inner join penggajian_penjualans pp3 on pp3.penjualan_id = p3.id and pp3.penggajian_id = :penggajianid
+        // 				inner join tkbms t3 on p3.id  = t3.penjualan_id
+        // 				inner join m_karyawans mk3 on mk3.id  = t3.karyawan_id  
+        // 				where t3.deleted_at is null 
+        // 				and t3.type_karyawan_id = 2 --TKBM
+        // 				group by t3.penjualan_id, p3.netto, p3.tanggal_penjualan, p3.model_kerja_id,p3.tarif_tkbm_borongan,p3.tarif_sopir_borongan 
+
+        //       ) as xx on xx.penjualan_id = p.penjualan_id
+        //        left join (
+        //       			select t3.penjualan_id, p3.tanggal_penjualan,mk3.nama as sopir
+        // 					from penjualans p3 
+        // 					inner join penggajian_penjualans pp3 on pp3.penjualan_id = p3.id and pp3.penggajian_id = :penggajianid
+        // 					inner join tkbms t3 on p3.id  = t3.penjualan_id 
+        // 					inner join m_karyawans mk3 on mk3.id  = t3.karyawan_id  
+        // 					where t3.deleted_at is null 
+        // 				and t3.type_karyawan_id = 1 --SOPIR 
+        //       ) as xx_sopir on xx_sopir.penjualan_id = p.penjualan_id
+        //       ORDER BY p.created_at DESC
+        //     ) as x
+        // 	 WHERE NOT (x.model_kerja_id = 2 AND x.is_tkbm_alpha = true)
+        // 	 AND NOT (x.main_type_karyawan_id = 1 AND x.is_tkbm_alpha = true)", [
+        //     'karyawanid' => $karyawanid,
+        //     'penggajianid' => $penggajianid
+        // ]);
+
+
+        $items = DB::select("SELECT DISTINCT ON (p.id) 
+                    p.id,t.penjualan_id,t.karyawan_id,mk.nama,t.type_karyawan_id,
+                    CASE 
+                        WHEN t.type_karyawan_id = 1 THEN 'SOPIR'
+                        WHEN t.type_karyawan_id = 2 THEN 'TKBM'
+                    END AS keterangan,
+                    mk.main_type_karyawan_id,
+                    t.jumlah_tkbm AS total,p.tanggal_penjualan,p.netto,t.model_kerja_id,mp.nama_pabrik,mt.tarif_perkg,t.tkbm_agg as tkbms,mk_sopir.nama as sopir,t.jumlah_uang,
+                    case 
+                        when t_a.karyawan_id is null then true
+                        when t_a.karyawan_id is not null then false
+                    end AS is_tkbm_alpha
+                FROM penggajians ps
+                    INNER JOIN penggajian_penjualans pp ON ps.id = pp.penggajian_id 
+                    INNER JOIN penjualans p ON p.id = pp.penjualan_id 
+                    INNER JOIN m_pabriks mp ON p.pabrik_id = mp.id 
+                    LEFT JOIN tkbms t ON t.penjualan_id = p.id 
+                    LEFT JOIN tkbms t_a ON t_a.penjualan_id = p.id AND t_a.karyawan_id = :karyawanid 
+                    LEFT JOIN m_karyawans mk ON mk.id = t.karyawan_id
+                    LEFT JOIN m_tarifs mt ON mt.id = t.tarif_id 
+                    INNER JOIN m_karyawans mk_sopir ON mk_sopir.id = p.sopir_id
+                    where ps.id = :penggajianid and
+                    p.model_kerja_id = 1 or t_a.karyawan_id = :karyawanid
+                ORDER BY p.id, p.created_at DESC;", [
             'karyawanid' => $karyawanid,
             'penggajianid' => $penggajianid
         ]);
-        // }
+
+
+
 
 
 

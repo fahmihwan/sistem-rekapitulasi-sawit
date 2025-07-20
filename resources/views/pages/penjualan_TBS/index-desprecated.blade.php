@@ -138,6 +138,7 @@
                                         <th>Netto</th>
                                         <th>Harga</th>
                                         <th>Uang</th>
+                                        {{-- <th>Created at</th> --}}
                                         <th>#</th>
                                     </tr>
                                 </thead>
@@ -149,6 +150,8 @@
                                                 <span class="label label-success">{{ $item->periode->periode }}</span> <br>
                                                 <span class="text-info"
                                                     style="font-weight: bold">{{ isset($item->model_kerja->model_kerja) ? $item->model_kerja->model_kerja : '' }}</span>
+                                                {{-- <span class=""
+                                                    style="color: red">{{ $item->periode->periode }}</span>  --}}
                                             </td>
                                             <td>{{ $item->pabrik->nama_pabrik ?? '-' }}</td>
                                             <td>
@@ -159,7 +162,7 @@
                                                 @endif
                                                 @if ($item->model_kerja_id == 2)
                                                     <span
-                                                        class="label label-warning">{{ 'Rp ' . number_format($item->tarif_sopir_borongan, 0, ',', '.') ?? '' }}</span>
+                                                        class="label label-warning">{{ $item->tarif_sopir_borongan ?? '' }}</span>
                                                     {{ $item->sopir->nama ?? '-' }}
                                                 @endif
                                             </td>
@@ -167,17 +170,13 @@
                                                 <div style="display: flex">
                                                     <div style="margin-right: 5px">
                                                         @if ($item->model_kerja_id == 1)
-                                                            <span class="label label-primary">
-                                                                {{ $item->tarif_tkbm->tarif_perkg ?? '' }}</span>
+                                                            <span
+                                                                class="label label-primary">{{ $item->tarif_tkbm->tarif_perkg ?? '' }}</span>
                                                         @endif
                                                         @if ($item->model_kerja_id == 2)
-                                                            @foreach ($item->tkbms as $d)
-                                                                @if ($d->type_karyawan_id == 2)
-                                                                    <span class="label label-warning">
-                                                                        {{ 'Rp ' . number_format($d->tarif_tkbm_borongan, 0, ',', '.') ?? '-' }}
-                                                                    </span> <br>
-                                                                @endif
-                                                            @endforeach
+                                                            <span
+                                                                class="label label-warning">{{ $item->tarif_tkbm_borongan ?? '' }}</span>
+                                                            {{-- {{ $item->sopir->nama ?? '-' }} --}}
                                                         @endif
                                                     </div>
                                                     <div>
@@ -185,6 +184,7 @@
                                                             @if ($d->type_karyawan_id == 2)
                                                                 <p style="margin: 0; padding: 0;">-
                                                                     {{ $d->karyawan->nama ?? '-' }}
+
                                                                 </p>
                                                             @endif
                                                         @endforeach
@@ -216,7 +216,6 @@
                                                         data-tariftkbmid="{{ $item->tarif_tkbm_id }}"
                                                         data-tarifsopirborongan="{{ $item->tarif_sopir_borongan ?? '' }}"
                                                         data-tariftkbmborongan="{{ $item->tarif_tkbm_borongan ?? '' }}"
-                                                        data-jsontkbm="{{ $item->tkbms }}"
                                                         data-tarifsopirtext="{{ $item->tarif_sopir->tarif_perkg ?? '' }}"
                                                         data-tariftkbmtext="{{ $item->tarif_tkbm->tarif_perkg ?? '' }}"
                                                         data-modelkerja="{{ $item->model_kerja_id }}"
@@ -279,7 +278,7 @@
         <!-- Modal CREATE-->
         <div class="modal fade" id="modalCreateEdit" tabindex="-1" role="dialog" aria-labelledby="mymodalCreateEdit"
             aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <form id='mainForm' role="form" method=POST action={{ '/penjualan/tbs/' . $menu . '/view' }}>
                         <div class="modal-header">
@@ -294,14 +293,14 @@
                             @csrf
 
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group "> {{-- has-success, has-warning, has-error --}}
                                         <label>Tgl Penjualan</label>
                                         <input type="date" class="form-control" name="tanggal_penjualan"
                                             value="{{ now()->toDateString() }}" id="tanggal_penjualan" required>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group" id="form-periode-select">
                                         <label>Periode</label>
                                         <select name="periode_id" id="periode_id_select" class="form-control"
@@ -319,9 +318,12 @@
                                         <label>Peroide</label>
                                         <input class="form-control" name="" value="" id="periode_id_text">
                                     </div>
-                                </div>
 
-                                <div class="col-md-4">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="pabrik_id">Pilih Pabrik </label><br>
                                         <select name="pabrik_id" id="pabrik_id" class="form-control"
@@ -335,27 +337,208 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-
-
-                            <div class="row">
-
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group ">
                                         <label>Harga Pabrik</label>
                                         <div class="form-group input-group">
                                             <span class="input-group-addon">Rp</span>
                                             <input type="number" class="form-control" name="harga"
-                                                value="{{ old('harga') }}" id="harga" required>
+                                                value="{{ old('harga', 0) }}" id="harga">
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="form-group"
+                                style="border:1px solid rgb(70, 137, 230); padding: 5px; border-radius: 5px;">
+                                <label>Model Kerja</label>
+                                <div>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="model_kerja_id" id="tonase" value="1"
+                                            checked style="">Tonase
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="model_kerja_id" id="borongan"
+                                            value="2">Borongan
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+
+
+
+                            </div>
+                            {{-- TARIF TONASE --}}
+                            <div id="tarif-tonase">
+                                <div class="row">
+                                    <div>
+                                        <div class="col-md-3">
+                                            <div class="form-group" id="form-periode-select">
+                                                <label>Tarif Sopir</label>
+                                                <select name="tarif_sopir_id" id="tarif_sopir_id_select"
+                                                    class="form-control" style="width: 100%; ">
+                                                    <option value="">-- Pilih --</option>
+                                                    @foreach ($data_list_tarif as $p)
+                                                        @if ($p->type_karyawan == 'SOPIR')
+                                                            <option value="{{ $p->id }}"
+                                                                {{ old('tarif_sopir_id') == $p->id ? 'selected' : '' }}>
+                                                                {{ $p->tarif_perkg }}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group" id="form-periode-select">
+                                                <label>Tarif TKBM</label>
+                                                <select name="tarif_tkbm_id" id="tarif_tkbm_id_select"
+                                                    class="form-control" style="width: 100%; ">
+                                                    <option value="">-- Pilih --</option>
+                                                    @foreach ($data_list_tarif as $p)
+                                                        @if ($p->type_karyawan == 'TKBM')
+                                                            <option value="{{ $p->id }}"
+                                                                {{ old('tarif_tkbm_id') == $p->id ? 'selected' : '' }}>
+                                                                {{ $p->tarif_perkg }}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="sopir_id">Pilih Sopir</label><br>
+                                            <select name="sopir_id" id="sopir_id" class="form-control"
+                                                style="width: 100%; height: 200px !important;">
+                                                {{-- <option value="">-- Pilih Sopir --</option> --}}
+                                                {{-- @foreach ($karyawans as $karyawan)
+                                                    @if ($karyawan->type_karyawan == 'SOPIR')
+                                                        <option value="{{ $karyawan->id }}">{{ $karyawan->nama }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach --}}
+                                                <option value="">-- Pilih Sopir --</option>
+                                                @foreach ($karyawans as $karyawan)
+                                                    @if ($karyawan->type_karyawan == 'SOPIR')
+                                                        <option value="{{ $karyawan->id }}"
+                                                            {{ old('sopir_id') == $karyawan->id ? 'selected' : '' }}>
+                                                            {{ $karyawan->nama }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @php
+                                    // Pastikan nilai selalu array
+                                    $selectedTkbm = old('tkbm_id');
+
+                                    // Jika tidak ada old(), dan misalnya ini form edit, fallback ke $model->tkbm_ids
+                                    if (!is_array($selectedTkbm)) {
+                                        $selectedTkbm =
+                                            isset($model) && is_array($model->tkbm_ids ?? null) ? $model->tkbm_ids : [];
+                                    }
+                                @endphp
+
+                                <div class="form-group">
+                                    <select name="tkbm_id[]" multiple="multiple" id="tkbm_id" class="form-control"
+                                        style="width: 100%; height: 200px !important;">
+                                        @foreach ($karyawans as $karyawan)
+                                            @if ($karyawan->type_karyawan == 'TKBM')
+                                                <option value="{{ $karyawan->id }}"
+                                                    {{ in_array($karyawan->id, $selectedTkbm) ? 'selected' : '' }}>
+                                                    {{ $karyawan->nama }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+                            {{-- TARIF BORONGAN --}}
+                            <div id="tarif-borongan">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group ">
+                                            <label>Tarif Sopir</label>
+                                            <div class="form-group ">
+                                                <input type="number" class="form-control" name="tarif_sopir_borongan"
+                                                    {{-- value="{{ old('tarif_sopir_borongan') }}"  --}} value="0" id="tarif_sopir_borongan">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group ">
+                                            <label>Tarif TKBM</label>
+                                            <div class="form-group ">
+                                                <input type="number" class="form-control" name="tarif_tkbm_borongan"
+                                                    {{-- value="{{ old('tarif_tkbm_borongan') }}" --}} value="0" id="tarif_tkbm_borongan">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="sopir_id">Pilih Sopir</label><br>
+                                            <select name="sopir_borongan_id" id="sopir_borongan_id" class="form-control"
+                                                style="width: 100%; height: 200px !important;">
+                                                <option value="">-- Pilih Sopir --</option>
+                                                @foreach ($karyawans as $karyawan)
+                                                    @if ($karyawan->type_karyawan_id == 1 || $karyawan->type_karyawan_id == 4)
+                                                        <option value="{{ $karyawan->id }}">{{ $karyawan->nama }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="form-group">
+                                    <label for="tkbm_id">Pilih TKBM</label><br>
+                                    <select name="tkbm_borongan_id[]" multiple="multiple" id="tkbm_borongan_id"
+                                        class="form-control" style="width: 100%; height: 200px !important;">
+                                        {{-- <option value="">-- Pilih TKBM --</option> --}}
+                                        @foreach ($karyawans as $karyawan)
+                                            @if ($karyawan->type_karyawan_id == 2 || $karyawan->type_karyawan_id == 4)
+                                                <option value="{{ $karyawan->id }}">{{ $karyawan->nama }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group ">
                                         <label>Timbangan 1 (kg)</label>
                                         <div class="form-group ">
                                             <input type="number" class="form-control" name="timbangan_first"
-                                                value="{{ old('timbangan_first') }}" required id="timbangan_first">
+                                                value="{{ old('timbangan_first', 0) }}" id="timbangan_first">
+                                            {{-- <span class="input-group-addon">Kg</span> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -364,26 +547,25 @@
                                         <label>Timbangan 2 (kg)</label>
                                         <div class="form-group ">
                                             <input type="number" class="form-control" name="timbangan_second"
-                                                value="{{ old('timbangan_second', 0) }}" id="timbangan_second" required>
+                                                value="{{ old('timbangan_second', 0) }}" id="timbangan_second">
+                                            {{-- <span class="input-group-addon">Kg</span> --}}
                                         </div>
                                     </div>
                                 </div>
-
-                            </div>
-
-
-                            <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group ">
                                         <label>Sortasi (%)</label>
                                         <div class="form-group input-group">
-                                            <input class="form-control" name="sortasi" value="{{ old('sortasi') }}"
+                                            <input class="form-control" name="sortasi" value="{{ old('sortasi', 0) }}"
                                                 id="sortasi">
                                             <span class="input-group-addon">%</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
                                     <div class="form-group ">
                                         <label>Bruto</label>
                                         <div class="form-group input-group">
@@ -393,7 +575,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group ">
                                         <label>Netto</label>
                                         <div class="form-group input-group">
@@ -403,7 +585,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group ">
                                         <label>Uang</label>
                                         <div class="form-group input-group">
@@ -415,279 +597,49 @@
                                 </div>
                             </div>
 
+
                             <div class="row">
-
-                                <div class="col-md-2">
-                                    <div class="form-group"
-                                        style="border:1px solid rgb(70, 137, 230); padding: 5px; border-radius: 5px;">
-                                        <label>Model Kerja</label>
-                                        <div>
-                                            <label class="radio-inline">
-                                                <input type="radio" name="model_kerja_id" id="tonase"
-                                                    value="1" checked style="">Tonase
-                                            </label> <br>
-                                            <label class="radio-inline">
-                                                <input type="radio" name="model_kerja_id" id="borongan"
-                                                    value="2">Borongan
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-10">
-
-                                    {{-- #TONASE --}}
-                                    <div id="tarif-tonase">
-                                        <div class="panel panel-primary">
-                                            <div class="panel-heading">
-                                                TONASE
-                                            </div>
-                                            <div class="panel-body">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="sopir_id">Pilih Sopir</label><br>
-                                                            <select name="sopir_id" id="sopir_id" class="form-control"
-                                                                style="width: 100%; height: 200px !important;">
-                                                                <option value="">-- Pilih Sopir --</option>
-                                                                @foreach ($karyawans as $karyawan)
-                                                                    @if ($karyawan->type_karyawan == 'SOPIR')
-                                                                        <option value="{{ $karyawan->id }}"
-                                                                            {{ old('sopir_id') == $karyawan->id ? 'selected' : '' }}>
-                                                                            {{ $karyawan->nama }}
-                                                                        </option>
-                                                                    @endif
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-3">
-                                                        <div class="form-group" id="form-periode-select">
-                                                            <label>Tarif Sopir</label>
-                                                            <select name="tarif_sopir_id" id="tarif_sopir_id_select"
-                                                                class="form-control" style="width: 100%; ">
-                                                                <option value="">-- Pilih --</option>
-                                                                @foreach ($data_list_tarif as $p)
-                                                                    @if ($p->type_karyawan == 'SOPIR')
-                                                                        <option value="{{ $p->id }}"
-                                                                            {{ old('tarif_sopir_id') == $p->id ? 'selected' : '' }}>
-                                                                            {{ $p->tarif_perkg }}</option>
-                                                                    @endif
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <div class="form-group" id="form-periode-select">
-                                                            <label>Tarif TKBM</label>
-                                                            <select name="tarif_tkbm_id" id="tarif_tkbm_id_select"
-                                                                class="form-control" style="width: 100%; ">
-                                                                <option value="">-- Pilih --</option>
-                                                                @foreach ($data_list_tarif as $p)
-                                                                    @if ($p->type_karyawan == 'TKBM')
-                                                                        <option value="{{ $p->id }}"
-                                                                            {{ old('tarif_tkbm_id') == $p->id ? 'selected' : '' }}>
-                                                                            {{ $p->tarif_perkg }}</option>
-                                                                    @endif
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-                                                @php
-                                                    // Pastikan nilai selalu array
-                                                    $selectedTkbm = old('tkbm_id');
-
-                                                    // Jika tidak ada old(), dan misalnya ini form edit, fallback ke $model->tkbm_ids
-                                                    if (!is_array($selectedTkbm)) {
-                                                        $selectedTkbm =
-                                                            isset($model) && is_array($model->tkbm_ids ?? null)
-                                                                ? $model->tkbm_ids
-                                                                : [];
-                                                    }
-                                                @endphp
-
-                                                <div class="form-group">
-                                                    <select name="tkbm_id[]" multiple="multiple" id="tkbm_id"
-                                                        class="form-control"
-                                                        style="width: 100%; height: 200px !important;">
-                                                        @foreach ($karyawans as $karyawan)
-                                                            @if ($karyawan->type_karyawan == 'TKBM')
-                                                                <option value="{{ $karyawan->id }}"
-                                                                    {{ in_array($karyawan->id, $selectedTkbm) ? 'selected' : '' }}>
-                                                                    {{ $karyawan->nama }}
-                                                                </option>
-                                                            @endif
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-
-                                    </div>
-
-
-
-                                    {{-- #BORONGAN --}}
-                                    <div id="tarif-borongan">
-
-                                        <div class="panel panel-primary">
-                                            <div class="panel-heading">
-                                                BORONGAN
-                                            </div>
-                                            <div class="panel-body">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="sopir_id">Pilih Sopir</label><br>
-                                                            <select name="sopir_borongan_id" id="sopir_borongan_id"
-                                                                class="form-control"
-                                                                style="width: 100%; height: 200px !important;">
-                                                                <option value="">-- Pilih Sopir --</option>
-                                                                @foreach ($karyawans as $karyawan)
-                                                                    @if ($karyawan->type_karyawan_id == 1 || $karyawan->type_karyawan_id == 4)
-                                                                        <option value="{{ $karyawan->id }}">
-                                                                            {{ $karyawan->nama }}
-                                                                        </option>
-                                                                    @endif
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group ">
-                                                            <label>Tarif Sopir</label>
-                                                            <div class="form-group ">
-                                                                <input type="number" class="form-control"
-                                                                    name="tarif_sopir_borongan" value="0"
-                                                                    id="tarif_sopir_borongan">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <input type="hidden" name="data_tkbm_dinamis_borongan_json"
-                                                    id="data_tkbm_dinamis_borongan_json"
-                                                    style="width: 100%; height: 50px;">
-
-                                                <div class="row" style="margin-bottom: 10px">
-                                                    <div class="col-md-12">
-                                                        <div style="border:1px solid #46b8da" class="bg-success">
-                                                            <table class="table table-bordered">
-                                                                <thead>
-                                                                    <tr class="info">
-                                                                        <td style="width: 50%">TKBM</td>
-                                                                        <td style="width: 50%">TARIF BORONGAN</td>
-                                                                        <td style="width: 10%">#</td>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody id="tbody-tkbm-dinamis-borongan">
-                                                                    {{-- <tr class="success">
-                                                                        <td style="padding: 5px">
-                                                                            <div class="form-group">
-                                                                                <select name="tkbm_borongan"
-                                                                                    class="form-control tkbm_borongan_class"
-                                                                                    style="width: 100%;">
-                                                                                    <option value="">-- PILIH TKBM
-                                                                                        --
-                                                                                    </option>
-                                                                                    @foreach ($karyawans as $karyawan)
-                                                                                        @if ($karyawan->type_karyawan_id == 1 || $karyawan->type_karyawan_id == 4)
-                                                                                            <option
-                                                                                                value="{{ $karyawan->id }}">
-                                                                                                {{ $karyawan->nama }}
-                                                                                            </option>
-                                                                                        @endif
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td style="padding: 5px">
-                                                                            <div class="form-group">
-                                                                                <input type="number"
-                                                                                    class="form-control tkbm_borongan_tarif_class"
-                                                                                    style="width: 100%; height: 40px"
-                                                                                    name="tarif_sopir_borongan"
-                                                                                    value="0"
-                                                                                    id="tarif_sopir_borongan">
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <button
-                                                                                    class="btn btn-danger btn-delete-row-dinamis-borongan  ">
-                                                                                    <i class="fa fa-trash"></i></button>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr> --}}
-                                                                </tbody>
-                                                                <tfoot>
-                                                                    <tr class="success">
-                                                                        <td colspan="3">
-                                                                            <div
-                                                                                style="display: flex; align-items: center; justify-content: center">
-                                                                                <button
-                                                                                    class="btn btn-primary btn-add-row-dinamis-borongan">
-                                                                                    <i class="fa fa-plus"></i>
-                                                                                </button>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                </tfoot>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-
-
-
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-
-                                    </div>
-
+                                <div class="col-md-6">
 
                                 </div>
-
-
-
-
-
-
-
-
-
-
-                            </div>
-                            <div class="modal-footer">
-
-                                <div style="display: flex; justify-content: space-between; color: red">
-
-                                    <div>
-                                        <p style="margin: 0;  text-align: left; ">* Tarif <b>Sopir</b> saat ini
-                                            Rp.{{ $data_tarif['tarif_sopir_perkg'] }}/kg
-                                        </p>
-                                        <p style="margin: 0; text-align: left">* Tarif <b>TKBM</b> saat ini
-                                            Rp.{{ $data_tarif['tarif_tkbm_perkg'] }}/kg
-                                        </p>
-                                    </div>
-
-                                    <div class="">
-                                        <button type="button" class="btn btn-default"
-                                            data-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary">Save changes</button>
-                                    </div>
-
+                                <div class="col-md-6">
+                                    {{-- <div class="form-group ">
+                                        <label>Uang</label>
+                                        <div class="form-group input-group">
+                                            <span class="input-group-addon">Rp</span>
+                                            <input type="text" class="form-control" readonly name="uang"
+                                                value="{{ old('uang') }}" id="uang">
+                                        </div>
+                                    </div> --}}
                                 </div>
                             </div>
+
+
+
+
+
+
+                        </div>
+                        <div class="modal-footer">
+
+                            <div style="display: flex; justify-content: space-between; color: red">
+
+                                <div>
+                                    <p style="margin: 0;  text-align: left; ">* Tarif <b>Sopir</b> saat ini
+                                        Rp.{{ $data_tarif['tarif_sopir_perkg'] }}/kg
+                                    </p>
+                                    <p style="margin: 0; text-align: left">* Tarif <b>TKBM</b> saat ini
+                                        Rp.{{ $data_tarif['tarif_tkbm_perkg'] }}/kg
+                                    </p>
+                                </div>
+
+                                <div class="">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                </div>
+
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <!-- /.modal-content -->
@@ -702,17 +654,11 @@
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script> --}}
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-
     <script>
         $(document).ready(function() {
 
 
             const dataTarif = @json($data_tarif)
-
-            const listKaryawans = @json($karyawans);
-
-            let dataBorongan = []
 
             var value = $('input[name="model_kerja_id"]').val();
             if (value === '1') {
@@ -778,11 +724,7 @@
                     dropdownParent: $('#modalCreateEdit')
                 });
 
-                $('.tkbm_borongan_class').select2({
-                    placeholder: "Pilih User",
-                    allowClear: true,
-                    dropdownParent: $('#modalCreateEdit')
-                });
+
 
             });
 
@@ -840,16 +782,6 @@
                 $('#tkbm_borongan_id').val('').trigger('change');
                 $('#tarif_sopir_borongan').val('')
                 $('#tarif_tkbm_borongan').val('')
-
-                $('#tarif-tonase').show();
-                $('#tarif-borongan').hide();
-
-                $('input[name="model_kerja_id"][value="1"]').prop('checked', true);
-                refreshAllSelects()
-                dataBorongan = []
-                renderTkbmBorongan(dataBorongan);
-
-
             }
 
 
@@ -886,20 +818,9 @@
                 const tarifTkbmText = $(this).data('tariftkbmtext');
                 const tarifTkbmBorongan = $(this).data('tariftkbmborongan')
                 const tarifSopirBorongan = $(this).data('tarifsopirborongan')
-                const jsontkbm = $(this).data('jsontkbm')
 
 
 
-                let jsonTkbmMap = jsontkbm.filter((x) => x.type_karyawan_id == 2 || x.type_karyawan_id == 4)
-                    .map((d) => {
-                        return {
-                            'karyawan_id': d.karyawan_id,
-                            'tarif_borongan': d.tarif_tkbm_borongan
-                        }
-                    })
-
-                dataBorongan = jsonTkbmMap
-                renderTkbmBorongan(dataBorongan);
                 const modelkerja = $(this).data('modelkerja')
                 $(`input[name="model_kerja_id"][value="${modelkerja}"]`).prop('checked', true);
 
@@ -939,6 +860,25 @@
                     const karyawanIds = tkbms.map(t => t.karyawan_id);
                     $('#tkbm_id').val(karyawanIds).trigger('change');;
                 } else if (modelkerja == 2) {
+                    // if ($('#tarif_sopir_id_select option[value="' + tarifSopirId + '"]').length === 0) {
+                    //     $('#tarif_sopir_id_select').append(
+                    //         $('<option>', {
+                    //             value: tarifSopirId,
+                    //             text: tarifSopirText
+                    //         })
+                    //     );
+                    // }
+                    // $('#tarif_sopir_id_select').val(tarifSopirId).trigger('change');
+
+                    // if ($('#tarif_tkbm_id_select option[value="' + tarifTkbmId + '"]').length === 0) {
+                    //     $('#tarif_tkbm_id_select').append(
+                    //         $('<option>', {
+                    //             value: tarifTkbmId,
+                    //             text: tarifTkbmText
+                    //         })
+                    //     );
+                    // }
+                    // $('#tarif_tkbm_id_select').val(tarifTkbmId).trigger('change');
 
                     $('#sopir_borongan_id').val($(this).data('nama')).trigger('change');;
 
@@ -949,6 +889,10 @@
                     $('#tarif_sopir_borongan').val(tarifSopirBorongan)
                     $('#tarif_tkbm_borongan').val(tarifTkbmBorongan)
                 }
+
+
+
+
 
                 $('#tanggal_penjualan').val($(this).data('tanggalpenjualan'));
                 $('#periode_id_text').val($(this).data('periode'));
@@ -968,197 +912,6 @@
 
             });
 
-
-
-
-
-
-
-
-
-            // LOGIC UNTUK TKBM BORONGAN DINAMIS TABEL
-            function getSelectedKaryawanIds() {
-                const selected = [];
-                $('.tkbm_borongan_class').each(function() {
-                    const val = $(this).val();
-                    if (val) selected.push(parseInt(val));
-                });
-                return selected;
-            }
-
-            function generateOptions(selectedId = null, includeEmpty = true) {
-                const selectedIds = getSelectedKaryawanIds().filter(id => id !== selectedId);
-                const options = [];
-
-                if (includeEmpty) {
-                    options.push(`<option value="">-- Pilih Sopir --</option>`);
-                }
-
-                listKaryawans
-                    .filter(k => k.type_karyawan_id === 2 || k.type_karyawan_id === 4)
-                    .filter(k => !selectedIds.includes(k.id))
-                    .forEach(k => {
-                        const selected = k.id === selectedId ? 'selected' : '';
-                        options.push(`<option value="${k.id}" ${selected}>${k.nama}</option>`);
-                    });
-
-                return options.join('');
-            }
-
-            function refreshAllSelects() {
-                $('.tkbm_borongan_class').each(function() {
-                    const currentVal = parseInt($(this).val());
-                    const $parent = $(this).parent();
-
-                    $(this).select2('destroy').remove();
-
-                    const selectHtml = `
-                <select  class="form-control tkbm_borongan_class" style="width: 100%;">
-                    ${generateOptions(currentVal)}
-                </select>
-            `;
-
-                    $parent.append(selectHtml);
-                });
-
-                $('.tkbm_borongan_class').select2({
-                    placeholder: "Pilih User",
-                    allowClear: true,
-                    dropdownParent: $('#modalCreateEdit')
-                });
-
-                collectDataBorongan();
-            }
-
-            function collectDataBorongan() {
-                let dataBorongan = []
-
-                $('#tbody-tkbm-dinamis-borongan tr').each(function() {
-                    const karyawanId = $(this).find('.tkbm_borongan_class').val();
-                    const tarif = $(this).find('input[type="number"]').val();
-
-                    if (karyawanId) {
-                        dataBorongan.push({
-                            karyawan_id: parseInt(karyawanId),
-                            tarif_borongan: parseInt(tarif) || 0
-                        });
-                    }
-                });
-
-                $('#data_tkbm_dinamis_borongan_json').val(JSON.stringify(dataBorongan));
-            }
-
-            function renderTkbmBorongan(dataArray = []) {
-                const $tbody = $('#tbody-tkbm-dinamis-borongan');
-                $tbody.html('');
-
-                dataArray.forEach(row => {
-                    const options = generateOptions(row.karyawan_id, true);
-
-                    const $row = $(`
-                <tr class="success">
-                    <td>
-                        <select  class="form-control tkbm_borongan_class" style="width: 100%;">
-                            ${options}
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number"  value="${row.tarif_borongan}" class="form-control tkbm_borongan_tarif_class" />
-                    </td>
-                    <td>
-                        <button class="btn btn-danger btn-delete-row-dinamis-borongan"><i class="fa fa-trash"></i></button>
-                    </td>
-                </tr>
-            `);
-
-                    $tbody.append($row);
-                });
-
-                $('.tkbm_borongan_class').select2({
-                    placeholder: "Pilih User",
-                    allowClear: true,
-                    dropdownParent: $('#modalCreateEdit')
-                });
-
-                refreshAllSelects();
-                collectDataBorongan();
-            }
-
-            // Trigger awal (saat edit)
-            $(document).ready(function() {
-                if (dataBorongan.length > 0) {
-                    renderTkbmBorongan(dataBorongan);
-                } else {
-                    $('.btn-add-row-dinamis-borongan').trigger('click'); // default 1 baris
-                }
-            });
-
-            // Tambah baris
-            $('.btn-add-row-dinamis-borongan').on('click', function(e) {
-                e.preventDefault();
-
-
-
-                // Ambil tarif dari baris pertama (jika ada)
-                let defaultTarif = 0;
-                const $firstTarifInput = $('#tbody-tkbm-dinamis-borongan tr:first').find(
-                    'input[type="number"]');
-                if ($firstTarifInput.length > 0) {
-                    const val = parseInt($firstTarifInput.val());
-                    if (!isNaN(val)) {
-                        defaultTarif = val;
-                    }
-                }
-
-                const $row = $(`
-                                <tr class="success">
-                                <td>
-                                    <select  class="form-control tkbm_borongan_class" style="width: 100%;">
-                                        ${generateOptions(null, true)}
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number"  value="${defaultTarif}" class="form-control tkbm_borongan_tarif_class" />
-                                </td>
-                                <td>
-                                    <button class="btn btn-danger btn-delete-row-dinamis-borongan"><i class="fa fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            `);
-
-                $('#tbody-tkbm-dinamis-borongan').append($row);
-
-                $row.find('.tkbm_borongan_class').select2({
-                    placeholder: "Pilih User",
-                    allowClear: true,
-                    dropdownParent: $('#modalCreateEdit')
-                });
-
-                refreshAllSelects();
-            });
-
-            // Hapus baris
-            $(document).on('click', '.btn-delete-row-dinamis-borongan', function(e) {
-                e.preventDefault();
-
-                const $tbody = $('#tbody-tkbm-dinamis-borongan');
-                if ($tbody.find('tr').length > 1) {
-                    $(this).closest('tr').remove();
-                    refreshAllSelects();
-                } else {
-                    alert('Minimal 1 baris harus ada.');
-                }
-            });
-
-            // Update saat input tarif diubah
-            $(document).on('input', '.tkbm_borongan_tarif_class', function() {
-                collectDataBorongan();
-            });
-
-            // Update saat dropdown berubah
-            $(document).on('change', '.tkbm_borongan_class', function() {
-                refreshAllSelects();
-            });
 
         });
     </script>
