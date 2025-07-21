@@ -11,7 +11,7 @@ use PhpParser\Node\Stmt\Return_;
 
 use function PHPUnit\Framework\returnSelf;
 
-class PenggajianV2Controller extends Controller
+class PenggajianDespricatedController extends Controller
 {
 
   public function detail_gaji()
@@ -483,3 +483,4 @@ class PenggajianV2Controller extends Controller
     ]);
   }
 }
+// with('success', 'Transaksi berhasil disimpan!');

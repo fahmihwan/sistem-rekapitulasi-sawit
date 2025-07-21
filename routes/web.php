@@ -8,7 +8,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\OpsController;
 use App\Http\Controllers\PabrikController;
 use App\Http\Controllers\PenggajianController;
-use App\Http\Controllers\PenggajianV2Controller;
+// use App\Http\Controllers\PenggajianV2Controller;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\PinjamanController;
@@ -80,7 +80,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-    Route::get('/penggajianv2', [PenggajianV2Controller::class, 'detail_gaji']);
+    // Route::get('/penggajianv2', [PenggajianV2Controller::class, 'detail_gaji']);
 
 
 

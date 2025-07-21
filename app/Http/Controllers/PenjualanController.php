@@ -133,10 +133,10 @@ class PenjualanController extends Controller
             'tarif_sopir_borongan' => 'nullable|numeric',
             'data_tkbm_dinamis_borongan_json' => 'nullable|array',
             'sortasi' => 'required|numeric',
-            'bruto' => 'required|numeric',
-            'netto' => 'required|numeric',
-            'harga' => 'required|numeric',
-            'uang' => 'required|numeric'
+            'bruto' => 'required|integer',
+            'netto' => 'required|integer',
+            'harga' => 'required|integer',
+            'uang' => 'required|integer'
         ];
 
         $validated = $request->validate($rules);
@@ -178,7 +178,7 @@ class PenjualanController extends Controller
                         'is_gaji_dibayarkan' => false,
                         'tkbm_agg' => $tkbm_agg,
                         'jumlah_tkbm' => count($validated['tkbm_id']),
-                        'jumlah_uang' => $jumlah_uang_tkbm
+                        'jumlah_uang' => ceil($jumlah_uang_tkbm)
                     ];
                 }
 
@@ -194,7 +194,7 @@ class PenjualanController extends Controller
                     'is_gaji_dibayarkan' => false,
                     'tkbm_agg' => $tkbm_agg,
                     'jumlah_tkbm' => count($validated['tkbm_id']),
-                    'jumlah_uang' => $jumlah_uang_sopir
+                    'jumlah_uang' => ceil($jumlah_uang_sopir)
                 ];
                 Tkbm::insert($data);
             } elseif ($validated['model_kerja_id'] == 2) {
@@ -222,7 +222,7 @@ class PenjualanController extends Controller
                         'is_gaji_dibayarkan' => false,
                         'tkbm_agg' => $tkbm_agg,
                         'jumlah_tkbm' => count($validated['data_tkbm_dinamis_borongan_json']),
-                        'jumlah_uang' => $d->tarif_borongan
+                        'jumlah_uang' => ceil($d->tarif_borongan)
                     ];
                 }
 
@@ -238,7 +238,7 @@ class PenjualanController extends Controller
                     'is_gaji_dibayarkan' => false,
                     'tkbm_agg' => $tkbm_agg,
                     'jumlah_tkbm' => count($validated['data_tkbm_dinamis_borongan_json']),
-                    'jumlah_uang' => $validated['tarif_sopir_borongan']
+                    'jumlah_uang' => ceil($validated['tarif_sopir_borongan']) 
                 ];
                 Tkbm::insert($data);
             }
@@ -291,6 +291,8 @@ class PenjualanController extends Controller
                 'uang' => str_replace('.', '', $request->input('uang'))
             ]);
 
+
+            
             $rules = [
                 // 'model_kerja_id' => 'required',
                 // 'pabrik_id' => 'required|integer',
@@ -325,16 +327,22 @@ class PenjualanController extends Controller
             ];
 
 
+
+
             $validated = $request->validate($rules);
+            
             $DO_TYPE =  Utils::mappingDO_type($menu);
             if ($DO_TYPE == null) {
                 return "NOT FOUND";
             };
             $validated['do_type_id'] = $DO_TYPE['id'];
 
+            
 
             $penjualan = Penjualan::findOrFail($id);
             $penjualan->update($validated);
+
+            
 
             Tkbm::where('penjualan_id', $id)->forceDelete();
 
@@ -369,6 +377,8 @@ class PenjualanController extends Controller
                 $tkbm_agg = implode('~', $get_tkbm_agg);
                 $tarif_tkbm = M_tarif::where('id', $validated['tarif_tkbm_id'])->first();
                 $jumlah_uang_tkbm =  $validated['netto'] * $tarif_tkbm->tarif_perkg / count($validated['tkbm_id']);
+
+
                 $tarif_sopir = M_tarif::where('id', $validated['tarif_sopir_id'])->first();
                 $jumlah_uang_sopir =  $validated['netto'] * $tarif_sopir->tarif_perkg;
                 foreach ($validated['tkbm_id'] as $d) {
@@ -384,7 +394,7 @@ class PenjualanController extends Controller
                         'is_gaji_dibayarkan' => false,
                         'tkbm_agg' => $tkbm_agg,
                         'jumlah_tkbm' => count($validated['tkbm_id']),
-                        'jumlah_uang' => $jumlah_uang_tkbm
+                        'jumlah_uang' => ceil($jumlah_uang_tkbm) 
                     ];
                 }
 
@@ -400,8 +410,9 @@ class PenjualanController extends Controller
                     'is_gaji_dibayarkan' => false,
                     'tkbm_agg' => $tkbm_agg,
                     'jumlah_tkbm' => count($validated['tkbm_id']),
-                    'jumlah_uang' => $jumlah_uang_sopir
+                    'jumlah_uang' => ceil($jumlah_uang_sopir)
                 ];
+                
                 Tkbm::insert($data);
             } elseif ($validated['model_kerja_id'] == 2) {
 

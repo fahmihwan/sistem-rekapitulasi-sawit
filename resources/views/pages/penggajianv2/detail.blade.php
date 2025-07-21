@@ -69,7 +69,6 @@
                     <li role="presentation"><a
                             href="/penggajian/{{ request()->route('penggajianid') }}/{{ request()->route('karyawanid') }}/ambil-gaji-perhari">Ambil
                             Gaji</a></li>
-                    <li role="presentation"><a href="#">Messages</a></li>
                 </ul>
             </div>
         </div>
@@ -80,57 +79,9 @@
                 <div class="panel panel-default">
                     <div class="panel-heading" style="display: flex; justify-content: space-between">
                         <div>
-                            DataTables Advanced Tables
+                            Laporan Penggajian karyawan
                         </div>
 
-                        {{--  --}}
-                        @php
-                            $selectedBulan = request('bulan') ?? now()->format('m');
-                            $selectedTahun = request('tahun') ?? now()->format('Y');
-                        @endphp
-
-                        <form method="GET" action="/slipgaji/karyawan/{{ $karyawan->id }}" style="display: flex">
-                            <div class="" style="margin-right: 10px">
-                                <select name="bulan" class="form-control">
-                                    <option value="">Pilih Bulan</option>
-                                    @for ($i = 1; $i <= 12; $i++)
-                                        @php $val = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
-                                        <option value="{{ $val }}" {{ $selectedBulan == $val ? 'selected' : '' }}>
-                                            {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
-                                        </option>
-                                    @endfor
-                                </select>
-                            </div>
-
-                            <div class="">
-                                <select name="tahun" class="form-control">
-                                    <option value="">Pilih Tahun</option>
-                                    @for ($y = now()->year; $y >= 2024; $y--)
-                                        <option value="{{ $y }}" {{ $selectedTahun == $y ? 'selected' : '' }}>
-                                            {{ $y }}
-                                        </option>
-                                    @endfor
-                                </select>
-                            </div>
-
-                            <div class="form-filter-datatables">
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="fa fa-search"></i> Search
-                                </button>
-                            </div>
-
-                            <div class="form-filter-datatables">
-                                <a href="/slipgaji/karyawan/{{ $karyawan->id }}?bulan={{ now()->format('m') }}&tahun={{ now()->format('Y') }}"
-                                    class="btn btn-info btn-sm">
-                                    <i class="fa fa-refresh"></i> clear
-                                </a>
-                            </div>
-
-
-                        </form>
-
-
-                        {{--  --}}
                     </div>
                     <!-- /.panel-heading -->
                     <div class="panel-body">
@@ -152,8 +103,6 @@
                                             <br>
                                             TKBM
                                         </th>
-
-
                                         <th style="text-align: center" rowspan="2">JUMLAH UANG DITERIMA</th>
                                         <th style="text-align: center" rowspan="2">JENIS <br>
                                             PEKERJAAN
@@ -184,16 +133,27 @@
                                             @if ($item['model_kerja_id'] == 2)
                                                 <td>BORONGAN</td>
                                             @endif
+
+
                                             @if ($item['model_kerja_id'] == 1)
                                                 <td>{{ $item['tarif_perkg_rp'] }}</td>
                                             @endif
+
+
+                                            @if ($item['model_kerja_id'] == null)
+                                                <td></td>
+                                            @endif
+
+
                                             <td>{{ $item['total'] ?? '' }}</td>
                                             @if ($item['is_tkbm_alpha'])
                                                 <td></td>
                                             @else
                                                 <td>{{ $item['jumlah_uang_rp'] }}</td>
                                             @endif
-                                            <td>{{ $item['keterangan'] }}</td>
+
+                                            <td>{{ $item['keterangan'] ?? '' }}</td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>

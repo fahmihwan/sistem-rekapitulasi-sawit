@@ -25,55 +25,6 @@ class PenggajianController extends Controller
         $perPage = $request->input('per_page', 10);
         $search = $request->input('search');
 
-
-
-        // $query = Penggajian::with(['penggajian_penjualans.penjualan.tkbms.karyawan'])->get();
-
-        // $data = Penggajian::with(['penggajian_penjualans.penjualan.tkbms.karyawan'])->get();
-        // return $data;
-        // $groupedTkbm = $data->flatMap(function ($penggajian) {
-        //     return $penggajian->penggajian_penjualans->flatMap(function ($pp) {
-        //         return $pp->penjualan->tkbms;
-        //     });
-        // })->groupBy('nama_karyawan');
-
-        // return $data;
-        // return Penggajian::with([
-        //     'penggajian_karyawans:id,penggajian_id,karyawan_id,total_gaji,is_gaji_dibayarkan'
-        // ])->get();
-
-
-
-
-
-        // $sub = DB::table('penggajians as p')
-        //     ->join('penggajian_tkbms as pt', 'pt.penggajian_id', '=', 'p.id')
-        //     ->join('m_karyawans as mk', 'mk.id', '=', 'pt.karyawan_id')
-        //     ->select(
-        //         'p.id',
-        //         'p.periode_awal',
-        //         'p.periode_akhir',
-        //         'mk.id as karyawan_id',
-        //         'mk.nama'
-        //     )
-        //     ->groupBy('p.id', 'p.periode_awal', 'p.periode_akhir', 'mk.id', 'mk.nama');
-
-        // $query = DB::query()
-        //     ->fromSub($sub, 'x')
-        //     ->select(
-        //         'x.id',
-        //         'x.periode_awal',
-        //         'x.periode_akhir',
-        //         DB::raw("jsonb_agg(jsonb_build_object(
-        //         'id', x.karyawan_id,
-        //         'nama', x.nama
-        //     )) AS karyawans")
-        //     )
-        //     ->groupBy('x.id', 'x.periode_awal', 'x.periode_akhir')
-        //     ->orderBy('x.id', 'desc');
-
-
-
         $query = Penggajian::with([
             'penggajian_karyawans:id,penggajian_id,karyawan_id,total_gaji,is_gaji_dibayarkan',
             'penggajian_karyawans.karyawan:id,nama,main_type_karyawan_id',
@@ -84,21 +35,6 @@ class PenggajianController extends Controller
 
         $penggajians = $query->paginate($perPage)->appends($request->query());
 
-
-        // return $penggajians;
-        // $data = $penggajians->map(function ($item) {
-        //     $item->karyawans = json_decode($item->karyawans);
-        //     return $item;
-        // });
-
-
-        // $paginatedResponse = new \Illuminate\Pagination\LengthAwarePaginator(
-        //     $data,
-        //     $penggajians->total(),
-        //     $penggajians->perPage(),
-        //     $penggajians->currentPage(),
-        //     ['path' => request()->url(), 'query' => request()->query()]
-        // );
 
 
         return view('pages.penggajian.index', [
@@ -122,22 +58,8 @@ class PenggajianController extends Controller
     }
 
 
-
-    // public function detail_gaji($penggajianid, $karyawanid) {}
-
     public function detail_gaji($penggajianid, $karyawanid)
     {
-
-
-
-        // return [
-        //     $penggajianid,
-        //     $karyawanid,
-        // ];
-
-
-
-
 
         $karyawan = M_karyawan::with(['main_type_karyawan'])->findOrFail($karyawanid);
 
@@ -245,14 +167,18 @@ class PenggajianController extends Controller
         // ]);
 
 
-        $items = DB::select("SELECT DISTINCT ON (p.id) 
-                    p.id,t.penjualan_id,t.karyawan_id,mk.nama,t.type_karyawan_id,
+        $items = DB::select("SELECT * from (
+               SELECT
+               		DISTINCT ON (p.id)
+                    p.id,
+                    t.penjualan_id,t_a.karyawan_id,mk.nama,t.type_karyawan_id,
                     CASE 
-                        WHEN t.type_karyawan_id = 1 THEN 'SOPIR'
-                        WHEN t.type_karyawan_id = 2 THEN 'TKBM'
+                        WHEN t_a.type_karyawan_id = 1 THEN 'SOPIR'
+                        WHEN t_a.type_karyawan_id = 2 THEN 'TKBM'
                     END AS keterangan,
                     mk.main_type_karyawan_id,
-                    t.jumlah_tkbm AS total,p.tanggal_penjualan,p.netto,t.model_kerja_id,mp.nama_pabrik,mt.tarif_perkg,t.tkbm_agg as tkbms,mk_sopir.nama as sopir,t.jumlah_uang,
+                    t.jumlah_tkbm AS total,p.tanggal_penjualan,p.netto,t_a.model_kerja_id,mp.nama_pabrik, mt.tarif_perkg,
+                    t.tkbm_agg as tkbms,mk_sopir.nama as sopir,t_a.jumlah_uang,
                     case 
                         when t_a.karyawan_id is null then true
                         when t_a.karyawan_id is not null then false
@@ -263,12 +189,12 @@ class PenggajianController extends Controller
                     INNER JOIN m_pabriks mp ON p.pabrik_id = mp.id 
                     LEFT JOIN tkbms t ON t.penjualan_id = p.id 
                     LEFT JOIN tkbms t_a ON t_a.penjualan_id = p.id AND t_a.karyawan_id = :karyawanid 
-                    LEFT JOIN m_karyawans mk ON mk.id = t.karyawan_id
-                    LEFT JOIN m_tarifs mt ON mt.id = t.tarif_id 
+                    LEFT JOIN m_karyawans mk ON mk.id = t_a.karyawan_id
+                    left JOIN m_tarifs mt ON mt.id = t_a.tarif_id 
                     INNER JOIN m_karyawans mk_sopir ON mk_sopir.id = p.sopir_id
-                    where ps.id = :penggajianid and
-                    p.model_kerja_id = 1 or t_a.karyawan_id = :karyawanid
-                ORDER BY p.id, p.created_at DESC;", [
+                    where ps.id = :penggajianid and (p.model_kerja_id = 1 or t_a.karyawan_id = :karyawanid)
+               ) as x
+               order by x.tanggal_penjualan desc", [
             'karyawanid' => $karyawanid,
             'penggajianid' => $penggajianid
         ]);
@@ -279,21 +205,7 @@ class PenggajianController extends Controller
 
 
         $mapItems = collect($items)
-            ->filter(function ($item) use ($karyawan) {
-                $item = (array) $item;
-
-                // if ($item['model_kerja_id'] == 2 && $item['is_tkbm_alpha'] != true) {
-                //     // return $item;
-                //     // return true;
-                // }
-
-                // if ($item['model_kerja_id'] == 2 && $item['is_tkbm_alpha'] == true) {
-                //   return false;
-                // }
-
-                return true;
-                // return true;
-            })->map(function ($item) {
+            ->map(function ($item) {
                 $item = (array) $item;
                 $item['tkbms'] = explode('~', $item['tkbms']);
                 $tanggal = Carbon::parse($item['tanggal_penjualan']);
@@ -305,16 +217,7 @@ class PenggajianController extends Controller
             });
 
 
-        // return $mapItems;
-
-
-        // return $mapItems;
-
-
         $totalNetto = $mapItems->sum('netto');
-
-
-
 
         $colspanTkbm = $mapItems->max('total');
 
@@ -340,41 +243,45 @@ class PenggajianController extends Controller
         $karyawan = M_karyawan::with(['main_type_karyawan'])->findOrFail($karyawanid);
         // return $karyawan;
 
-        $items = collect(DB::select("SELECT
-                    pt.id,
-                    p.tanggal_penjualan,
-                    mk.nama,
-                    mtk.type_karyawan,
-                    p.netto,
-                    pt.tarif_perkg as tarif_perkg_rp,
-                    pt.tkbm_agg,
-					mp.nama_pabrik,
-                    pt.total,
-                    pt.jumlah_uang as jumlah_uang_rp,	
-                    pt.is_gaji_perhari_dibayarkan,
-	                pt.is_gaji_dibayarkan
-                from penggajian_tkbms pt 
-                inner join m_karyawans mk on mk.id = pt.karyawan_id
-                inner join penjualans p on p.id = pt.penjualan_id
-                inner join m_type_karyawans mtk on mtk.id = pt.type_karyawan_id 
-                inner join m_pabriks mp on mp.id = pt.pabrik_id
-                where pt.penggajian_id = ? and pt.karyawan_id = ?
-                and pt.deleted_at is null", [$penggajianid, $karyawanid]))
+
+
+        $items = DB::select("SELECT DISTINCT ON (p.id) 
+                    p.id,t.penjualan_id,t.karyawan_id,mk.nama,t.type_karyawan_id,
+                    CASE 
+                        WHEN t.type_karyawan_id = 1 THEN 'SOPIR'
+                        WHEN t.type_karyawan_id = 2 THEN 'TKBM'
+                    END AS keterangan,
+                    mk.main_type_karyawan_id,
+                    t.jumlah_tkbm AS total,p.tanggal_penjualan,p.netto,t.model_kerja_id,mp.nama_pabrik,mt.tarif_perkg,t.tkbm_agg as tkbms,mk_sopir.nama as sopir,t.jumlah_uang
+                FROM penggajians ps
+                    INNER JOIN penggajian_penjualans pp ON ps.id = pp.penggajian_id 
+                    INNER JOIN penjualans p ON p.id = pp.penjualan_id 
+                    INNER JOIN m_pabriks mp ON p.pabrik_id = mp.id 
+                    LEFT JOIN tkbms t ON t.penjualan_id = p.id 
+--                    LEFT JOIN tkbms t_a ON t_a.penjualan_id = p.id AND t_a.karyawan_id = :karyawanid 
+                    LEFT JOIN m_karyawans mk ON mk.id = t.karyawan_id
+                    LEFT JOIN m_tarifs mt ON mt.id = t.tarif_id 
+                    INNER JOIN m_karyawans mk_sopir ON mk_sopir.id = p.sopir_id
+                    where ps.id = :penggajianid and t.karyawan_id = :karyawanid and p.model_kerja_id = 1
+                ORDER BY p.id, p.created_at DESC;", [
+            'karyawanid' => $karyawanid,
+            'penggajianid' => $penggajianid
+        ]);
+
+        $items = collect($items)
             ->map(function ($item) {
                 $item = (array) $item;
-                $item['tkbms'] = explode('~', $item['tkbm_agg']);
+                $item['tkbms'] = explode('~', $item['tkbms']);
                 $tanggal = Carbon::parse($item['tanggal_penjualan']);
-                $item['jumlah_uang'] = $item['jumlah_uang_rp'];
-                $item['created_at_formatted'] = $tanggal->translatedFormat('l, d-F-Y H:i') . ' WIB';
-                $item['tarif_perkg_rp'] = 'Rp ' . number_format($item['tarif_perkg_rp'], 0, ',', '.');
-                $item['jumlah_uang_rp'] = 'Rp ' . number_format($item['jumlah_uang_rp'], 0, ',', '.');
+                $item['created_at_formatted'] = $tanggal->translatedFormat('l, d-F-Y');
 
+                $item['tarif_perkg_rp'] = 'Rp ' . number_format($item['tarif_perkg'], 0, ',', '.');
+                $item['jumlah_uang_rp'] = 'Rp ' . number_format($item['jumlah_uang'], 0, ',', '.');
                 return $item;
             });
 
 
         // return $items;
-
         $totalNetto = $items->sum('netto');
         $totalUang   = $items->sum('jumlah_uang');
 
@@ -404,7 +311,10 @@ class PenggajianController extends Controller
         ])->first();
 
 
-        return view('pages.penggajian.ambil-gaji-perhari', [
+
+
+
+        return view('pages.penggajianv2.ambil-gaji-perhari', [
             'items' => $items,
             'penggajian_karyawan' => $penggajian_karyawan,
             'colspanTKBM' =>  $items->max('total'),
@@ -419,19 +329,16 @@ class PenggajianController extends Controller
     public function update_ambil_gaji(Request $request, $penggajianid, $karyawanid)
     {
 
-
+        // return $request->all();
 
         try {
             DB::beginTransaction();
-
-
 
             $request->merge([
                 'karyawan_id' => $karyawanid,
                 'penanggung_jawab_id' => auth()->user()->id
             ]);
 
-            // return $request->all();
 
             $validated = $request->validate([
                 'karyawan_id' => 'required|exists:m_karyawans,id',
@@ -444,15 +351,28 @@ class PenggajianController extends Controller
                 'is_gaji_dibayarkan' => 'boolean',
             ]);
 
-
-            Penggajian_karyawan::where([
+            $penggajian_karyawan = Penggajian_karyawan::where([
                 ['penggajian_id', '=', $penggajianid],
                 ['karyawan_id', '=', $karyawanid],
-            ])->update($validated);
+            ]);
+
+            $message = '';
+            if ($penggajian_karyawan->exists()) {
+                $penggajian_karyawan->update($validated);
+                $message = 'Gaji karyawan barhasil di tambahkan!';
+            } else {
+                $validated['id'] = (string) Str::uuid();
+                $validated['penggajian_id'] = $penggajianid;
+                $penggajian_karyawan->insert($validated);
+                $message = 'Gaji karyawan berhasil di perbarui!';
+            }
+
+
+
 
 
             DB::commit();
-            return redirect()->back();
+            return redirect()->back()->with('success', $message);;
         } catch (\Throwable $th) {
 
             DB::rollBack();
