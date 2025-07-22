@@ -7,6 +7,7 @@ use App\Http\Controllers\LabaController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\OpsController;
 use App\Http\Controllers\PabrikController;
+use App\Http\Controllers\PdfExportController;
 use App\Http\Controllers\PenggajianController;
 // use App\Http\Controllers\PenggajianV2Controller;
 use App\Http\Controllers\PenjualanController;
@@ -88,6 +89,9 @@ Route::middleware(['auth'])->group(function () {
     // Route::post('/master/karyawan', [SlipGajiController::class, 'store']);
     // Route::put('/master/karyawan/{id}', [SlipGajiController::class, 'update']);
     // Route::delete('/master/karyawan/{id}', [SlipGajiController::class, 'destroy']);
+
+    Route::get('/export-gaji-karyawan/{penggajianid}/{karyawanid}/detail-gaji', [PdfExportController::class, 'gaji_karyawan']);
+
 
     Route::get('/pinjaman', [PinjamanController::class, 'index']);
     Route::post('/pinjaman', [PinjamanController::class, 'store']);

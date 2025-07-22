@@ -54,7 +54,6 @@
                             </tr>
                         </table>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -81,6 +80,11 @@
                         <div>
                             Laporan Penggajian karyawan
                         </div>
+
+                        <a href="{{ url('/export-gaji-karyawan/' . request()->route('penggajianid') . '/' . request()->route('karyawanid') . '/detail-gaji') }}"
+                            target="_blank">
+                            export
+                        </a>
 
                     </div>
                     <!-- /.panel-heading -->
@@ -167,7 +171,7 @@
                                         <th></th>
                                         <th></th>
                                         <th>{{ 'Rp ' . number_format($totalUang, 0, ',', '.') }}</th>
-
+                                        <th></th>
                                     </tr>
                                 </tfoot>
                             </table>

@@ -201,9 +201,6 @@ class PenggajianController extends Controller
 
 
 
-
-
-
         $mapItems = collect($items)
             ->map(function ($item) {
                 $item = (array) $item;
@@ -217,9 +214,14 @@ class PenggajianController extends Controller
             });
 
 
-        $totalNetto = $mapItems->sum('netto');
 
+        $totalNetto = $mapItems->where('model_kerja_id', 1)->sum('netto');
+        $totalUang   = $mapItems->where('model_kerja_id', 1)->sum('jumlah_uang');
         $colspanTkbm = $mapItems->max('total');
+
+
+
+
 
         $pabrik = M_pabrik::all();
 
@@ -232,7 +234,7 @@ class PenggajianController extends Controller
             'pabriks' => $pabrik,
             'karyawan' => $karyawan,
             'totalNetto' => $totalNetto,
-            'totalUang' => $mapItems->sum('jumlah_uang'),
+            'totalUang' => $totalUang,
         ]);
     }
 
@@ -281,9 +283,10 @@ class PenggajianController extends Controller
             });
 
 
+
         // return $items;
-        $totalNetto = $items->sum('netto');
-        $totalUang   = $items->sum('jumlah_uang');
+        $totalNetto = $items->where('model_kerja_id', 1)->sum('netto');
+        $totalUang   = $items->where('model_kerja_id', 1)->sum('jumlah_uang');
 
 
         $pinjaman_saat_ini = DB::select("SELECT

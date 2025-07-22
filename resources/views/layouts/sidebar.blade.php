@@ -95,10 +95,10 @@
                     {{-- <i class="fa fa-table fa-fw"></i> --}}
                     <i class="fa fa-fw" aria-hidden="true" title="Copy to use file-text-o">&#xf0f6</i>
                     Penggajian</a>
-                <a href="/penggajianv2">
-                    {{-- <i class="fa fa-table fa-fw"></i> --}}
+                {{-- <a href="/penggajianv2">
+                    <i class="fa fa-table fa-fw"></i>
                     <i class="fa fa-fw" aria-hidden="true" title="Copy to use file-text-o">&#xf0f6</i>
-                    Penggajian V2</a>
+                    Penggajian V2</a> --}}
             </li>
             <li>
                 <a href="/pinjaman">
